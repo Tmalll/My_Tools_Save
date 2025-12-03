@@ -65,7 +65,7 @@ goto :menu
 cd /d %~dp0
 git add -A
 git commit -m "update %date% %time%"
-git push origin master
+git push origin main
 
 echo 普通更新 - 完成！
 pause
@@ -75,10 +75,10 @@ goto :EOF
 :2_Sync_update
 cd /d %~dp0
 git fetch origin
-git pull origin master
+git pull origin main
 git add -A
 git commit -m "sync update %date% %time%"
-git push origin master
+git push origin main
 
 echo 同步更新 - 完成！
 pause
@@ -89,7 +89,7 @@ goto :EOF
 cd /d %~dp0
 git add -A
 git commit -m "force override %date% %time%"
-git push origin master --force
+git push origin main --force
 
 echo 强制覆盖远程 - 完成！
 pause
@@ -102,11 +102,11 @@ rmdir /s /q .git
 
 git init
 git remote add origin %repo_addres%
-git branch -M master
+git branch -M main
 
 git add -A
 git commit -m "initial clean commit %date% %time%"
-git push origin master --force
+git push origin main --force
 
 echo 彻底重置仓库 - 完成！
 pause
