@@ -1,0 +1,25 @@
+set PATH=%CD%;%PATH%
+powershell Measure-Command { coreutils.exe base64 -w=0 5120m > 5120m.b64 }
+# 上面这个版本只能输出时间,  不能输出编码后的文件. 要输出编码后的文件得下面这样调用.
+
+
+编码 - 带时间测试
+echo @echo off > base.bat
+echo set PATH=%%CD%%;%%PATH%% >> base.bat
+echo coreutils.exe base64 -w=0 25m ^> 25m.b64 >> base.bat
+powershell Measure-Command { ./base.bat } && del /s /q base.bat
+
+
+解码 - 带时间测试
+echo @echo off > decode.bat
+echo set PATH=%%CD%%;%%PATH%% >> decode.bat
+echo coreutils.exe base64 -d  25m.b64 ^> 25m.out >> decode.bat
+powershell Measure-Command { ./decode.bat } && del /s /q decode.bat
+
+
+
+
+
+
+
+
