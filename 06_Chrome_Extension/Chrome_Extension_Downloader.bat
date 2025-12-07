@@ -2,13 +2,29 @@
 setlocal enabledelayedexpansion
 
 :: ====== 配置扩展 ID ======
-set "ExtensionID=pfnededegaaopdmhkdmcofjmoldfiped"
+:: set "ExtensionName=ZeroOmega"
+:: set "ExtensionID=pfnededegaaopdmhkdmcofjmoldfiped"
+
+:: 提示用户输入扩展名
+set /p ExtensionName=请输入扩展名: 
+echo.
+
+:: 提示用户输入扩展ID
+echo 请输入扩展ID
+echo 浏览器中32位ID, 例如: pfnededegaaopdmhkdmcofjmoldfiped
+set /p ExtensionID=扩展ID: 
+echo.
+
+echo 您输入的扩展名是: %ExtensionName%
+echo 您输入的扩展ID是: %ExtensionID%
+echo.
+
 
 :: ====== Chrome 版本 ======
 set "ChromeVersion=125.0.0.0"
 
 :: ====== 输出文件名 ======
-set "OutputFile=%ExtensionID%.crx"
+set "OutputFile=[%ExtensionName%] Chrome %ExtensionID%.crx"
 
 :: ====== SOCKS5 代理 ======
 set "Proxy=socks5h://192.168.1.40:10800"
