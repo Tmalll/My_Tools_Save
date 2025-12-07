@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: ====== ≈‰÷√¿©’π ID ======
-set "ExtensionID=epcnnfbjfcgphgdmggkamkmgojdagdnn"
+set "ExtensionID=pfnededegaaopdmhkdmcofjmoldfiped"
 
 :: ====== Chrome ∞Ê±æ ======
 set "ChromeVersion=125.0.0.0"
