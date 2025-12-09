@@ -124,7 +124,7 @@ gh repo create %REPO_NAME% --public --confirm
 :: ³õÊ¼»¯²Ö¿â
 git init
 git add .
-git commit -m "Initial commit"
+git commit -m "Initial commit %date% %time%"
 git branch -M main
 git remote remove origin 2>nul
 git remote add origin https://github.com/%UserName%/%REPO_NAME%.git
