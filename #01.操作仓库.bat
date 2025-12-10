@@ -86,6 +86,14 @@ goto :EOF
 
 :: [3] 强制覆盖远程
 :3_Force_update
+echo 这将会覆盖远程仓库 [ 3 ] 如果远程有的文件本地没有, 则会丢失文件. 
+pause
+echo 这将会覆盖远程仓库 [ 2 ] 如果远程有的文件本地没有, 则会丢失文件. 
+pause
+echo 这将会覆盖远程仓库 [ 1 ] 如果远程有的文件本地没有, 则会丢失文件. 
+echo 再按就开始了 ! 
+pause
+
 cd /d %~dp0
 git add -A
 git commit -m "force override %date% %time%"
@@ -97,6 +105,15 @@ goto :EOF
 
 :: [4] 彻底重置仓库
 :4_Reset_repo
+echo 这将会彻底重置远程仓库 [ 3 ] 如果远程有的文件本地没有, 则会丢失文件. 另外还会丢失所有历史记录. 
+pause
+echo 这将会彻底重置远程仓库 [ 2 ] 如果远程有的文件本地没有, 则会丢失文件. 另外还会丢失所有历史记录. 
+pause
+echo 这将会彻底重置远程仓库 [ 1 ] 如果远程有的文件本地没有, 则会丢失文件. 另外还会丢失所有历史记录. 
+echo 再按就开始了 ! 
+pause
+
+
 cd /d %~dp0
 rmdir /s /q .git
 
@@ -115,6 +132,16 @@ goto :EOF
 
 
 :5_create
+echo 脚本所在目录将会创建一个新的仓库 [ 3 ] , 具体设置请编辑脚本内的变量 !
+pause
+echo 脚本所在目录将会创建一个新的仓库 [ 2 ] , 具体设置请编辑脚本内的变量 !
+pause
+echo 脚本所在目录将会创建一个新的仓库 [ 1 ] , 具体设置请编辑脚本内的变量 !
+echo 再按就开始了 ! 
+pause
+
+
+
 cd /d %~dp0
 
 :: 创建 GitHub 公共仓库
@@ -146,6 +173,17 @@ goto :EOF
 
 
 :6_rename
+echo 仓库改名 [ %NowName% ] to [ %ToName% ]
+
+echo 脚本将会修改仓库名称 [ 3 ] , 请核对上面所显示参数, 具体设置请编辑脚本内的变量 !
+pause
+echo 脚本将会修改仓库名称 [ 2 ] , 请核对上面所显示参数, 具体设置请编辑脚本内的变量 !
+pause
+echo 脚本将会修改仓库名称 [ 1 ] , 请核对上面所显示参数, 具体设置请编辑脚本内的变量 !
+echo 再按就开始了 ! 
+pause
+
+
 :: 修改 GitHub 仓库名
 gh api -X PATCH -H "Accept: application/vnd.github+json" /repos/%UserName%/%NowName% -F name=%ToName%
 
