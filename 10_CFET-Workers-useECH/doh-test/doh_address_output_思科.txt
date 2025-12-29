@@ -1,7 +1,8 @@
 https://146.112.41.2/dns-query 
 https://146.112.41.3/dns-query 
-https://146.112.71.71/dns-query 
+https://146.112.41.4/dns-query 
 https://146.112.70.70/dns-query 
+https://146.112.71.71/dns-query 
 https://204.194.234.200/dns-query 
 https://204.194.232.200/dns-query 
 https://[2620:119:fc::3]/dns-query 
@@ -11,9 +12,11 @@ https://[2a04:e4c0:170::170]/dns-query
 https://[2a04:e4c0:171::171]/dns-query 
 https://doh.umbrella.com/dns-query 
 https://pdns.opendns.com/dns-query 
+https://doh.sse.cisco.com/dns-query 
 https://pdns.umbrella.com/dns-query 
-https://dns7071.opendns.com/dns-query 
-https://dns7071.umbrella.com/dns-query 
 https://dns7071.sse.cisco.com/dns-query 
+https://dns7071.umbrella.com/dns-query 
+https://familyshield.opendns.com/dns-query 
+https://doh.sandbox.opendns.com/dns-query 
 https://doh.familyshield.opendns.com/dns-query 
 https://familyshield.sse.cisco.com/dns-query 
