@@ -1,0 +1,62 @@
+{
+  /// loglevel: "debug" | "info" | "warning" | "error" | "none"
+  "log": { "loglevel": "warning", "access": "", "error": "error.log" },
+  
+  "inbounds": [
+    { "tag": "socks5in_10901", "port": "10901", "protocol": "socks", "settings": { "auth": "noauth", "udp": true }},
+    { "tag": "socks5in_10808", "port": "10808", "protocol": "socks", "settings": { "auth": "noauth", "udp": true }}
+  ],
+
+  "outbounds": [
+    { "tag": "useProxy", "protocol": "vless", 
+      "settings": { "vnext": [{ 
+        "address": "2606:4700::9328:a6b6", "port": 443, // 优选IP 
+        "users": [{"id": "b0bbb48d-f912-4639-a385-2941ffa0a5f1", "encryption": "none" }]}]
+      },
+      "streamSettings": {
+        // WS 设置
+        "network": "ws", 
+        "wsSettings": { "host": "wandering-voice-e877.fdzy.workers.dev", "path": "/?ed=2560"},
+        
+        // TLS 设置
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "wandering-voice-e877.fdzy.workers.dev", // SNI
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "minVersion": "1.3", // 使用ECH时必须是1.3
+          "maxVersion": "1.3", // 使用ECH时必须是1.3
+          "echConfigList": "udp://dns.umbrella.com:443", // 必须使用支持ECH的DNS(基本上国外的都行)
+          "echForceQuery": "full" // 使用full防止退回到明文SNI
+        }
+      }
+    },
+    { "tag": "direct", "protocol": "freedom", "settings": {} },
+    { "tag": "blocked", "protocol": "blackhole", "settings": {} }
+  ],
+  "routing": {
+    "domainStrategy": "IPOnDemand",
+    "rules": [
+      /// 去广告
+      { "type": "field",
+        "domain": ["geosite:category-ads-all"],
+        "outboundTag": "blocked"
+      },
+      /// 非国内域名
+      { "type": "field",
+        "domain": ["geosite:geolocation-!cn"],
+        "outboundTag": "useProxy"
+      },
+      /// 国内域名直连
+      { "type": "field",
+        "domain": ["geosite:geolocation-cn"],
+        "outboundTag": "direct"
+      },
+      /// 国内和私有ip直连
+      { "type": "field",
+        "ip": ["geoip:private", "geoip:cn"],
+        "outboundTag": "direct"
+      }
+    ]
+  }
+}

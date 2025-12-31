@@ -1,5 +1,5 @@
 @echo off
-mode con: cols=80 lines=20
+mode con: cols=160 lines=40
 powershell -Command "$h = Get-Host; $ui = $h.UI.RawUI; $ui.BufferSize = New-Object System.Management.Automation.Host.Size($ui.BufferSize.Width, 9999)"
 
 
@@ -13,7 +13,8 @@ pathping -p 100 -q 1 localhost >nul
 del /s /q error.log
 pathping -p 100 -q 1 localhost >nul
 
-start /min "" %~dp0xray.exe
+cls
+start /min /b "" %~dp0xray.exe
 
 exit
 
