@@ -11,7 +11,7 @@
     { "tag": "useProxy", "protocol": "vless", 
       "settings": { "vnext": [{ 
         "address": "2606:4700::9328:a6b6", "port": 443, // 优选IP 
-        "users": [{"id": "b0bbb48d-f912-4639-a385-2941ffa0a5f1", "encryption": "none" }]}]
+        "users": [{"id": "b0bbb48d-f912-4639-a385-2941ffa0a5f1", "encryption": "none" }]}] // UUID
       },
       "streamSettings": {
         // WS 设置
