@@ -3,8 +3,8 @@
   "log": { "loglevel": "warning", "access": "", "error": "error.log" },
   
   "inbounds": [
-    { "tag": "socks5in_10901", "port": "10901", "protocol": "socks", "settings": { "auth": "noauth", "udp": true }},
-    { "tag": "socks5in_10808", "port": "10808", "protocol": "socks", "settings": { "auth": "noauth", "udp": true }}
+    { "tag": "socks5_10901", "port": "10901", "protocol": "socks", "settings": { "auth": "noauth", "udp": true }},
+    { "tag": "socks5_10808", "port": "10808", "protocol": "socks", "settings": { "auth": "noauth", "udp": true }}
   ],
 
   "outbounds": [
