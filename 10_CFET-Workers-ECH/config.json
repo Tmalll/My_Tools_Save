@@ -1,6 +1,6 @@
 {
   /// loglevel: "debug" | "info" | "warning" | "error" | "none"
-  "log": { "loglevel": "warning", "access": "", "error": "error.log" },
+  /// "log": { "loglevel": "warning", "access": "", "error": "error.log" },
   
   "inbounds": [
     { "tag": "socks5_10901", "port": "10901", "protocol": "socks", "settings": { "auth": "noauth", "udp": true }},
