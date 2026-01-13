@@ -32,13 +32,14 @@ if "%~1"=="" (
 set "audioName=%~1"
 
 :: 4. 验证是否为有效音频
+echo 输入文件: "%audioName%"
 "%ffmpegPath%" -i "%audioName%" 2> "%~dp0output.tmp"
 
 set "isValid="
 for /F "tokens=1,2,3,4,5,6 delims=:., " %%i in ('type "%~dp0output.tmp"') do (
     if "%%i"=="Duration" (
         set "isValid=1"
-        call :calcLength %%j %%k %%l %%m
+        call :calcLength1 %%j %%k %%l %%m
     )
 )
 
@@ -78,8 +79,20 @@ if not defined isValid (
 :: veryslow
 :: placebo
 
-:: x264
-"%ffmpegPath%"  -r 1 -f image2 -loop 1 -i "%picNamePath%" -i "%audioName%"   -c:a copy   -vf "scale=-2:1080,format=yuv420p"   -c:v libx264  -crf 24  -preset veryfast  -tune stillimage  -movflags +faststart  -shortest  -y "%audioName%.mp4"
+echo.
+echo.
+echo.
+
+:: 适用于油管的方式, 这样转换出来的视频流只有1s, 音频流为复制. 再油管的转码流程下能够工作,  油管应该是用流时间最长的那个为基础进行转码, 传上去可以播放.
+"%ffmpegPath%" ^
+-r 1 -framerate 1 -i "%picNamePath%" ^
+-i "%audioName%" ^
+-map 0:v:0 -map 1:a:0 ^
+-c:a copy ^
+-vf "scale=-2:1080,format=yuv420p" ^
+-c:v libx264 -crf 24 -preset veryfast -tune stillimage ^
+-movflags +faststart ^
+-y "%audioName%.mp4"
 
 
 :: 清理临时文件
@@ -88,14 +101,33 @@ if exist "%~dp0output.tmp" del "%~dp0output.tmp"
 echo.
 echo 处理完成！
 echo 输出文件: "%audioName%.mp4"
+"%ffmpegPath%" -i "%audioName%.mp4" 2> "%~dp0output.tmp"
+
+set "isValid="
+for /F "tokens=1,2,3,4,5,6 delims=:., " %%i in ('type "%~dp0output.tmp"') do (
+    if "%%i"=="Duration" (
+        set "isValid=1"
+        call :calcLength2 %%j %%k %%l %%m
+    )
+)
 pause
+del "%~dp0output.tmp"
 exit
 
-:calcLength
+:calcLength1
 set /A s=%3
 set /A s=s+%2*60
 set /A s=s+%1*60*60
-set /A VIDEO_LENGTH_S = s+1
-set /A VIDEO_LENGTH_MS = s*1000 + %4
-echo Video duration %1:%2:%3.%4 = %VIDEO_LENGTH_MS%ms = %VIDEO_LENGTH_S%s
+set /A VIDEO_LENGTH_S = s
+set /A VIDEO_LENGTH_MS = s*1000 + %4*10
+echo 输入文件长度为: %1:%2:%3.%4 = %VIDEO_LENGTH_MS%ms = %VIDEO_LENGTH_S%s
+goto :EOF
+
+:calcLength2
+set /A s=%3
+set /A s=s+%2*60
+set /A s=s+%1*60*60
+set /A VIDEO_LENGTH_S = s
+set /A VIDEO_LENGTH_MS = s*1000 + %4*10
+echo 输出文件长度为: %1:%2:%3.%4 = %VIDEO_LENGTH_MS%ms = %VIDEO_LENGTH_S%s
 goto :EOF
