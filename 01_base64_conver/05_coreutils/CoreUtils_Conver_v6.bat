@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 :: 用户设置
 :: SplitBlock=0 则关闭分割功能. 执行脚本1, 拖进来的文件不进行分割, 直接编码.
 :: SplitBlock=1+ 则开启分割分块功能. 执行脚本2, 并且将其设置为分割大小. (单位MB)
-set SplitBlock=100
+set SplitBlock=0
 
 :: 并行解码最大线程数, 用于开启分割后的解码流程.
 set maxThreads=5
@@ -27,7 +27,8 @@ if %SplitBlock%==0 (
 )
 
 :done
-rd /s /q ".jobs"
+:: 检查 .jobs 文件夹是否存在，存在则删除
+if exist ".jobs" ( rd /s /q ".jobs" )
 :: ================== 记录结束时间 毫秒级 ==================
 powershell -NoProfile -Command "$elapsed=[int64](Get-Date).ToUniversalTime().Ticks/10000 - %startTime%; Write-Host ('总计耗时 {0:F3} 秒' -f ($elapsed/1000.0))"
 echo. && echo 所有文件处理完成! && echo.
