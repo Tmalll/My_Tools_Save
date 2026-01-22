@@ -7,7 +7,7 @@ setlocal enabledelayedexpansion
 set SplitBlock=0
 
 :: 并行解码最大线程数, 用于开启分割后的解码流程.
-set maxThreads=5
+set maxThreads=10
 
 :: 检查是否有拖放文件
 if "%~1"=="" (
@@ -67,7 +67,7 @@ for %%F in (%*) do (
                 echo 检测到 Base64 文件，开始解码批处理... && echo. && echo.
                 
                 echo ***** ***** ***** 解码子程序开始 ***** ***** ***** && echo.
-                call :decodeLoop
+                call :decode_Loop
                 echo ***** ***** ***** 解码子程序结束 ***** ***** ***** && echo. && echo.
                 
                 echo ***** ***** ***** 合并子程序开始 ***** ***** ***** && echo.
@@ -79,13 +79,13 @@ for %%F in (%*) do (
     ) else (
         echo 分块编码中: "%%~dpnF"
         set /a i=1
-        call :split_loop_encode "%%~fF" "%%~dpnF"
+        call :split_encode_loop "%%~fF" "%%~dpnF"
     )
 )
 goto done
 
 
-:split_loop_encode
+:split_encode_loop
 :: 子程序：按 SplitBlock(MB) 分块并逐块 base64
 set "src=%~1"
 set "base=%~2"
@@ -107,13 +107,13 @@ for %%A in ("!fname!.b64") do (
 
 echo 生成 !fname!.b64
 set /a i+=1
-goto split_loop_encode
+goto split_encode_loop
 
 
 
 
 
-:decodeLoop
+:decode_Loop
 :: ================= 并行解码循环 =================
 
 :: 每次回到循环都按锁文件实时统计活跃任务
