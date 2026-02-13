@@ -1,0 +1,4 @@
+
+set SECONDS=15 & set interval_MS=10 & set skip_MS=3000 & set skip_min_Interval_MS=50
+powershell -NoProfile -Command "$m=%SECONDS%*1000; $lastTick=0; $skipS = %skip_MS%/1000; while($m -gt 0){ $display=[math]::Max($m/1000, 0); Write-Host -NoNewline (\"`r剩余 {0:F3} 秒后脚本继续... [点按空格跳过 {1:F1}s ^| 长按空格/Esc/回车 - 快速跳过]   \" -f $display, $skipS); if([Console]::KeyAvailable){ $key=[Console]::ReadKey($true); $nowTick=(Get-Date).Ticks; if($key.Key -eq 'Spacebar'){ if(($nowTick - $lastTick) -gt %skip_min_Interval_MS%0000){ $m-=%skip_MS%; $lastTick=$nowTick } } elseif($key.Key -eq 'Enter' -or $key.Key -eq 'Escape'){ break }; while([Console]::KeyAvailable){$null=[Console]::ReadKey($true)} }; Start-Sleep -Milliseconds %interval_MS%; $m-=%interval_MS% }; Write-Host ' '"
+echo 计时器已经结束... & pathping -p 333 -q 1 localhost >nul

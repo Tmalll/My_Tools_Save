@@ -1,0 +1,26 @@
+
+powershell版本计时器
+
+set SECONDS=10 & set interval_MS=100
+powershell -NoProfile -Command "$s=%SECONDS%; $i=%interval_MS%; for($m=$s*1000; $m -gt 0; $m-=$i){ Write-Host -NoNewline (\"`r剩余 {0:F3} 秒后脚本继续...   \" -f ($m/1000)); Start-Sleep -Milliseconds $i }"
+
+
+
+
+毫秒级
+ping 10.6.6.6 -n 1 -w 100 > nul
+
+powershell -NoProfile -Command "Start-Sleep -Milliseconds 200"
+pathping -p 333 -q 1 localhost >nul
+powershell -NoProfile -Command "sleep -m 200"
+
+
+秒级
+timeout /t 5 >nul
+choice /c y /n /d y /t 1 >nul
+
+
+:: 忽略除 Ctrl+C 以外的所有按键
+timeout /t 15 /nobreak >nul
+
+
