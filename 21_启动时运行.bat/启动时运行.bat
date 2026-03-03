@@ -21,6 +21,7 @@ reg add "HKCU\Console" /v "ScreenBufferSize" /t REG_DWORD /d 0x03E80078 /f >nul
 cls
 set SECONDS=15 & set interval_MS=10 & set skip_MS=3000 & set skip_min_Interval_MS=50
 powershell -NoProfile -Command "$m=%SECONDS%*1000;$skipS=%skip_MS%/1000;$lastTick=0;$line=[Console]::CursorTop;while($m -gt 0){[Console]::SetCursorPosition(0,$line);$display=[math]::Max($m/1000,0);Write-Host -NoNewline ('剩余 {0,6:F3} 秒后继续... [空格跳过 {1:F1}s ^| Enter/Esc 立即跳过]   ' -f $display,$skipS);if([Console]::KeyAvailable){$key=[Console]::ReadKey($true);$now=(Get-Date).Ticks;if($key.Key -eq 'Spacebar'){if(($now-$lastTick) -gt %skip_min_interval_MS%0000){$m-=%skip_MS%;$lastTick=$now}}elseif($key.Key -in 'Enter','Escape'){break};while([Console]::KeyAvailable){$null=[Console]::ReadKey($true)}};Start-Sleep -Milliseconds %interval_MS%;$m-=%interval_MS%};[Console]::SetCursorPosition(0,$line);Write-Host '延迟结束，开始执行脚本...                     '"
+timeout /t 2 >nul
 cls
 
 :: 最小化窗口
@@ -72,24 +73,8 @@ echo.
 timeout /t 2 >nul
 
 :Cobian_Reflector_备份任务
-echo Cobian_Reflector_备份任务 - 开始
-
-:: 检测系统运行秒数
-set "uptime=0"
-for /f %%i in ('powershell -NoProfile -Command "[int]((Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime).TotalSeconds"') do set "uptime=%%i"
-if %uptime% LSS 3600 (
-    echo ----- [ 跳过 ] ----- 当前系统运行时间仅为 %uptime% 秒，跳过此次任务 ----- [ 跳过 ] -----
-    echo.
-    goto :bak_2_end
-)
-
-echo ----- [任务开始] ----- 当前系统运行时间为 %uptime% 秒 ----- [任务开始] -----
-echo.
-echo Cobian Reflector 备份任务 - 开始
-echo.
-
-echo 10秒后开始 Cobian Reflector 备份任务检测
-timeout /t 10 >nul
+echo Cobian_Reflector_备份任务 - 开始 & echo.
+timeout /t 5 >nul
 
 :: 检查 Cobian Reflector UI 是否正在运行
 tasklist /FI "IMAGENAME eq Cobian.Reflector.UserInterface.exe" /FO CSV | findstr /I "Cobian.Reflector.UserInterface.exe" >nul
@@ -99,25 +84,18 @@ if %ERRORLEVEL% equ 0 (
     echo 未找到进程，将重新启动它
     start "" "C:\Program Files\Cobian Reflector\Cobian.Reflector.UserInterface.exe"
 )
+timeout /t 5 >nul
+echo.
 
-:: 文件备份任务2, [ CobianReflector ] 备份任务
-echo.
-echo ***** ***** 开始执行 [ CobianReflector ] 备份任务 3 ***** ***** && echo.
-pathping -p 500 -q 1 localhost >nul
-echo ***** ***** 开始执行 [ CobianReflector ] 备份任务 2 ***** ***** && echo.
-pathping -p 500 -q 1 localhost >nul 
-echo ***** ***** 开始执行 [ CobianReflector ] 备份任务 1 ***** ***** && echo.
-pathping -p 500 -q 1 localhost >nul
-:: 参考命令 powershell Restart-Service -Name "CobianReflectorService" -Force -ErrorAction Stop && echo.
-powershell -NoProfile -Command "try { Restart-Service -Name 'CobianReflectorService' -Force -ErrorAction Stop; $svc = Get-Service -Name 'CobianReflectorService'; if ($svc.Status -eq 'Running') { Write-Host '[ CobianReflectorService ] 重启成功, 服务已成功运行' `n} else { Write-Host '[ CobianReflectorService ] 服务未成功启动，当前状态: ' $svc.Status `n} } catch { Write-Host '[ CobianReflectorService ] 重启失败: ' $_.Exception.Message `n}"
+:: 启动服务
+echo ***** ***** 开始执行 [ CobianReflector ] 备份任务 3 ***** ***** && echo. && pathping -p 500 -q 1 localhost >nul
+echo ***** ***** 开始执行 [ CobianReflector ] 备份任务 2 ***** ***** && echo. && pathping -p 500 -q 1 localhost >nul
+echo ***** ***** 开始执行 [ CobianReflector ] 备份任务 1 ***** ***** && echo. && pathping -p 500 -q 1 localhost >nul
+powershell -NoProfile -Command "try { $name = 'CobianReflectorService'; Set-Service -Name $name -StartupType Manual; $svc = Get-Service -Name $name; if ($svc.Status -ne 'Running') { Start-Service -Name $name -ErrorAction Stop; $action = '启动' } else { Restart-Service -Name $name -Force -ErrorAction Stop; $action = '重启' }; $svc.Refresh(); if ($svc.Status -eq 'Running') { Write-Host \"[ $name ] $action成功, 服务已成功运行`n\" } else { Write-Host \"[ $name ] 服务未成功运行，当前状态: $($svc.Status)`n\" } } catch { Write-Host \"[ CobianReflectorService ] 操作失败: $($_.Exception.Message)`n\" }"
 echo.
 echo.
-:bak_2_end
 timeout /t 2 >nul
 :: 后续其他脚本....
-
-
-
 
 :备份暗黑2存档
 echo 备份暗黑2存档 - 开始

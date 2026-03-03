@@ -7,9 +7,8 @@ if "%1" neq "min" start /min "" "%~f0" min & exit
 echo. & timeout /t 2 >nul & echo.
 
 :原版Chrome
-set "PRName=chrome.exe"
+set "PRName=原版Chrome"
 set "FullPath=D:\01.Program_Soft\01-浏览器\02.Chrome\Chrome\chrome.exe"
-echo 隐藏启动 [ %FullPath% ] - 开始
 
 :: FullPath 检测的版本
 powershell -Command "$p = Get-Process | Where-Object { $_.Path -eq '%FullPath%' }; if (-not $p) { exit 1 }" >nul 2>&1
@@ -25,9 +24,8 @@ if %ERRORLEVEL% equ 0 (
 echo. & timeout /t 2 >nul & echo.
 
 :Cent_Browser_New_5.1
-set "PRName=chrome.exe"
+set "PRName=Cent_Browser_New_5.1"
 set "FullPath=D:\01.Program_Soft\01-浏览器\01.CentBrowser\New_5.1.1130.129_x64_portable\chrome.exe"
-echo 隐藏启动 [ %FullPath% ] - 开始
 
 :: FullPath 检测的版本
 powershell -Command "$p = Get-Process | Where-Object { $_.Path -eq '%FullPath%' }; if (-not $p) { exit 1 }" >nul 2>&1
@@ -44,7 +42,6 @@ echo. & timeout /t 2 >nul & echo.
 
 :catsxp.exe
 set PRName=catsxp.exe
-echo 隐藏启动 [ %PRName% ] - 开始
 
 tasklist /FI "IMAGENAME eq %PRName%" /FO CSV | findstr /I "%PRName%" >nul
 if %ERRORLEVEL% equ 0 (
@@ -59,7 +56,6 @@ echo. & timeout /t 2 >nul & echo.
 
 :msedge.exe
 set PRName=msedge.exe
-echo 隐藏启动 [ %PRName% ] - 开始
 
 tasklist /FI "IMAGENAME eq %PRName%" /FO CSV | findstr /I "%PRName%" >nul
 if %ERRORLEVEL% equ 0 (
@@ -75,7 +71,6 @@ echo. & timeout /t 2 >nul & echo.
 
 :Brave_browser
 set PRName=brave.exe
-echo 隐藏启动 [ %PRName% ] - 开始
 
 tasklist /FI "IMAGENAME eq %PRName%" /FO CSV | findstr /I "%PRName%" >nul
 if %ERRORLEVEL% equ 0 (
@@ -91,7 +86,6 @@ echo. & timeout /t 2 >nul & echo.
 
 :Telegram.exe
 set PRName=Telegram.exe
-echo 隐藏启动 [ %PRName% ] - 开始
 
 tasklist /FI "IMAGENAME eq %PRName%" /FO CSV | findstr /I "%PRName%" >nul
 if %ERRORLEVEL% equ 0 (
@@ -107,7 +101,6 @@ echo. & timeout /t 2 >nul & echo.
 :Foxmail.exe
 set "PRName=Foxmail.exe"
 set "PRPath=D:\01.Program_Soft\12-eMail_Client\Foxmail\Foxmail.exe"
-echo 隐藏启动 [ %PRName% ] - 开始
 :: 1. 获取系统运行秒数
 for /f %%i in ('powershell -NoProfile -Command "[int]((Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime).TotalSeconds"') do set "uptime=%%i"
 :: 2. 逻辑判断, 开机时间小于3600秒, 并且已经启动, 则跳过, 否则重启它.
@@ -140,7 +133,6 @@ echo. & timeout /t 2 >nul & echo.
 
 :Opera_Browser
 set PRName=opera.exe
-echo 隐藏启动 [ %PRName% ] - 开始
 
 tasklist /FI "IMAGENAME eq %PRName%" /FO CSV | findstr /I "%PRName%" >nul
 if %ERRORLEVEL% equ 0 (
@@ -156,7 +148,6 @@ echo. & timeout /t 2 >nul & echo.
 
 :Iceweasel.exe
 set PRName=Iceweasel.exe
-echo 隐藏启动 [ %PRName% ] - 开始
 
 tasklist /FI "IMAGENAME eq %PRName%" /FO CSV | findstr /I "%PRName%" >nul
 if %ERRORLEVEL% equ 0 (
