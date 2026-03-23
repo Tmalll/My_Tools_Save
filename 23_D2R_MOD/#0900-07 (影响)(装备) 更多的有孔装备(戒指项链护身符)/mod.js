@@ -106,14 +106,16 @@ if (config.New_Jewelry_Recipes) {
             return newRow;
         };
 
+        // 2. 定义打孔配置数据 (包含最小和最大孔数)
         const socketTargets = [
-            { code: 'ring', s: 1, desc: 'Ring' },
-            { code: 'amul', s: 1, desc: 'Amulet' },
-            { code: 'scha', s: 1, desc: 'SC' },
-            { code: 'mcha', s: 2, desc: 'MC' },
-            { code: 'lcha', s: 3, desc: 'LC' }
+            { code: 'ring', minsocks: 1, maxsocks: 1, desc: 'Ring' },
+            { code: 'amul', minsocks: 1, maxsocks: 1, desc: 'Amulet' },
+            { code: 'scha', minsocks: 1, maxsocks: 1, desc: 'SC' },
+            { code: 'mcha', minsocks: 1, maxsocks: 2, desc: 'MC' },
+            { code: 'lcha', minsocks: 1, maxsocks: 3, desc: 'LC' }
         ];
-
+        
+        // 3. 循环生成打孔配方
         socketTargets.forEach(target => {
             cube.rows.push(createRecipe({
                 description: `MyMOD Add Socket to ${target.desc}`,
@@ -122,8 +124,9 @@ if (config.New_Jewelry_Recipes) {
                 'input 2': 'wms', 
                 output: 'usetype,mod',
                 'mod 1': 'sock',
-                'mod 1 min': String(target.s),
-                'mod 1 max': String(target.s)
+                // --- 这里适配随机孔数逻辑 ---
+                'mod 1 min': String(target.minsocks), 
+                'mod 1 max': String(target.maxsocks)
             }));
         });
 

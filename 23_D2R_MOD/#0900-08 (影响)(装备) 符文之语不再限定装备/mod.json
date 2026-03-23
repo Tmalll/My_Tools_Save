@@ -1,0 +1,22 @@
+{
+  "name": "#0900-08 (影响)(装备) 符文之语不再限定装备",
+  "description": "解锁符文之语的类型限制, (这可能会解锁新玩法, 也可能造成角色过于强力而不平衡)",
+  "author": "原作者:Shadedness + 自制大改",
+  "website": "",
+  "config": [
+    {
+      "id": "unlock_all",
+      "type": "checkbox",
+      "name": "符文之语不再限定装备类型(这会忽略手动模式)",
+      "description": "打开这个会忽略下面的手动模式设置, 让全部符文之语对所有类型的装备通用.",
+      "defaultValue": false
+    },
+    {
+      "id": "manual_unlock",
+      "type": "checkbox",
+      "name": "手动模式",
+      "description": "单独设置每一个符文之语所适用的装备, 具体设置请修改mod.js中的 *_can_be_use = [] 组数内的名称, 把特定符文之语的英文名称加进去就行了",
+      "defaultValue": true
+    }
+  ]
+}
