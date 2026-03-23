@@ -1,0 +1,8 @@
+{
+  "$schema": "../config-schema.json",
+  "name": "#0202-03 大方块 ExpandedCube-189-1-5-1771873188",
+  "description": "Increases cube size to 6x4.",
+  "author": "olegbl",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/189",
+  "version": "1.5"
+}

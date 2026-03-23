@@ -1,0 +1,80 @@
+{
+  "name": "#0999-02 (非常)(供应商)(调试专用) NPC出售符文,宝石,紫药,红门钥匙,洗点,珠宝",
+  "description": "建议只用于调试",
+  "author": "lil174",
+  "version": "1.5",
+  "config": [
+    {
+      "id": "runesUpTo",
+      "type": "number",
+      "name": "A1-A5NPC出售符文最高编号",
+      "description": "0=不允许,限制0-33",
+      "defaultValue": 33,
+      "minValue": 0,
+      "maxValue": 33
+    },
+    {
+      "id": "RuneCost",
+      "type": "checkbox",
+      "name": "1金币出售符文",
+      "description": "符文将以每个 1 金币的价格出售",
+      "defaultValue": true
+    },
+    {
+      "id": "allowGem",
+      "type": "checkbox",
+      "name": "A1-A5NPC出售完美宝石",
+      "description": "允许A1-A5NPC出售6种完美宝石包括完美骷髅",
+      "defaultValue": true
+    },
+    {
+      "id": "allowGemALL",
+      "type": "checkbox",
+      "name": "出售所有宝石",
+      "description": "包括低级宝石, 否则只出售高级宝石.",
+      "defaultValue": true
+    },
+    {
+      "id": "GemCost",
+      "type": "checkbox",
+      "name": "1金币出售宝石",
+      "description": "宝石将以每个 1 金币的价格出售",
+      "defaultValue": true
+    },
+    {
+      "id": "allowRev",
+      "type": "checkbox",
+      "name": "A1-A5NPC出售大紫药",
+      "description": "方便K6BOSS用",
+      "defaultValue": false
+    },
+    {
+      "id": "allowUKey",
+      "type": "checkbox",
+      "name": "A1-A5NPC出售红门钥匙",
+      "description": "方便K6BOSS用",
+      "defaultValue": false
+    },
+    {
+      "id": "allowToken",
+      "type": "checkbox",
+      "name": "A1-A5NPC出售洗点",
+      "description": "方便洗属性和技能点",
+      "defaultValue": false
+    },
+    {
+      "id": "allowJewel",
+      "type": "checkbox",
+      "name": "A1-A5NPC出售珠宝",
+      "description": "方便做手工物品",
+      "defaultValue": true
+    },
+    {
+      "id": "JewelCost",
+      "type": "checkbox",
+      "name": "1金币出售珠宝",
+      "description": "珠宝将以每个 1 金币的价格出售",
+      "defaultValue": true
+    }
+  ]
+}

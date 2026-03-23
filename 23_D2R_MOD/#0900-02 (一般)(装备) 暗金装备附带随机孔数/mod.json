@@ -1,0 +1,14 @@
+{
+  "name": "#0900-02 (一般)(装备) 暗金装备附带随机孔数",
+  "description": "",
+  "author": "自制",
+  "config": [
+    {
+      "id": "addSocket",
+      "type": "checkbox",
+      "name": "暗金装备附带随机孔数",
+      "description": "暗金装备附带随机孔数",
+      "defaultValue": true
+    }
+  ]
+}

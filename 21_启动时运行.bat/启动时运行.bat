@@ -5,7 +5,7 @@ cd /d "%~dp0" & title %~nx0
 :: 判断并设置窗口尺寸
 if "%1"=="min" (
     mode con: cols=120 lines=40
-    explorer.exe "E:\01.userData\ZhuoMian\用户权限脚本.bat"
+    explorer.exe "%~dp0用户权限脚本.bat"
     goto :start_script
 )
 
@@ -16,15 +16,18 @@ mode con: cols=80 lines=20
 reg add "HKCU\Console" /v "WindowSize" /t REG_DWORD /d 0x00280078 /f >nul
 reg add "HKCU\Console" /v "ScreenBufferSize" /t REG_DWORD /d 0x03E80078 /f >nul
 
+:备份暗黑2存档
+echo 备份暗黑2存档 - 开始
+start  /min  ""  "E:\01.userData\Saved Games\D2R_BAK.bat"
 
-:: 延迟15秒脚本
+:延迟15秒脚本
 cls
 set SECONDS=15 & set interval_MS=10 & set skip_MS=3000 & set skip_min_Interval_MS=50
 powershell -NoProfile -Command "$m=%SECONDS%*1000;$skipS=%skip_MS%/1000;$lastTick=0;$line=[Console]::CursorTop;while($m -gt 0){[Console]::SetCursorPosition(0,$line);$display=[math]::Max($m/1000,0);Write-Host -NoNewline ('剩余 {0,6:F3} 秒后继续... [空格跳过 {1:F1}s ^| Enter/Esc 立即跳过]   ' -f $display,$skipS);if([Console]::KeyAvailable){$key=[Console]::ReadKey($true);$now=(Get-Date).Ticks;if($key.Key -eq 'Spacebar'){if(($now-$lastTick) -gt %skip_min_interval_MS%0000){$m-=%skip_MS%;$lastTick=$now}}elseif($key.Key -in 'Enter','Escape'){break};while([Console]::KeyAvailable){$null=[Console]::ReadKey($true)}};Start-Sleep -Milliseconds %interval_MS%;$m-=%interval_MS%};[Console]::SetCursorPosition(0,$line);Write-Host '延迟结束，开始执行脚本...                     '"
 timeout /t 2 >nul
 cls
 
-:: 最小化窗口
+:最小化窗口
 cd /d "%~dp0" & title %~nx0
 if "%1" neq "min" start /min "" "%~f0" min & exit
 :start_script
@@ -96,17 +99,6 @@ echo.
 echo.
 timeout /t 2 >nul
 :: 后续其他脚本....
-
-:备份暗黑2存档
-echo 备份暗黑2存档 - 开始
-echo.
-
-:: echo 备份D2R配置和存档.
-:: timeout /t 1 >nul
-:: start  /min  ""  "E:\01.userData\Saved Games\D2R_BAK.bat"
-echo.
-echo.
-timeout /t 2 >nul
 
 :rclone挂载任务
 echo rclone挂载任务 - 开始

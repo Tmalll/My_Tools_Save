@@ -1,0 +1,90 @@
+{
+    "name": "#0999-01 (非常)(经验)(调试专用) exp更好的经验与升级",
+    "description": "配置暗黑破坏神2重制版中的经验机制",
+    "website": "https://www.nexusmods.com/diablo2resurrected/mods/671",
+    "author": "原作者:Otterpawps, 自制大改",
+    "config": [
+        {
+            "id": "MaxLevelConfig",
+            "type": "section",
+            "name": "最大等级设置",
+            "defaultExpanded": true
+        },
+        {
+            "id": "maxLevel",
+            "type": "number",
+            "name": "最大等级",
+            "description": "默认: 99级. 这将更改所有职业的最大等级。请只使用整数（如 1, 2, 3, 67, 409 等）。使用小于99的值请自行承担风险。如果使用大于99的最大等级，强烈建议启用“调整比率”，否则99级之后每一级所需经验将和98升99时相同。",
+            "defaultValue": 100,
+            "minValue": 1,
+            "maxValue": 999
+        },
+        {
+            "id": "expUp1_30",
+            "type": "number",
+            "name": "升级所需经验倍数(1级~30级)",
+            "description": "这会调整升级所需经验的倍数, 就是显示在经验条上的那个数值. 如果想让升级时间缩短为原来的四分之一，填写0.25（即只需25%经验）。填写5意味着升级所需经验是原来的5倍。",
+            "defaultValue": 15
+        },
+        {
+            "id": "expUp31_60",
+            "type": "number",
+            "name": "升级所需经验倍数(31级~60级)",
+            "description": "这会调整升级所需经验的倍数, 就是显示在经验条上的那个数值. 如果想让升级时间缩短为原来的四分之一，填写0.25（即只需25%经验）。填写5意味着升级所需经验是原来的5倍。",
+            "defaultValue": 10
+        },
+        {
+            "id": "expUp61_90",
+            "type": "number",
+            "name": "升级所需经验倍数(61级~90级)",
+            "description": "这会调整升级所需经验的倍数, 就是显示在经验条上的那个数值. 如果想让升级时间缩短为原来的四分之一，填写0.25（即只需25%经验）。填写5意味着升级所需经验是原来的5倍。",
+            "defaultValue": 5
+        },
+        {
+            "id": "expUp90up",
+            "type": "number",
+            "name": "升级所需经验倍数(90级以上)",
+            "description": "这会调整升级所需经验的倍数, 就是显示在经验条上的那个数值. 如果想让升级时间缩短为原来的四分之一，填写0.25（即只需25%经验）。填写5意味着升级所需经验是原来的5倍。",
+            "defaultValue": 1
+        },
+        {
+            "id": "one_monster_full_Level",
+            "type": "checkbox",
+            "name": "杀一个怪就满级(忽略以上设置)",
+            "defaultValue": false,
+            "description": "杀一个怪就满级, 把每级所需经验设置为1, 所以杀一个怪就满级了, 不够就再杀几个."
+        },
+        {
+            "id": "expGrowthRate",
+            "type": "number",
+            "name": "调整99级以上经验增长率",
+            "description": "99级以上的经验增长率应如何设定？原版最后10级的平均经验增长约为前一级的9%。默认值1.08表示较容易升级。你可以降低它以加快升级速度，或者提高以增加难度。符合原版标准的值为1.10。",
+            "defaultValue": 1.08,
+            "minValue": 1.08
+        },
+
+
+
+        {   
+            "id": "Ratio",
+            "type": "section",
+            "name": "经验获取比率设定",
+            "defaultExpanded": true
+        },
+        {
+            "id": "expIncreaseNum",
+            "type": "number",
+            "name": "经验获取倍率",
+            "defaultValue": 1,
+            "minValue": 0,
+            "description": "1=默认, 2=获取加倍, 0.5=获取减半"
+        },                
+        {
+            "id": "Unified_experience_acquisition_ratio",
+            "type": "checkbox",
+            "name": "统一经验获取比率",
+            "defaultValue": true,
+            "description": "游戏默认70级后经验获取率递减, 打开此项取消此设置, 把经验获取率统一为1024(即100%), 然后再用上面的选项重新计算获取比率."
+        }
+    ]
+}

@@ -1,0 +1,155 @@
+// === 各大类统一修改 ===
+const batchMods = [
+  {
+    keyword: "Hit Power",
+    mods: {
+      "input 3": "r10",
+      "mod 1": "addxp",
+      "mod 1 min": "100",
+      "mod 1 max": "100",
+      "mod 2": "dmg/lvl",
+      "mod 2 param": "4",
+      "mod 3": "crush",
+      "mod 3 min": "10",
+      "mod 3 max": "10",
+      "mod 4": "swing2",
+      "mod 4 min": "10",
+      "mod 4 max": "10",
+      "mod 5": "mag%/lvl",
+      "mod 5 param": "40"
+    }
+  },
+  {
+    keyword: "Blood",
+    mods: {
+      "input 3": "r08",
+      "mod 1": "addxp",
+      "mod 1 min": "100",
+      "mod 1 max": "100",
+      "mod 2": "dmg%/lvl",
+      "mod 2 param": "4",
+      "mod 3": "deadly",
+      "mod 3 min": "10",
+      "mod 3 max": "10",
+      "mod 4": "lifesteal",
+      "mod 4 min": "3",
+      "mod 4 max": "3",
+      "mod 5": "mag%/lvl",
+      "mod 5 param": "40"
+    }
+  }
+];
+
+// === 主武器 ===
+batchMods.forEach(batch => {
+  recipeFile.rows.forEach(recipe => {
+    if (recipe["description"] && recipe["description"].includes(batch.keyword)) {
+      for (const [key, val] of Object.entries(batch.mods)) {
+        recipe[key] = val;
+      }
+    }
+  });
+});
+
+const specialMods = [
+  {
+    keyword: "Hit Power Weapon",
+    mods: {
+      "mod 1": "att-skill",
+      "mod 1 param": "44",
+      "mod 1 min": "30",
+      "mod 1 max": "3",
+      "mod 2": "dmg/lvl",
+      "mod 2 param": "40"
+    }
+  },
+  {
+    keyword: "Blood Weapon",
+    mods: {
+      "mod 1": "hit-skill",
+      "mod 1 param": "51",
+      "mod 1 min": "30",
+      "mod 1 max": "1",
+      "mod 2": "dmg%/lvl",
+      "mod 2 param": "40"
+    }
+  }
+];
+
+specialMods.forEach(special => {
+  recipeFile.rows.forEach(recipe => {
+    if (recipe["description"] && recipe["description"].includes(special.keyword)) {
+      for (const [key, val] of Object.entries(special.mods)) {
+        recipe[key] = val;
+      }
+    }
+  });
+});
+
+/// 副武器复制的配方
+const recipeCopies = [
+  {
+    baseDescription: "Hit Power Weapon",
+    newDescription: "Hit Power Missile",
+    changes: {
+      "input 1": "miss,upg",
+      "mod 1": "oskill",
+      "mod 1 param": "31",
+      "mod 1 min": "1",
+      "mod 1 max": "1"
+    }
+  },
+  {
+    baseDescription: "Hit Power Weapon",
+    newDescription: "Hit Power Combo",
+    changes: {
+      "input 1": "comb,upg",
+      "input 5": "yps",
+      "numinputs": "5",
+      "mod 1": "hit-skill",
+      "mod 1 param": "84",
+      "mod 1 min": "15",
+      "mod 1 max": "1"
+    }
+  },
+  {
+    baseDescription: "Blood Weapon",
+    newDescription: "Blood Missile",
+    changes: {
+      "input 1": "miss,upg",
+      "mod 1": "hit-skill",
+      "mod 1 param": "56",
+      "mod 1 min": "15",
+      "mod 1 max": "1"
+    }
+  },
+  {
+    baseDescription: "Blood Weapon",
+    newDescription: "Blood Combo",
+    changes: {
+      "input 1": "comb,upg",
+      "input 5": "yps",
+      "numinputs": "5",
+      "mod 1": "hit-skill",
+      "mod 1 param": "56",
+      "mod 1 min": "15",
+      "mod 1 max": "1"
+    }
+  }
+];
+
+recipeCopies.forEach(cfg => {
+  const base = recipeFile.rows.find(recipe =>
+    recipe["description"] && recipe["description"].includes(cfg.baseDescription)
+  );
+  if (base) {
+    const copy = { ...base };
+    copy["description"] = cfg.newDescription;
+    for (const [key, value] of Object.entries(cfg.changes)) {
+      copy[key] = value;
+    }
+    recipeFile.rows.push(copy);
+  } else {
+    console.warn(`未找到 description 包含 "${cfg.baseDescription}" 的配方`);
+  }
+});

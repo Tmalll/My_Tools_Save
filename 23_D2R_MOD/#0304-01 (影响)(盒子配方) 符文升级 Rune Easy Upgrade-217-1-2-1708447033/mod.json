@@ -1,0 +1,51 @@
+{
+  "name": "#0304-01 (影响)(盒子配方) 符文升级",
+  "description": "添加更简单的符文升级配方：两个相同符文可合成更高一级的符文，无需宝石。",
+  "author": "Jobus",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/217",
+  "version": "1.2.0",
+  "config": [
+    {
+      "id": "lowRuneCost",
+      "type": "select",
+      "name": "低级符文成本",
+      "description": "设置低级符文（El 至 Thul）的升级成本，默认需 3 个相同符文。",
+      "defaultValue": "twoRunes",
+      "options": [
+        { "value": "oneRune", "label": "1 个符文", "description": "与可堆叠符文模组不兼容" },
+        { "value": "twoRunes", "label": "2 个符文" },
+        { "value": "threeRunes", "label": "3 个符文(原版设定)", "description": "原版设定" }
+      ]
+    },
+    {
+      "id": "midRuneCost",
+      "type": "select",
+      "name": "中级符文成本",
+      "description": "设置中级符文（Amn 至 Pul）的升级成本，默认为 3 个符文加 1 颗宝石。",
+      "defaultValue": "twoRunes",
+      "options": [
+        { "value": "oneRune", "label": "1 个符文", "description": "与可堆叠符文模组不兼容" },
+        { "value": "oneRuneOneGem", "label": "1 个符文 + 1 颗宝石" },
+        { "value": "twoRunes", "label": "2 个符文" },
+        { "value": "twoRunesOneGem", "label": "2 个符文 + 1 颗宝石" },
+        { "value": "threeRunes", "label": "3 个符文" },
+        { "value": "threeRunesOneGem", "label": "3 个符文 + 1 颗宝石(原版设定)", "description": "原版设定" }
+      ]
+    },
+    {
+      "id": "highRuneCost",
+      "type": "select",
+      "name": "高级符文成本",
+      "description": "设置高级符文（Um 至 Zod）的升级成本，默认为 2 个符文加 1 颗宝石。",
+      "defaultValue": "twoRunes",
+      "options": [
+        { "value": "oneRune", "label": "1 个符文", "description": "与可堆叠符文模组不兼容" },
+        { "value": "oneRuneOneGem", "label": "1 个符文 + 1 颗宝石" },
+        { "value": "twoRunes", "label": "2 个符文" },
+        { "value": "twoRunesOneGem", "label": "2 个符文 + 1 颗宝石(原版设定)", "description": "原版设定" },
+        { "value": "threeRunes", "label": "3 个符文" },
+        { "value": "threeRunesOneGem", "label": "3 个符文 + 1 颗宝石" }
+      ]
+    }
+  ]
+}

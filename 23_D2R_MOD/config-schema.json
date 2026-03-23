@@ -1,0 +1,1853 @@
+{
+  "description": "The structure of the \"mod.json\" file that D2RMM mods should provide.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "description": "The JSON schema used to validate the file.",
+      "type": "string"
+    },
+    "name": {
+      "description": "The name of the mod.",
+      "type": "string"
+    },
+    "description": {
+      "description": "A short description of the mod.",
+      "type": "string"
+    },
+    "author": {
+      "description": "The author of the mod.",
+      "type": "string"
+    },
+    "website": {
+      "description": "The website of the mod. Ideally, this should link to the Nexus Mods page for the mod.",
+      "type": "string"
+    },
+    "version": {
+      "description": "The version of the mod.",
+      "type": "string"
+    },
+    "config": {
+      "description": "The configuration for the mod. This allows the mod to set up a custom configuration UI\nthat the user can interact with to customize the behavior of the mod.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ModConfigFieldOrSection"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "name"
+  ],
+  "definitions": {
+    "ModConfigFieldOrSection": {
+      "description": "A single configuration field or section.",
+      "ignore": "",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ModConfigSection"
+        },
+        {
+          "$ref": "#/definitions/ModConfigFieldCheckbox"
+        },
+        {
+          "$ref": "#/definitions/ModConfigFieldNumber"
+        },
+        {
+          "$ref": "#/definitions/ModConfigFieldText"
+        },
+        {
+          "$ref": "#/definitions/ModConfigFieldSelect"
+        },
+        {
+          "$ref": "#/definitions/ModConfigFieldColor"
+        }
+      ]
+    },
+    "ModConfigSection": {
+      "description": "A section in the configuration UI that can contain other fields or sections.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the configuration element.",
+          "type": "string",
+          "const": "section"
+        },
+        "name": {
+          "description": "The name of the section.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description for the section that appears in a help tooltip.",
+          "type": "string"
+        },
+        "visible": {
+          "$ref": "#/definitions/Binding",
+          "description": "Determines if the section is visible or not."
+        },
+        "defaultExpanded": {
+          "description": "Whether the section should be expanded by default.",
+          "type": "boolean"
+        },
+        "allowToggleAll": {
+          "$ref": "#/definitions/Binding",
+          "description": "Whether the \"toggle all\" button can appear in this section.\nNote that this button will only appear if all the children\nof this section are checkboxes."
+        },
+        "children": {
+          "description": "The fields or sections that are contained within this section.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ModConfigFieldOrSection"
+          }
+        },
+        "defaultValue": {
+          "description": "If this value is anything other than `null`, the section will have a\ncheckbox on the left hand side that will set this section's `value`\nthe same way as it would work for a checkbox field.",
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "overrideValue": {
+          "$ref": "#/definitions/Binding_1",
+          "description": "The override value of the section field.\nIf this value is anything other than `null`, it will override the current value.\nIf the value is overridden, it will also be read only.\nThis needs to be used in unison with `defaultValue`."
+        },
+        "id": {
+          "description": "The unique identifier of the configuration element.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "type"
+      ]
+    },
+    "Binding": {
+      "description": "A binding that can be dynamically evaluated to a value.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BindingSectionExpanded",
+          "description": "Returns whether the configuration section whose id matches the first parameter (`string`) is currently expanded."
+        },
+        {
+          "$ref": "#/definitions/BindingNot",
+          "description": "Checks if the parameter (`boolean`) is false."
+        },
+        {
+          "$ref": "#/definitions/BindingAnd",
+          "description": "Checks if all of the parameters (`boolean`) are true."
+        },
+        {
+          "$ref": "#/definitions/BindingOr",
+          "description": "Checks if any of the parameters (`boolean`) are true."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals_1",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals_2",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals_1",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals_2",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingLessThan",
+          "description": "Checks if the first parameter (`number`) is less than the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingLessThanOrEqual",
+          "description": "Checks if the first parameter (`number`) is less than or equal to the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingGreaterThan",
+          "description": "Checks if the first parameter (`number`) is greater than the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingGreaterThanOrEqual",
+          "description": "CHecks if the first parameter (`number`) is greater than or equal to the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingIncludes",
+          "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+        },
+        {
+          "$ref": "#/definitions/BindingIncludes_1",
+          "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_5",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_5",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    "BindingSectionExpanded": {
+      "description": "Returns whether the configuration section whose id matches the first parameter (`string`) is currently expanded.",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "expanded"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "BindingNot": {
+      "description": "Checks if the parameter (`boolean`) is false.",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "not"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "BooleanBinding<boolean|null>": {
+      "description": "A binding that can be dynamically evaluated to a `boolean` value.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BindingSectionExpanded",
+          "description": "Returns whether the configuration section whose id matches the first parameter (`string`) is currently expanded."
+        },
+        {
+          "$ref": "#/definitions/BindingNot",
+          "description": "Checks if the parameter (`boolean`) is false."
+        },
+        {
+          "$ref": "#/definitions/BindingAnd",
+          "description": "Checks if all of the parameters (`boolean`) are true."
+        },
+        {
+          "$ref": "#/definitions/BindingOr",
+          "description": "Checks if any of the parameters (`boolean`) are true."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals_1",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals_2",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals_1",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals_2",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingLessThan",
+          "description": "Checks if the first parameter (`number`) is less than the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingLessThanOrEqual",
+          "description": "Checks if the first parameter (`number`) is less than or equal to the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingGreaterThan",
+          "description": "Checks if the first parameter (`number`) is greater than the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingGreaterThanOrEqual",
+          "description": "CHecks if the first parameter (`number`) is greater than or equal to the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingIncludes",
+          "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+        },
+        {
+          "$ref": "#/definitions/BindingIncludes_1",
+          "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_5",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_5",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    "BindingAnd": {
+      "description": "Checks if all of the parameters (`boolean`) are true.",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "and"
+        }
+      ],
+      "minItems": 1,
+      "additionalItems": {
+        "$ref": "#/definitions/BooleanBinding<boolean|null>"
+      }
+    },
+    "BindingOr": {
+      "description": "Checks if any of the parameters (`boolean`) are true.",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "or"
+        }
+      ],
+      "minItems": 1,
+      "additionalItems": {
+        "$ref": "#/definitions/BooleanBinding<boolean|null>"
+      }
+    },
+    "BindingEquals": {
+      "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "eq"
+        },
+        {
+          "$ref": "#/definitions/StringBinding<string|null>"
+        },
+        {
+          "$ref": "#/definitions/StringBinding<string|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "StringBinding<string|null>": {
+      "description": "A binding that can be dynamically evaluated to a `string` value.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BindingConfigValue",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      ]
+    },
+    "BindingConfigValue": {
+      "description": "Returns the value of the configuration field whose id matches the first parameter (`string`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "value"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "BindingConditional": {
+      "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "if"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          ]
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          ]
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "BindingConfigValue_1": {
+      "description": "Returns the value of the configuration field whose id matches the first parameter (`string`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "value"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "BindingConditional_1": {
+      "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "if"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        },
+        {
+          "$ref": "#/definitions/NullBinding<null>"
+        },
+        {
+          "$ref": "#/definitions/NullBinding<null>"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "NullBinding<null>": {
+      "description": "A binding that can be dynamically evaluated to a `null` value.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BindingConfigValue_1",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_1",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "BindingEquals_1": {
+      "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "eq"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "BindingEquals_2": {
+      "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "eq"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "NumberBinding<number|null>": {
+      "description": "A binding that can be dynamically evaluated to a `number` value.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BindingConfigValue_2",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_2",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": [
+            "null",
+            "number"
+          ]
+        }
+      ]
+    },
+    "BindingConfigValue_2": {
+      "description": "Returns the value of the configuration field whose id matches the first parameter (`string`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "value"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "BindingConditional_2": {
+      "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "if"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BindingConfigValue_2",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_2",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": [
+                "null",
+                "number"
+              ]
+            }
+          ]
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BindingConfigValue_2",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_2",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": [
+                "null",
+                "number"
+              ]
+            }
+          ]
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "BindingNotEquals": {
+      "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "neq"
+        },
+        {
+          "$ref": "#/definitions/StringBinding<string|null>"
+        },
+        {
+          "$ref": "#/definitions/StringBinding<string|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "BindingNotEquals_1": {
+      "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "neq"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "BindingNotEquals_2": {
+      "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "neq"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "BindingLessThan": {
+      "description": "Checks if the first parameter (`number`) is less than the second parameter (`number`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "lt"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "BindingLessThanOrEqual": {
+      "description": "Checks if the first parameter (`number`) is less than or equal to the second parameter (`number`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "lte"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "BindingGreaterThan": {
+      "description": "Checks if the first parameter (`number`) is greater than the second parameter (`number`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "gt"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "BindingGreaterThanOrEqual": {
+      "description": "CHecks if the first parameter (`number`) is greater than or equal to the second parameter (`number`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "gte"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "BindingIncludes": {
+      "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "in"
+        },
+        {
+          "$ref": "#/definitions/StringBinding<string|null>"
+        },
+        {
+          "$ref": "#/definitions/StringArrayBinding<string[]|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "StringArrayBinding<string[]|null>": {
+      "description": "A binding that can be dynamically evaluated to a `string[]` value.",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_3",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_3",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "BindingConfigValue_3": {
+      "description": "Returns the value of the configuration field whose id matches the first parameter (`string`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "value"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "BindingConditional_3": {
+      "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "if"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        },
+        {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_3",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_3",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_3",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_3",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "BindingIncludes_1": {
+      "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "in"
+        },
+        {
+          "$ref": "#/definitions/NumberBinding<number|null>"
+        },
+        {
+          "$ref": "#/definitions/NumberArrayBinding<number[]|null>"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "NumberArrayBinding<number[]|null>": {
+      "description": "A binding that can be dynamically evaluated to a `number[]` value.",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_4",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_4",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "BindingConfigValue_4": {
+      "description": "Returns the value of the configuration field whose id matches the first parameter (`string`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "value"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "BindingConditional_4": {
+      "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "if"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        },
+        {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_4",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_4",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_4",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_4",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "BindingConfigValue_5": {
+      "description": "Returns the value of the configuration field whose id matches the first parameter (`string`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "value"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "BindingConditional_5": {
+      "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`).",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "const": "if"
+        },
+        {
+          "$ref": "#/definitions/BooleanBinding<boolean|null>"
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BindingSectionExpanded",
+              "description": "Returns whether the configuration section whose id matches the first parameter (`string`) is currently expanded."
+            },
+            {
+              "$ref": "#/definitions/BindingNot",
+              "description": "Checks if the parameter (`boolean`) is false."
+            },
+            {
+              "$ref": "#/definitions/BindingAnd",
+              "description": "Checks if all of the parameters (`boolean`) are true."
+            },
+            {
+              "$ref": "#/definitions/BindingOr",
+              "description": "Checks if any of the parameters (`boolean`) are true."
+            },
+            {
+              "$ref": "#/definitions/BindingEquals",
+              "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingEquals_1",
+              "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingEquals_2",
+              "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingNotEquals",
+              "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingNotEquals_1",
+              "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingNotEquals_2",
+              "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingLessThan",
+              "description": "Checks if the first parameter (`number`) is less than the second parameter (`number`)."
+            },
+            {
+              "$ref": "#/definitions/BindingLessThanOrEqual",
+              "description": "Checks if the first parameter (`number`) is less than or equal to the second parameter (`number`)."
+            },
+            {
+              "$ref": "#/definitions/BindingGreaterThan",
+              "description": "Checks if the first parameter (`number`) is greater than the second parameter (`number`)."
+            },
+            {
+              "$ref": "#/definitions/BindingGreaterThanOrEqual",
+              "description": "CHecks if the first parameter (`number`) is greater than or equal to the second parameter (`number`)."
+            },
+            {
+              "$ref": "#/definitions/BindingIncludes",
+              "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+            },
+            {
+              "$ref": "#/definitions/BindingIncludes_1",
+              "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_5",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_5",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            }
+          ]
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BindingSectionExpanded",
+              "description": "Returns whether the configuration section whose id matches the first parameter (`string`) is currently expanded."
+            },
+            {
+              "$ref": "#/definitions/BindingNot",
+              "description": "Checks if the parameter (`boolean`) is false."
+            },
+            {
+              "$ref": "#/definitions/BindingAnd",
+              "description": "Checks if all of the parameters (`boolean`) are true."
+            },
+            {
+              "$ref": "#/definitions/BindingOr",
+              "description": "Checks if any of the parameters (`boolean`) are true."
+            },
+            {
+              "$ref": "#/definitions/BindingEquals",
+              "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingEquals_1",
+              "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingEquals_2",
+              "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingNotEquals",
+              "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingNotEquals_1",
+              "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingNotEquals_2",
+              "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingLessThan",
+              "description": "Checks if the first parameter (`number`) is less than the second parameter (`number`)."
+            },
+            {
+              "$ref": "#/definitions/BindingLessThanOrEqual",
+              "description": "Checks if the first parameter (`number`) is less than or equal to the second parameter (`number`)."
+            },
+            {
+              "$ref": "#/definitions/BindingGreaterThan",
+              "description": "Checks if the first parameter (`number`) is greater than the second parameter (`number`)."
+            },
+            {
+              "$ref": "#/definitions/BindingGreaterThanOrEqual",
+              "description": "CHecks if the first parameter (`number`) is greater than or equal to the second parameter (`number`)."
+            },
+            {
+              "$ref": "#/definitions/BindingIncludes",
+              "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+            },
+            {
+              "$ref": "#/definitions/BindingIncludes_1",
+              "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_5",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_5",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConfigValue_1",
+              "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+            },
+            {
+              "$ref": "#/definitions/BindingConditional_1",
+              "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+            },
+            {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            }
+          ]
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "Binding_1": {
+      "description": "A binding that can be dynamically evaluated to a value.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BindingSectionExpanded",
+          "description": "Returns whether the configuration section whose id matches the first parameter (`string`) is currently expanded."
+        },
+        {
+          "$ref": "#/definitions/BindingNot",
+          "description": "Checks if the parameter (`boolean`) is false."
+        },
+        {
+          "$ref": "#/definitions/BindingAnd",
+          "description": "Checks if all of the parameters (`boolean`) are true."
+        },
+        {
+          "$ref": "#/definitions/BindingOr",
+          "description": "Checks if any of the parameters (`boolean`) are true."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals_1",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals_2",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals_1",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals_2",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingLessThan",
+          "description": "Checks if the first parameter (`number`) is less than the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingLessThanOrEqual",
+          "description": "Checks if the first parameter (`number`) is less than or equal to the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingGreaterThan",
+          "description": "Checks if the first parameter (`number`) is greater than the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingGreaterThanOrEqual",
+          "description": "CHecks if the first parameter (`number`) is greater than or equal to the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingIncludes",
+          "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+        },
+        {
+          "$ref": "#/definitions/BindingIncludes_1",
+          "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_5",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_5",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_1",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_1",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    "ModConfigFieldCheckbox": {
+      "description": "Represents a boolean (true/false) configuration field that will be represented\nas a checkbox or toggle element in the configuration UI.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the configuration element.",
+          "type": "string",
+          "const": "checkbox"
+        },
+        "defaultValue": {
+          "description": "The default value of the checkbox field.",
+          "type": "boolean"
+        },
+        "overrideValue": {
+          "$ref": "#/definitions/Binding_1",
+          "description": "The override value of the checkbox field.\nIf this value is anything other than `null`, it will override the current value.\nIf the value is overridden, it will also be read only."
+        },
+        "name": {
+          "description": "The name of the field.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description for the field that appears in a help tooltip.",
+          "type": "string"
+        },
+        "visible": {
+          "$ref": "#/definitions/Binding",
+          "description": "Determines if the field is visible or not."
+        },
+        "id": {
+          "description": "The unique identifier of the configuration element.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "defaultValue",
+        "id",
+        "name",
+        "type"
+      ]
+    },
+    "ModConfigFieldNumber": {
+      "description": "Represents a number configuration field that will be represented as a number\ninput in the configuration UI.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the configuration element.",
+          "type": "string",
+          "const": "number"
+        },
+        "defaultValue": {
+          "description": "The default value of the number field.",
+          "type": "number"
+        },
+        "minValue": {
+          "description": "The minimum value that the user can input.",
+          "type": "number"
+        },
+        "maxValue": {
+          "description": "The maximum value that the user can input.",
+          "type": "number"
+        },
+        "overrideValue": {
+          "$ref": "#/definitions/Binding_2",
+          "description": "The override value of the number field.\nIf this value is anything other than `null`, it will override the current value.\nIf the value is overridden, it will also be read only."
+        },
+        "name": {
+          "description": "The name of the field.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description for the field that appears in a help tooltip.",
+          "type": "string"
+        },
+        "visible": {
+          "$ref": "#/definitions/Binding",
+          "description": "Determines if the field is visible or not."
+        },
+        "id": {
+          "description": "The unique identifier of the configuration element.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "defaultValue",
+        "id",
+        "name",
+        "type"
+      ]
+    },
+    "Binding_2": {
+      "description": "A binding that can be dynamically evaluated to a value.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BindingConfigValue_2",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_2",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_1",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_1",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": [
+            "null",
+            "number"
+          ]
+        }
+      ]
+    },
+    "ModConfigFieldText": {
+      "description": "Represents a text configuration field that will be represented as a text input\nin the configuration UI.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the configuration element.",
+          "type": "string",
+          "const": "text"
+        },
+        "defaultValue": {
+          "description": "The default value of the text field.",
+          "type": "string"
+        },
+        "overrideValue": {
+          "$ref": "#/definitions/Binding_3",
+          "description": "The override value of the text field.\nIf this value is anything other than `null`, it will override the current value.\nIf the value is overridden, it will also be read only."
+        },
+        "name": {
+          "description": "The name of the field.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description for the field that appears in a help tooltip.",
+          "type": "string"
+        },
+        "visible": {
+          "$ref": "#/definitions/Binding",
+          "description": "Determines if the field is visible or not."
+        },
+        "id": {
+          "description": "The unique identifier of the configuration element.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "defaultValue",
+        "id",
+        "name",
+        "type"
+      ]
+    },
+    "Binding_3": {
+      "description": "A binding that can be dynamically evaluated to a value.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BindingConfigValue_1",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_1",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      ]
+    },
+    "ModConfigFieldSelect": {
+      "description": "Represents a select configuration field that will be represented as a dropdown\nselect element in the configuration UI.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the configuration element.",
+          "type": "string",
+          "const": "select"
+        },
+        "defaultValue": {
+          "$ref": "#/definitions/ModConfigSingleValue",
+          "description": "The default value of the select field."
+        },
+        "overrideValue": {
+          "$ref": "#/definitions/Binding_4",
+          "description": "The override value of the select field.\nIf this value is anything other than `null`, it will override the current value.\nIf the value is overridden, it will also be read only."
+        },
+        "options": {
+          "description": "The options that the user can select from.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "description": "The description of the option that appears underneath the label in the dropdown.",
+                "type": "string"
+              },
+              "label": {
+                "description": "The label of the option that will be displayed in the dropdown.",
+                "type": "string"
+              },
+              "value": {
+                "$ref": "#/definitions/ModConfigSingleValue",
+                "description": "The value of the option that will be used when the user selects it."
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "value"
+            ]
+          }
+        },
+        "name": {
+          "description": "The name of the field.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description for the field that appears in a help tooltip.",
+          "type": "string"
+        },
+        "visible": {
+          "$ref": "#/definitions/Binding",
+          "description": "Determines if the field is visible or not."
+        },
+        "id": {
+          "description": "The unique identifier of the configuration element.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "defaultValue",
+        "id",
+        "name",
+        "options",
+        "type"
+      ]
+    },
+    "ModConfigSingleValue": {
+      "description": "Represents the valid value of any single configuration field.",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        {
+          "type": [
+            "null",
+            "string",
+            "number",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    "Binding_4": {
+      "description": "A binding that can be dynamically evaluated to a value.",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        {
+          "$ref": "#/definitions/BindingSectionExpanded",
+          "description": "Returns whether the configuration section whose id matches the first parameter (`string`) is currently expanded."
+        },
+        {
+          "$ref": "#/definitions/BindingNot",
+          "description": "Checks if the parameter (`boolean`) is false."
+        },
+        {
+          "$ref": "#/definitions/BindingAnd",
+          "description": "Checks if all of the parameters (`boolean`) are true."
+        },
+        {
+          "$ref": "#/definitions/BindingOr",
+          "description": "Checks if any of the parameters (`boolean`) are true."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals_1",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingEquals_2",
+          "description": "Checks if the first parameter (`T`) is equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals_1",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingNotEquals_2",
+          "description": "Checks if the first parameter (`T`) is not equal to the second parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingLessThan",
+          "description": "Checks if the first parameter (`number`) is less than the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingLessThanOrEqual",
+          "description": "Checks if the first parameter (`number`) is less than or equal to the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingGreaterThan",
+          "description": "Checks if the first parameter (`number`) is greater than the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingGreaterThanOrEqual",
+          "description": "CHecks if the first parameter (`number`) is greater than or equal to the second parameter (`number`)."
+        },
+        {
+          "$ref": "#/definitions/BindingIncludes",
+          "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+        },
+        {
+          "$ref": "#/definitions/BindingIncludes_1",
+          "description": "Checks if the first parameter (`string` or `number`) is a part of the second parameter (`string[]` or `number[]`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_5",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_5",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_2",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_2",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_3",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_3",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_4",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_4",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_1",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_1",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": [
+            "null",
+            "string",
+            "number",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    "ModConfigFieldColor": {
+      "description": "Represents a color configuration field that will be represented as a color picker\nelement in the configuration UI.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the configuration element.",
+          "type": "string",
+          "const": "color"
+        },
+        "defaultValue": {
+          "description": "The default value of the color in RGBA format (`[0, 255]`, `[0, 255]`, `[0, 255]`, `[0.0, 1.0]`).",
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "overrideValue": {
+          "$ref": "#/definitions/Binding_5",
+          "description": "The override value of the color field.\nIf this value is anything other than `null`, it will override the current value.\nIf the value is overridden, it will also be read only."
+        },
+        "isAlphaHidden": {
+          "description": "Whether the alpha channel should be hidden in the color picker.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The name of the field.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description for the field that appears in a help tooltip.",
+          "type": "string"
+        },
+        "visible": {
+          "$ref": "#/definitions/Binding",
+          "description": "Determines if the field is visible or not."
+        },
+        "id": {
+          "description": "The unique identifier of the configuration element.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "defaultValue",
+        "id",
+        "name",
+        "type"
+      ]
+    },
+    "Binding_5": {
+      "description": "A binding that can be dynamically evaluated to a value.",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_4",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_4",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConfigValue_1",
+          "description": "Returns the value of the configuration field whose id matches the first parameter (`string`)."
+        },
+        {
+          "$ref": "#/definitions/BindingConditional_1",
+          "description": "If the first parameter (`boolean`) is true, returns the second parameter (`T`), otherwise returns the third parameter (`T`)."
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

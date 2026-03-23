@@ -1,0 +1,115 @@
+{
+  "$schema": "../config-schema.json",
+  "name": "#0900-01 (一般)(装备) 物品满变量(放在打孔MOD之前)",
+  "description": "(这个MOD最好放在各种打孔相关MOD之前, 放在后面所有装备都是最大孔数. ) 使所有掉落物品都具备完美的随机属性（满变动数值）| 物品满变量 PerfectDrops-182-1-11-1771396394",
+  "author": "olegbl",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/182",
+  "version": "1.11",
+  "config": [
+    {
+      "id": "itemTypes",
+      "type": "section",
+      "name": "物品类型",
+      "description": "选择哪些类型的物品将应用完美数值。",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "unique",
+          "type": "checkbox",
+          "name": "暗金物品 (Unique)",
+          "description": "启用后，强制暗金物品拥有完美数值。",
+          "defaultValue": false
+        },
+        {
+          "id": "set",
+          "type": "checkbox",
+          "name": "套装物品 (Set)",
+          "description": "启用后，强制套装物品拥有完美数值。",
+          "defaultValue": false
+        },
+        {
+          "id": "blue",
+          "type": "checkbox",
+          "name": "魔法 / 稀有物品 (Magic / Rare)",
+          "description": "启用后，强制蓝色魔法物品和黄色稀有物品拥有完美数值。",
+          "defaultValue": true
+        },
+        {
+          "id": "highquality",
+          "type": "checkbox",
+          "name": "超强物品 (High Quality)",
+          "description": "启用后，强制超强（白色/灰色）物品拥有完美数值。",
+          "defaultValue": true
+        },
+        {
+          "id": "runeword",
+          "type": "checkbox",
+          "name": "符文之语 (Runeword)",
+          "description": "启用后，强制符文之语物品拥有完美数值。",
+          "defaultValue": false
+        },
+        {
+          "id": "crafted",
+          "type": "checkbox",
+          "name": "手工制作物品 (Crafted)",
+          "description": "启用后，强制通过赫拉迪姆方块配方生成的物品拥有完美数值。",
+          "defaultValue": true
+        }
+      ]
+    },
+    {
+      "id": "misc",
+      "type": "section",
+      "name": "其他设置",
+      "description": "关于词缀、属性等部分应该完美化的额外配置选项。",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "automagic",
+          "type": "checkbox",
+          "name": "自动词缀 (Auto Affixes)",
+          "description": "启用后，强制自动词缀（不改变物品品质的固定词缀，如圣骑士盾牌自带的全抗）拥有完美数值。",
+          "defaultValue": true
+        },
+        {
+          "id": "skilltab3",
+          "type": "checkbox",
+          "name": "技能树总是 +3",
+          "description": "启用后，强制增加特定技能树等级的词缀总是给予 +3 奖励，即使其正常最大值较小也是如此。",
+          "defaultValue": false
+        },
+        {
+          "id": "defense",
+          "type": "checkbox",
+          "name": "最大防御值",
+          "description": "启用后，强制护甲类物品以最高可能的防御值生成。",
+          "defaultValue": true
+        },
+        {
+          "id": "equalchances",
+          "type": "select",
+          "name": "词缀等级 (Affix Tiers)",
+          "description": "即使每个词缀的数值都是完美的，高等级物品仍可能出现低级词缀。此设置控制该行为。",
+          "defaultValue": "false",
+          "options": [
+            {
+              "value": false,
+              "label": "正常 (Normal)",
+              "description": "词缀等级按常规概率生成。"
+            },
+            {
+              "value": true,
+              "label": "均等化 (Equalize)",
+              "description": "高等级词缀与低等级词缀的出现频率相同。"
+            },
+            {
+              "value": "perfect",
+              "label": "完美 (Perfect)",
+              "description": "词缀总是以其可能达到的最高等级生成。"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

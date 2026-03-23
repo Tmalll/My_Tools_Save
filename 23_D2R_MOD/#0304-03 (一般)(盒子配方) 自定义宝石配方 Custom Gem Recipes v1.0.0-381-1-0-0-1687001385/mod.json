@@ -1,0 +1,33 @@
+{
+  "name": "#0304-03 (一般)(盒子配方) 自定义宝石配方 (宝石升级/降级)",
+  "description": "自定义升级所需宝石数量，支持启用宝石降级并设定返回数量。",
+  "author": "MetalTxus",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/381",
+  "version": "1.0.0",
+  "config": [
+    {
+      "id": "gemUpgradeCount",
+      "type": "number",
+      "name": "升级所需数量（2起）",
+      "description": "升级至更高阶宝石所需的数量（会替换原版配方）。",
+      "defaultValue": 3,
+      "minValue": 2
+    },
+    {
+      "id": "enableDowngrade",
+      "type": "checkbox",    
+      "name": "启用降级配方(原宝石+解冻药水)",
+      "description": "勾选后启用宝石降级配方（返回数量可在下方设置）。",
+      "defaultValue": true
+    },
+    {
+      "id": "gemDowngradeCount",
+      "type": "number",
+      "name": "降级返回数量（2-3）",
+      "description": "每次宝石降级返回的数量。",
+      "defaultValue": 3,
+      "minValue": 2,
+      "maxValue": 3
+    }
+  ]
+}

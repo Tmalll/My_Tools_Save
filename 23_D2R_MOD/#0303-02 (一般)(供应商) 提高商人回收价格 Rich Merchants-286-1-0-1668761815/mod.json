@@ -1,0 +1,25 @@
+{
+  "name": "#0303-02 (一般)(供应商) 提高商人回收价格",
+  "description": "让所有商人以更高价格回收物品。",
+  "author": "deo",
+  "website": "",
+  "version": "1.0",
+  "config": [
+    {
+      "id": "useStaticPrice",
+      "type": "checkbox",
+      "name": "Set Static Max Price",
+      "description": "游戏中所有商人都将以你在下方设置的固定最高价格回收物品。若不启用，则价格仍根据难度和章节决定。",
+      "defaultValue": true
+    },
+    {
+      "id": "maxPrice",
+      "type": "number",
+      "name": "Value",
+      "description": "设置商人回收物品的最高金币价格。",
+      "defaultValue": 100000,
+      "minValue": 1,
+      "maxValue": 999999
+    }
+  ]
+}

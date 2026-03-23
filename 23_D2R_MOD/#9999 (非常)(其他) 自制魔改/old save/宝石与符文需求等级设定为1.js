@@ -1,0 +1,20 @@
+// ******************************** 宝石与符文需求等级设定为1 ********************************** //
+const targetFiles = ["global\\excel\\misc.txt", "global\\excel\\itemdata.txt"]; // 可添加更多文件
+const targetTypes = ["gema", "gemt", "gems", "geme", "gemr", "gemd", "gemz", "rune"];
+const targetFields = ["level", "ShowLevel", "levelreq"];
+
+targetFiles.forEach((targetFile) => {
+  const file = D2RMM.readTsv(targetFile);
+
+  file.rows.forEach((row) => {
+    if (targetTypes.includes(row["type"])) {
+      targetFields.forEach(field => {
+        if (row[field] !== undefined && row[field] !== "") {
+          row[field] = "1";
+        }
+      });
+    }
+  });
+
+  D2RMM.writeTsv(targetFile, file);
+});

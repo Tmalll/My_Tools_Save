@@ -1,0 +1,27 @@
+{
+  "name": "#0101-10 (完全不)(界面) 显示场景等级",
+  "description": "",
+  "website": "",
+  "version": "",
+  "config": [
+    {
+      "id": "remarksMod",
+      "type": "select",
+      "name": "选择",
+      "description": "",
+      "defaultValue": "mod_def",
+      "options": [
+        {
+          "value": "mod_def",
+          "label": "游戏默认",
+          "description": "游戏默认，不做任何修改"
+        },
+        {
+          "value": "will",
+          "label": "显示场景等级",
+          "description": "显示场景等级"
+        }
+      ]
+    }
+  ]
+}

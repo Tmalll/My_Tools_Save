@@ -1,0 +1,14 @@
+{
+  "name": "#0900-03 (一般)(装备) 绿色套装附带随机孔数",
+  "description": "",
+  "author": "自制",
+  "config": [
+    {
+      "id": "addSocket",
+      "type": "checkbox",
+      "name": "绿色套装附带随机孔数",
+      "description": "绿色套装附带随机孔数",
+      "defaultValue": true
+    }
+  ]
+}

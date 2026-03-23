@@ -1,0 +1,67 @@
+{
+  "name": "#0999-04 (非常)(装备)(调试专用) 装备打孔和反镶嵌",
+  "description": "允许使用珠宝为物品打孔或清空插槽。",
+  "author": "olegbl",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/188",
+  "version": "1.2",
+  "config": [
+    {
+      "id": "socket",
+      "type": "checkbox",
+      "name": "打孔配方",
+      "description": "启用后可通过将未打孔物品与 1-6 颗珠宝一起放入炼金盒来为其打孔。",
+      "defaultValue": true
+    },
+    {
+      "id": "unsocket",
+      "type": "checkbox",
+      "name": "清空插槽配方",
+      "description": "启用后可通过将物品与一颗珠宝一起放入炼金盒来清空物品插槽内的内容物。",
+      "defaultValue": true
+    },
+    {
+      "id": "item",
+      "type": "select",
+      "name": "使用的物品",
+      "description": "你可以选择使用除珠宝外的其他物品来代替珠宝进行打孔或清空插槽。",
+      "defaultValue": "jew",
+      "options": [
+        { "value": "jew", "label": "珠宝" },
+        { "value": "rin", "label": "戒指" },
+        { "value": "amu", "label": "项链" },
+        { "value": "rvl", "label": "满复活药水" },
+        { "value": "tsc", "label": "回城卷轴" },
+        { "value": "isc", "label": "鉴定卷轴" }
+      ]
+    },
+    {
+      "id": "itemtypes",
+      "type": "section",
+      "name": "物品类型",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "weapon",
+          "type": "checkbox",
+          "name": "武器",
+          "description": "启用后可对武器进行打孔。",
+          "defaultValue": true
+        },
+        {
+          "id": "armor",
+          "type": "checkbox",
+          "name": "防具",
+          "description": "启用后可对防具进行打孔。",
+          "defaultValue": true
+        },
+        {
+          "id": "jewelry",
+          "type": "checkbox",
+          "name": "饰品",
+          "description": "启用后可对饰品进行打孔。注意：饰品默认不可打孔，因此需要搭配支持饰品打孔的模组使用。",
+          "defaultValue": true
+        }
+      ]
+    }
+  ]
+}

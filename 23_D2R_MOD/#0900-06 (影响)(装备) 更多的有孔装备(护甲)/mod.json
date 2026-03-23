@@ -1,0 +1,85 @@
+{
+  "name": "#0900-06 (影响)(装备) 更多的有孔装备(护甲)",
+  "description": "更多的有孔装备: 头盔、护甲、手套、鞋子、腰带",
+  "author": "原作者:Shadedness + 自修改",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/356",
+  "version": "1.0.1",
+  "config": [
+    {
+      "id": "Helms_Socket_to_Max_4",
+      "type": "checkbox",
+      "name": "统一[头盔]为最大可以有4个孔(原版最大3孔)",
+      "description": "开启此选项会修改低等级头盔, 让其可以出现4孔.(不建议开启, 因为符文之语最大只支持3孔的)",
+      "defaultValue": false
+    },
+    {
+      "id": "Tors_Socket_to_Max_6",
+      "type": "checkbox",
+      "name": "统一[护甲]为最大可以有6个孔(原版最大4孔)",
+      "description": "开启此选项会修改低等级护甲, 让其可以出现6孔.(不建议开启, 因为符文之语最大只支持4孔的)",
+      "defaultValue": false
+    },
+    {
+      "id": "Shield_Socket_to_Max_6",
+      "type": "checkbox",
+      "name": "统一[盾牌]为最大可以有6个孔(原版最大4孔)",
+      "description": "开启此选项会修改低等级盾牌, 让其可以出现6孔.(不建议开启, 因为符文之语最大只支持4孔的)",
+      "defaultValue": false
+    },
+    {
+      "id": "Gloves_Socket_To_4",
+      "type": "checkbox",
+      "name": "手套可打孔(并且最大4孔)",
+      "defaultValue": true
+    },
+    {
+      "id": "Gloves_Behavior",
+      "type": "select",
+      "name": "手套的孔的作用类似于?",
+      "description": "宝石和符文应该如何处理手套？这定义了应用宝石和符文的效果。",
+      "defaultValue": "0",
+      "options": [
+        { "value": "0", "label": "武器" },
+        { "value": "1", "label": "护甲或头盔" },
+        { "value": "2", "label": "盾牌" }
+      ]
+    },
+    {
+      "id": "Boots_Socket_To_4",
+      "type": "checkbox",
+      "name": "鞋子可打孔(并且最大4孔)",
+      "defaultValue": true
+    },
+    {
+      "id": "Boots_Behavior",
+      "type": "select",
+      "name": "鞋子孔的作用类似于?",
+      "description": "宝石和符文应该如何处理鞋子？这定义了应用宝石和符文的效果。",
+      "defaultValue": "2",
+      "options": [
+        { "value": "0", "label": "武器"       },
+        { "value": "1", "label": "护甲或头盔" },
+        { "value": "2", "label": "盾牌"       }
+      ]
+    },
+    {
+      "id": "Belts_Socket_To_2",
+      "type": "checkbox",
+      "name": "腰带可打孔(并且最大2孔)",
+      "description": "启用要插入的腰带。",
+      "defaultValue": true
+    },
+    {
+      "id": "Belts_Behavior",
+      "type": "select",
+      "name": "腰带孔的作用类似于?",
+      "description": "宝石和符文应该如何处理腰带的孔？这定义了应用宝石和符文的效果。",
+      "defaultValue": "1",
+      "options": [
+        { "value": "0", "label": "武器"       },
+        { "value": "1", "label": "护甲或头盔" },
+        { "value": "2", "label": "盾牌"       }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "#0201-06 (稍微)(质量) 修理费调整",  
+  "config": [
+    {
+      "id": "repMult",
+      "type": "number",
+      "name": "修理成本倍数",
+      "description": "1=默认值12.5%, 0.5=6.25%, 以此类推",
+      "defaultValue": 1,
+      "minValue": 0.01
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "../config-schema.json",
+  "name": "#0202-01 大背包 ExpandedInventory-172-1-6-1771022761",
+  "description": "Increases inventory size to 13x8. Based on https://www.nexusmods.com/diablo2resurrected/mods/13",
+  "author": "olegbl",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/172",
+  "version": "1.6"
+}

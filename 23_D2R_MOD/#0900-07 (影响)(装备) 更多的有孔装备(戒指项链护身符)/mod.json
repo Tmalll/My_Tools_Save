@@ -1,0 +1,107 @@
+{
+  "name": "#0900-07 (影响)(装备) 更多的有孔装备(戒指项链护身符)",
+  "description": "戒指、项链、护身符可带孔，释放您的制作潜力",
+  "author": "原作者:Shadedness + 自修改",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/356",
+  "version": "1.0.1",
+  "config": [
+    {
+      "id": "socket_to_Ring_and_Amule",
+      "type": "checkbox",
+      "name": "戒指、项链可有插孔",
+      "description": "使戒指和项链能够插入宝石和符文",
+      "defaultValue": true
+    },
+    {
+      "id": "ring_Behavior",
+      "type": "select",
+      "name": "戒指的作用类似于?",
+      "description": "这定义了应用宝石和符文的效果",
+      "defaultValue": "0",
+      "options": [
+        { "value": "0", "label": "武器" },
+        { "value": "1", "label": "护甲或头盔" },
+        { "value": "2", "label": "盾牌"}
+      ]
+    },
+    {
+      "id": "amul_Behavior",
+      "type": "select",
+      "name": "项链的作用类似于?",
+      "description": "这定义了应用宝石和符文的效果",
+      "defaultValue": "2",
+      "options": [
+        { "value": "0", "label": "武器" },
+        { "value": "1", "label": "护甲或头盔" },
+        { "value": "2", "label": "盾牌"}
+      ]
+    },
+
+
+    {
+      "id": "socket_to_charm",
+      "type": "checkbox",
+      "name": "护身符可有插孔(大3/中2/小1)",
+      "description": "使大/中/小/三种护身符能够插入宝石和符文",
+      "defaultValue": true
+    },
+    {
+      "id": "lcha_Behavior",
+      "type": "select",
+      "name": "大型护身符的作用类似于?",
+      "description": "这定义了应用宝石和符文的效果。",
+      "defaultValue": "2",
+      "options": [
+        { "value": "0", "label": "武器" },
+        { "value": "1", "label": "护甲或头盔" },
+        { "value": "2", "label": "盾牌"}
+      ]
+    },
+    {
+      "id": "mcha_Behavior",
+      "type": "select",
+      "name": "中型护身符的作用类似于?",
+      "description": "这定义了应用宝石和符文的效果",
+      "defaultValue": "1",
+      "options": [
+        { "value": "0", "label": "武器" },
+        { "value": "1", "label": "护甲或头盔" },
+        { "value": "2", "label": "盾牌"}
+      ]
+    },
+    {
+      "id": "scha_Behavior",
+      "type": "select",
+      "name": "小型护身符的作用类似于?",
+      "description": "这定义了应用宝石和符文的效果",
+      "defaultValue": "0",
+      "options": [
+        { "value": "0", "label": "武器" },
+        { "value": "1", "label": "护甲或头盔" },
+        { "value": "2", "label": "盾牌"}
+      ]
+    },
+    {
+      "id": "charm_color",
+      "type": "select",
+      "name": "护符可出现的颜色?",
+      "description": "Magic=游戏默认设置只有蓝色, Rare=可出现稀有(黄色)护符, Normal=护符全部都是白色(可插符文之语)",
+      "defaultValue": "Rare",
+      "options": [
+        { "value": "Magic",         "label": "Magic | 默认(只掉蓝的)" },
+        { "value": "Rare",          "label": "Rare | 可掉黄色的(实际测试可掉三种颜色)" },
+        { "value": "Normal_Only",   "label": "Normal_Only | 只生成白色的(都是白色的)" },
+        { "value": "Like_Jewel",    "label": "Like_Jewel | 和珠宝一样(未测试)" },
+        { "value": "All",           "label": "All | 可生成所有颜色(未测试)" }
+      ]
+    },
+    {
+      "id": "New_Jewelry_Recipes",
+      "type": "checkbox",
+      "name": "启用关于戒指丶项链和三种护符的打孔和反镶嵌公式",
+      "description": "戒指|项链|护符+解冻药水=打孔, 戒指|项链|护符+#15符文=移除镶嵌物",
+      "defaultValue": true
+    }
+
+  ]
+}

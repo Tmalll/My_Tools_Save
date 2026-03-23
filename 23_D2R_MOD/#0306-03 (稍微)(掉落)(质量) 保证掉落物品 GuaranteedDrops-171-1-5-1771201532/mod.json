@@ -1,0 +1,41 @@
+{
+  "$schema": "../config-schema.json",
+  "name": "#0306-03 (稍微)(掉落)(质量) 保证掉落物品",
+  "description": "修改宝藏类别的 nodrop（不掉落）几率，以模拟特定的 /players（玩家人数）设置。",
+  "author": "olegbl",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/171",
+  "version": "1.5",
+  "config": [
+    {
+      "id": "players",
+      "type": "number",
+      "name": "/players",
+      "description": "模拟 /players 命令的掉落率。0 = 必定掉落 (nodrop = 0)；1 = 1人模式；8 = 8人模式，依此类推。",
+      "defaultValue": 0,
+      "minValue": 0
+    },
+    {
+      "id": "fixcountess",
+      "type": "checkbox",
+      "name": "修复女伯爵掉落",
+      "description": "提高女伯爵掉落符文的数量.",
+      "defaultValue": true
+    },
+    {
+      "id": "sunderplayers",
+      "type": "number",
+      "name": "破免板 Sunder Charms",
+      "description": "破免板（破损护身符）所使用的 /players 数值。如果你在这里设置为 0，每个怪物都会掉落破免板，所以不建议这样做。",
+      "defaultValue": 1,
+      "minValue": 0
+    },
+    {
+      "id": "terrorizeplayers",
+      "type": "number",
+      "name": "恐怖区域 Terrorize Consumables",
+      "description": "恐怖区域消耗品（世界之石碎片）所使用的 /players 数值。如果你在这里设置为 0，你将会被世界之石碎片淹没，所以不建议这样做。",
+      "defaultValue": 1,
+      "minValue": 0
+    }
+  ]
+}

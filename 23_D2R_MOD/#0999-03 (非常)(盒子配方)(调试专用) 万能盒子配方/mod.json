@@ -1,0 +1,128 @@
+{
+    "name": "#0999-03 (非常)(盒子配方)(调试专用) 万能盒子配方",
+    "description": "使用药水合成各种物品",
+    "author": "CelticHound",
+    "website": "https://github.com/TimothyByrd/d2rmm_mods_ch/tree/main/PotionCrafting_CH",
+    "version": "1.6.2",
+    "config": [
+                {
+                    "id": "item_to_Normal",
+                    "type": "checkbox",
+                    "name": "物品洗白(#01)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_Hiq",
+                    "type": "checkbox",
+                    "name": "白装转超强(#01+体力)",
+                    "defaultValue": true
+                },                
+                {
+                    "id": "item_reroll",
+                    "type": "checkbox",
+                    "name": "重掷物品属性(#02)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_upgrade",
+                    "type": "checkbox",
+                    "name": "物品升级(#02+体力)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_Ethereal",
+                    "type": "checkbox",
+                    "name": "物品转无形(#03)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_Fix",
+                    "type": "checkbox",
+                    "name": "物品修理(#03+体力)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_lvl25",
+                    "type": "checkbox",
+                    "name": "提升物品等级到lv25(重新生成)(#04)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_lvl40",
+                    "type": "checkbox",
+                    "name": "提升物品等级到lv40(重新生成)(#05)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_lvl99",
+                    "type": "checkbox",
+                    "name": "提升物品等级到lv99(重新生成)(#06)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_set",
+                    "type": "checkbox",
+                    "name": "物品转绿装(#07)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_uni",
+                    "type": "checkbox",
+                    "name": "物品转暗金(#08)",
+                    "defaultValue": true
+                },
+
+                {
+                    "id": "item_to_Mag",
+                    "type": "checkbox",
+                    "name": "物品转蓝装(#09)",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_to_Rar",
+                    "type": "checkbox",
+                    "name": "物品转金装(#10)",
+                    "defaultValue": true
+                },                
+                {
+                    "id": "isfree",
+                    "type": "checkbox",
+                    "name": "转换不消耗材料",
+                    "description": "",
+                    "defaultValue": true
+                },
+                {
+                    "id": "Merge_jewelry",
+                    "type": "checkbox",
+                    "name": "允许合并戒指.项链.珠宝.护符",
+                    "description": "2个戒指|项链|护符|珠宝 > 1个同一颜色的相同物品.",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_nextSize",
+                    "type": "checkbox",
+                    "name": "1个护符 + #11 > 下一个尺寸",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_new_jewelry",
+                    "type": "checkbox",
+                    "name": "1个项链 + #11 > 新的珠宝",
+                    "defaultValue": true
+                },
+                {
+                    "id": "item_new_charms",
+                    "type": "checkbox",
+                    "name": "1个戒指 + #11 > 新的护符",
+                    "defaultValue": true
+                },
+                
+                {
+                    "id": "specific",
+                    "type": "checkbox",
+                    "name": "制作特定护符和珠宝",
+                    "description": "制作特定护符和珠宝的配方。详情见: https://github.com/TimothyByrd/d2rmm_mods_ch/tree/main/PotionCrafting_CH , 搜索: Specific charms and jewels",
+                    "defaultValue": true
+                }
+  ]
+}

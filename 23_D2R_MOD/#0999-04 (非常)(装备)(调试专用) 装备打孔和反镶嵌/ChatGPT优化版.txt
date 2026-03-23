@@ -1,0 +1,62 @@
+const cubemainFilename = 'global\\excel\\cubemain.txt';
+const cubemain = D2RMM.readTsv(cubemainFilename);
+
+// 物品类型映射
+const itemTypes = [
+  { code: 'weap', name: 'Weapon', enabled: config.weapon },
+  { code: 'armo', name: 'Armor', enabled: config.armor },
+  { code: 'ring', name: 'Ring', enabled: config.jewelry },
+  { code: 'amul', name: 'Amulet', enabled: config.jewelry },
+  { code: 'char', name: 'Charm', enabled: config.jewelry },
+];
+
+// 添加新配方函数
+function pushRecipe(baseRecipe, code, name, input1) {
+  cubemain.rows.push({
+    ...baseRecipe,
+    description: `${baseRecipe.description} ${name}`,
+    'input 1': input1 || `"${code}"`,
+  });
+}
+
+// 处理清空插槽（unsocket）
+if (config.unsocket) {
+  const unsocketBase = {
+    description: 'DaKongMOD Empty Sockets',
+    enabled: 1,
+    version: 100,
+    numinputs: 2,
+    'input 2': config.item,
+    output: '"useitem,rem"',
+    '*eol': 0,
+  };
+
+  itemTypes.forEach(({ code, name, enabled }) => {
+    if (enabled) pushRecipe(unsocketBase, code, `On ${name}`, `"${code},sock"`);
+  });
+}
+
+// 处理打孔（socket）
+if (config.socket) {
+  for (let sockets = 1; sockets <= 6; sockets++) {
+    const socketBase = {
+      description: `DaKongMOD Add ${sockets} Sockets`,
+      enabled: 1,
+      version: 100,
+      numinputs: sockets + 1,
+      'input 2': `"${config.item},qty=${sockets}"`,
+      output: 'useitem',
+      'mod 1': 'sock',
+      'mod 1 min': sockets,
+      'mod 1 max': sockets,
+      '*eol': 0,
+    };
+
+    itemTypes.forEach(({ code, name, enabled }) => {
+      if (enabled) pushRecipe(socketBase, code, `To ${name}`, `"${code},nos"`);
+    });
+  }
+}
+
+// 写入文件
+D2RMM.writeTsv(cubemainFilename, cubemain);

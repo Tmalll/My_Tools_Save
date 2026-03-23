@@ -1,0 +1,8 @@
+{
+  "$schema": "../config-schema.json",
+  "name": "#0202-02 大仓库 Expanded Stash Plus (RoTW)-842-1-17-1772277413",
+  "description": "Increases stash size to 16x16. Controller support/ Based on https://www.nexusmods.com/diablo2resurrected/mods/173",
+  "author": "olegbl, penoplast",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/842",
+  "version": "1.17"
+}

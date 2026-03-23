@@ -1,0 +1,21 @@
+{
+  "name": "#0900-05 (影响)(装备) 更多的有孔装备(武器)",
+  "description": "更多的有孔装备: 武器",
+  "author": "原作者:Shadedness + 自修改",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/356",
+  "version": "1.0.1",
+  "config": [
+    {
+      "id": "Only_socket_Throwing",
+      "type": "checkbox",
+      "name": "只修改投掷武器(让其可打孔并且最大6孔)",
+      "defaultValue": true
+    },
+    {
+      "id": "all_weap_to_Max_6_socks",
+      "type": "checkbox",
+      "name": "所有武器最大6孔(包括投掷武器)",
+      "defaultValue": false
+    }    
+  ]
+}

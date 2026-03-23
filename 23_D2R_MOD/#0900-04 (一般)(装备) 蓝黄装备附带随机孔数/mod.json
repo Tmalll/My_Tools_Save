@@ -1,0 +1,14 @@
+{
+  "name": "#0900-04 (一般)(装备) 蓝黄装备附带随机孔数",
+  "description": "",
+  "author": "自制",
+  "config": [
+    {
+      "id": "addSocket",
+      "type": "checkbox",
+      "name": "蓝黄装备附带随机孔数",
+      "description": "蓝黄装备附带随机孔数",
+      "defaultValue": true
+    }
+  ]
+}
