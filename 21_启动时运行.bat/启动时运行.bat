@@ -22,12 +22,6 @@ start  /min  ""  "E:\01.userData\Saved Games\D2R_BAK.bat"
 echo.
 echo.
 
-:同步Github仓库
-echo 同步Github仓库
-start  /min  "" "E:\01.userData\ZhuoMian\工具存档\#02.同步仓库.bat"
-echo.
-echo.
-
 :延迟15秒脚本
 cls
 set SECONDS=15 & set interval_MS=10 & set skip_MS=3000 & set skip_min_Interval_MS=50

@@ -6,6 +6,13 @@ if "%1" neq "min" start /min "" "%~f0" min & exit
 :: 这下面放最小化之后的脚本...
 echo. & timeout /t 2 >nul & echo.
 
+:同步Github仓库
+echo 同步Github仓库
+start  /min  "" "E:\01.userData\ZhuoMian\工具存档\#02.同步仓库.bat"
+echo.
+echo.
+
+
 :原版Chrome
 set "PRName=原版Chrome"
 set "FullPath=D:\01.Program_Soft\01-浏览器\02.Chrome\Chrome\chrome.exe"
