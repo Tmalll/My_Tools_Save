@@ -51,6 +51,6 @@ git push origin main
 
 echo 同步更新 - 完成！
 
-timeout /t 10 >nul
+timeout /t 10
 
 exit
