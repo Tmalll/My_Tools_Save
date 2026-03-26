@@ -1,5 +1,10 @@
 @echo off
-echo.
+:: 最小化窗口
+cd /d "%~dp0" & title %~nx0
+if "%1" neq "min" start /min "" "%~f0" min & exit
+:start_script
+:: 这下面放最小化之后的脚本...
+echo. & timeout /t 2 >nul & echo.
 
 :: 设置用户名 - 这个一般不用改
 set UserName=Tmalll
@@ -49,8 +54,27 @@ git add -A
 git commit -m "sync update %date% %time%"
 git push origin main
 
+echo.
+echo.
 echo 同步更新 - 完成！
-
+echo.
+echo.
 timeout /t 10
-
 exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
