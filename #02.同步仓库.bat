@@ -50,8 +50,7 @@ git commit -m "sync update %date% %time%"
 git push origin main
 
 echo 同步更新 - 完成！
-pause
-goto :EOF
 
-pause
+timeout /t 10 >nul
+
 exit
