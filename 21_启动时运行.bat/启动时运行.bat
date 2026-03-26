@@ -19,6 +19,14 @@ reg add "HKCU\Console" /v "ScreenBufferSize" /t REG_DWORD /d 0x03E80078 /f >nul
 :备份暗黑2存档
 echo 备份暗黑2存档 - 开始
 start  /min  ""  "E:\01.userData\Saved Games\D2R_BAK.bat"
+echo.
+echo.
+
+:同步Github仓库
+echo 同步Github仓库
+start  /min  "" "E:\01.userData\ZhuoMian\工具存档\#02.同步仓库.bat"
+echo.
+echo.
 
 :延迟15秒脚本
 cls
