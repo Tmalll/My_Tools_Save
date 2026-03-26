@@ -33,8 +33,11 @@ echo 使用的HTTP代理为: [ %http_proxy% ]
 :: curl -IL https://www.google.com -vv
 :: pause
 
+echo.
+echo.
 echo 正在执行
 echo [2] 同步更新 ( 先拉取远程，再安全推送，不带 --force，日常使用 )
+echo.
 echo.
 
 :: [2] 同步更新
