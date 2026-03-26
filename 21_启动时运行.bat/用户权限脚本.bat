@@ -7,11 +7,27 @@ if "%1" neq "min" start /min "" "%~f0" min & exit
 echo. & timeout /t 2 >nul & echo.
 
 :同步Github仓库
-echo 同步Github仓库
+echo 开始 - 同步Github仓库
+echo.
+:: 1. 获取系统运行秒数
+for /f %%i in ('powershell -NoProfile -Command "[int]((Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime).TotalSeconds"') do set "uptime=%%i"
+
+:: 2. 逻辑判断, 开机时间小于1800秒则跳过
+if %uptime% LSS 1800 (
+    echo 当前系统运行时间仅为 [ %uptime% ] 秒...
+    echo 跳过此次执行...
+    timeout /t 3
+    echo.
+    goto :同步Github仓库_END
+)
+:: 3. 启动时间大于1800秒则执行
 start  /min  "" "E:\01.userData\ZhuoMian\工具存档\#02.同步仓库.bat"
 echo.
-echo.
+:同步Github仓库_END
+echo 同步Github仓库 - 结束
+echo. & timeout /t 2 >nul & echo.
 
+pause
 
 :原版Chrome
 set "PRName=原版Chrome"
