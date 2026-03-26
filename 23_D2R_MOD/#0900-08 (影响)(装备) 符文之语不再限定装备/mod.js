@@ -47,7 +47,7 @@ runesFiles.forEach(runesFilename => {
         const glov_can_be_use = [ "Spirit" ];
 
         // 鞋子可用的符文之语 boot
-        const boot_can_be_use = [];
+        const boot_can_be_use = [ "Spirit" ];
 
         // 腰带可用的符文之语 belt
         const belt_can_be_use = [];

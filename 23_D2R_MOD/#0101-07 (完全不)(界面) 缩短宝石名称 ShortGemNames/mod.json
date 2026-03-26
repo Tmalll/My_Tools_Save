@@ -1,0 +1,16 @@
+{
+  "name": "#0101-07 (完全不)(界面) 缩短宝石名称",
+  "description": "将宝石名称大幅缩短，并按类型上色。",
+  "author": "olegbl",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/187",
+  "version": "1.3",
+  "config": [
+    {
+      "id": "shorten",
+      "type": "checkbox",
+      "name": "Shorten Name",
+      "description": "缩短宝石/骷髅的名称。若禁用，则仅为原名称上色。",
+      "defaultValue": true
+    }
+  ]
+}
