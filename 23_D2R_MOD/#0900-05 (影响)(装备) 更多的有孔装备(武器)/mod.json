@@ -6,16 +6,28 @@
   "version": "1.0.1",
   "config": [
     {
+      "id": "all_weap_to_Max_6_socks",
+      "type": "checkbox",
+      "name": "统一修改所有武器, 让其最大可以6孔(这会忽略和覆盖下面的设置)",
+      "defaultValue": false
+    },
+    {
       "id": "Only_socket_Throwing",
       "type": "checkbox",
-      "name": "只修改投掷武器(让其可打孔并且最大6孔)",
+      "name": "只修改投掷武器(让其最大6孔)",
       "defaultValue": true
     },
     {
-      "id": "all_weap_to_Max_6_socks",
+      "id": "Only_socket_Bow_and_Crossbow",
       "type": "checkbox",
-      "name": "所有武器最大6孔(包括投掷武器)",
+      "name": "只修改弓和弩(让其最大6孔)",
+      "defaultValue": true
+    },
+    {
+      "id": "Only_socket_other",
+      "type": "checkbox",
+      "name": "只修改xxx(让其最大6孔)",
       "defaultValue": false
-    }    
+    }
   ]
 }

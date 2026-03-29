@@ -6,6 +6,7 @@ cd /d "%~dp0" & title %~nx0
 if "%1"=="min" (
     mode con: cols=120 lines=40
     explorer.exe "%~dp0用户权限脚本.bat"
+    explorer.exe "E:\01.userData\ZhuoMian\工具存档\24_rclone_windows_本地同步备份脚本\#Rclone备份程序顺序运行总调度脚本.bat"
     goto :start_script
 )
 
@@ -66,16 +67,15 @@ echo.
 echo.
 timeout /t 2 >nul
 
-:日常备份1
-echo 日常备份1 - 开始
-echo.
-
-start /min "" cmd /c "title 备份锁屏画报 & echo 备份锁屏画报 & echo 脚本将在15秒后开始执行... & timeout /t 15  >nul && "E:\01.userData\ZhuoMian\04.图片\#02-锁屏画报\备份锁屏画报.bat"
-start /min "" cmd /c "title 备份锁屏画报 & echo 备份网盘文件 & echo 脚本将在15秒后开始执行... & timeout /t 15  >nul && "E:\01.userData\ZhuoMian\10.同步盘\备份网盘文件.bat"
-echo 执行 [ 文件备份任务1, 备份 [OD个人网盘, 锁屏画报] 并行运行 - 等待30秒后运行 ]
-echo.
-echo.
-timeout /t 2 >nul
+rem :日常备份1
+rem echo 日常备份1 - 开始
+rem echo.
+rem start /min "" cmd /c "title 备份锁屏画报 & echo 备份锁屏画报 & echo 脚本将在15秒后开始执行... & timeout /t 15  >nul && "E:\01.userData\ZhuoMian\04.图片\#02-锁屏画报\备份锁屏画报.bat"
+rem start /min "" cmd /c "title 备份锁屏画报 & echo 备份网盘文件 & echo 脚本将在15秒后开始执行... & timeout /t 15  >nul && "E:\01.userData\ZhuoMian\10.同步盘\备份网盘文件.bat"
+rem echo 执行 [ 文件备份任务1, 备份 [OD个人网盘, 锁屏画报] 并行运行 - 等待30秒后运行 ]
+rem echo.
+rem echo.
+rem timeout /t 2 >nul
 
 :Cobian_Reflector_备份任务
 echo Cobian_Reflector_备份任务 - 开始 & echo.

@@ -17,7 +17,7 @@
       "type": "select",
       "name": "戒指的作用类似于?",
       "description": "这定义了应用宝石和符文的效果",
-      "defaultValue": "0",
+      "defaultValue": "1",
       "options": [
         { "value": "0", "label": "武器" },
         { "value": "1", "label": "护甲或头盔" },
