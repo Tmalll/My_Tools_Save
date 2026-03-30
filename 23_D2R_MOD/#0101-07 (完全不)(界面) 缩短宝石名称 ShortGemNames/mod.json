@@ -8,7 +8,7 @@
     {
       "id": "shorten",
       "type": "checkbox",
-      "name": "Shorten Name",
+      "name": "缩短宝石名称",
       "description": "缩短宝石/骷髅的名称。若禁用，则仅为原名称上色。",
       "defaultValue": true
     }

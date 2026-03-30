@@ -1,0 +1,16 @@
+{
+  "name": "#0101-11 (完全不)(界面) 自定义物品名称和颜色",
+  "description": "",
+  "author": "自制",
+  "website": "",
+  "version": "",
+  "config": [
+    {
+      "id": "SwitchName1",
+      "type": "checkbox",
+      "name": "占位用开关以后用得着",
+      "description": "",
+      "defaultValue": true
+    }
+  ]
+}

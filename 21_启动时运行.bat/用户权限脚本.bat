@@ -12,7 +12,7 @@ echo.
 :: 1. 获取系统运行秒数
 for /f %%i in ('powershell -NoProfile -Command "[int]((Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime).TotalSeconds"') do set "uptime=%%i"
 :: 2. 逻辑判断, 开机时间小于1800秒则跳过
-if %uptime% LSS 1800 (
+if %uptime% LSS 60 (
     echo 当前系统运行时间仅为 [ %uptime% ] 秒...
     echo 跳过此次执行...
     timeout /t 3
