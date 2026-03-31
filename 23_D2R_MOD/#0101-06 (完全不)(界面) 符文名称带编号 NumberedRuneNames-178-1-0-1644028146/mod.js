@@ -24,7 +24,7 @@ itemRunes.forEach((item) => {
           // 能够处理 "符文：埃歐" -> "埃歐" 以及 "艾欧符文" -> "艾欧"
           const cleanChineseName = originalName.replace(/符文[:：]?|[:：]?符文/g, "");
           
-          item[key] = `${cleanChineseName}${originalEnUS} (${runeNumber})`;
+          item[key] = `${cleanChineseName}${originalEnUS} #${runeNumber}`;
         } else {
           // 其他语言保持：原名 (#编号)
           item[key] = `${originalName} (${runeNumber})`;
