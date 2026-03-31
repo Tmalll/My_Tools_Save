@@ -5,8 +5,7 @@ cd /d "%~dp0" & title %~nx0
 :: 判断并设置窗口尺寸
 if "%1"=="min" (
     mode con: cols=120 lines=40
-    explorer.exe "%~dp0用户权限脚本.bat"
-    explorer.exe "E:\01.userData\ZhuoMian\工具存档\24_rclone_windows_本地同步备份脚本\#Rclone备份程序顺序运行总调度脚本.bat"
+    explorer.exe   "%~dp0用户权限脚本.bat"
     goto :start_script
 )
 
@@ -16,6 +15,12 @@ mode con: cols=80 lines=20
 :: 通过注册表强制将 CMD 默认窗口大小设为 120 (宽) x 40 (高)
 reg add "HKCU\Console" /v "WindowSize" /t REG_DWORD /d 0x00280078 /f >nul
 reg add "HKCU\Console" /v "ScreenBufferSize" /t REG_DWORD /d 0x03E80078 /f >nul
+
+:先行脚本
+explorer.exe   "E:\01.userData\ZhuoMian\工具存档\24_rclone_windows_本地同步备份脚本\#Rclone备份程序顺序运行总调度脚本.bat"
+explorer.exe   "E:\01.userData\ZhuoMian\工具存档\#02.同步仓库.bat"
+echo.
+echo.
 
 :备份暗黑2存档
 echo 备份暗黑2存档 - 开始
