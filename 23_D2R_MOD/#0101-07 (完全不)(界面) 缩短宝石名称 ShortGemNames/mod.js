@@ -14,8 +14,8 @@
 // ÿc< , 暗绿色 (Sage Green),较少见，比 2 深一些
 // ÿc= , 淡绿色 (Bright Lime),非常亮的荧光绿
 // ÿc> , 淡黄色 (Pale Yellow),比 9 浅一些
-// ÿc? , 青蓝色 (Cyan),浅蓝色
-// ÿc@ , 银色 (Silver),比 0 稍暗一点的亮灰
+// ÿc? , 金黄色
+// ÿc@ , 橙色
 // ÿcA , 深蓝色 (Dark Blue),比 3 深很多
 // ÿcB , 深黄色 (Dark Yellow),土黄色
 
@@ -23,7 +23,7 @@ const ITEMS = [
   { id: '紫宝石', color: `ÿc;`, codes: ['gcv', 'gfv', 'gsv', 'gzv', 'gpv'], },
   { id: '红宝石', color: `ÿc1`, codes: ['gcr', 'gfr', 'gsr', 'glr', 'gpr'], },
   { id: '骷髅石', color: `ÿc8`, codes: ['skc', 'skf', 'sku', 'skl', 'skz'], },
-  { id: '钻石',   color: `ÿc:`, codes: ['gcw', 'gfw', 'gsw', 'glw', 'gpw'], },
+  { id: '钻石',   color: `ÿcI`, codes: ['gcw', 'gfw', 'gsw', 'glw', 'gpw'], },
   { id: '绿宝石', color: `ÿc2`, codes: ['gcg', 'gfg', 'gsg', 'glg', 'gpg'], },
   { id: '蓝宝石', color: `ÿc3`, codes: ['gcb', 'gfb', 'gsb', 'glb', 'gpb'], },
   { id: '黄宝石', color: `ÿc9`, codes: ['gcy', 'gfy', 'gsy', 'gly', 'gpy'], },

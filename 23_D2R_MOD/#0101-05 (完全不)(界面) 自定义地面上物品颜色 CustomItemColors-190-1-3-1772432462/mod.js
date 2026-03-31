@@ -1,3 +1,8 @@
+if (D2RMM.getVersion == null || D2RMM.getVersion() < 1.6) {
+  D2RMM.error('Requires D2RMM version 1.6 or higher.');
+  return;
+}
+
 const COLORS = {
   Beige: '$FontColorBeige',
   Black: '$FontColorBlack',
@@ -28,6 +33,28 @@ const COLORS = {
   Yellow: '$FontColorYellow',
 };
 
+// Pre-RotW: https://imgur.com/a/lrqE6J1
+// Post-RotW: https://imgur.com/a/6SiXKtT
+const LOCALIZATION_COLORS = {
+  White: 'ÿc0',
+  Gray: 'ÿc5',
+  Black: 'ÿc6',
+  LightRed: 'ÿc1',
+  BrightRed: 'ÿcV',
+  Gold: 'ÿc4',
+  Yellow: 'ÿc9',
+  Orange: 'ÿc8',
+  BrightGreen: 'ÿc2',
+  DarkGreen: 'ÿcA',
+  LightTeal: 'ÿcI',
+  LightCyan: 'ÿcU',
+  BrightCyan: 'ÿcO',
+  LightBlue: 'ÿcQ',
+  Blue: 'ÿc3',
+  Purple: 'ÿc;',
+  Pink: 'ÿcP',
+};
+
 const VARIABLES = [
   'DefaultColor',
   'EtherealColor',
@@ -40,10 +67,21 @@ const VARIABLES = [
   'TemperedColor',
   'QuestColor',
   'GoldColor',
+  'HealthPotionColor',
+  'ManaPotionColor',
+  'RejuvPotionColor',
+  'EventItemsColor',
 ];
 
 function changeProfileColors(profile) {
   VARIABLES.forEach((variable) => {
+    if (config[variable] === 'Default') {
+      return;
+    }
+    if (config[variable] === 'Custom') {
+      profile.TooltipStyle[variable] = config['Custom' + variable];
+      return;
+    }
     const color = COLORS[config[variable]];
     if (color != null) {
       profile.TooltipStyle[variable] = color;
@@ -66,3 +104,36 @@ const controllerProfileLVFilename =
 const controllerProfileLV = D2RMM.readJson(controllerProfileLVFilename);
 changeProfileColors(controllerProfileLV);
 D2RMM.writeJson(controllerProfileLVFilename, controllerProfileLV);
+
+const itemRunesFilename = 'local\\lng\\strings\\item-runes.json';
+const itemRunes = D2RMM.readJson(itemRunesFilename);
+itemRunes.forEach((item) => {
+  const itemtype = item.Key;
+  const match = itemtype.match(/^r([0-9]{2})$/);
+  if (match != null) {
+    const runeNumber = parseInt(match[1], 10);
+    const category =
+      runeNumber <= 11 ? 'Low' : runeNumber <= 22 ? 'Mid' : 'High';
+    const colorName = config[category + 'RuneColor'];
+    if (colorName === 'Default') {
+      return;
+    }
+    const color = LOCALIZATION_COLORS[colorName];
+    if (color === undefined) {
+      // something went wrong
+      console.warn(
+        `Unknown color ${colorName} for ${category} rune #${runeNumber} (${itemtype})`,
+      );
+      return;
+    }
+    // update all localizations
+    for (const key in item) {
+      if (key !== 'id' && key !== 'Key') {
+        // color codes must appear after gender codes
+        const [, prefix = '', value] = item[key].match(/^(\[fs\])?(.*)$/);
+        item[key] = `${prefix}${color}${value}`;
+      }
+    }
+  }
+});
+D2RMM.writeJson(itemRunesFilename, itemRunes);

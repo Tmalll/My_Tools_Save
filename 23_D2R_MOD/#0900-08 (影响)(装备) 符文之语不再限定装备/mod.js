@@ -32,9 +32,7 @@ runesFiles.forEach(runesFilename => {
         const weap_can_be_use = [];
 
         // 所有护甲可用 armo, 包括: 衣服tors, 头盔helm, 盾牌shld, 手套glov, 鞋子boot, 腰带belt, 
-        const armo_can_be_use = [
-            "Vigilance"
-        ];
+        const armo_can_be_use = [];
 
         // 单护甲衣服可用 tors
         const tors_can_be_use = [];
@@ -47,42 +45,16 @@ runesFiles.forEach(runesFilename => {
 
         // 手套可用的符文之语 glov (更多有孔装备MOD中设置为-武器)
         const glov_can_be_use = [ 
-            // 2孔武器
-            "Leaf", "Steel", "Strength", "White", "Wind", "Zephyr", 
-            // 3孔武器
-            "Black", "Chaos", "Crescent" "Moon", "Edge", "Fury", 
-            "Hysteria", "King's Grace", "Lawbringer", "Malice", "Melody", 
-            "Mosaic", "Pattern", "Plague", "Ritual", "Venom", "Void", 
-            // 4孔武器
-            "Brand", "Faith", "Famine", "Fortitude", "Hand of Justice", "Harmony", 
-            "Heart of the Oak", "Holy Thunder", "Ice", "Infinity", "Insight", "Kingslayer", 
-            "Memory", "Oath", "Passion", "Phoenix", "Pride", "Rift", "Spirit", "Voice of Reason", "Wrath" 
+            "Spirit"
         ];
 
         // 鞋子可用的符文之语 boot (更多有孔装备MOD中设置为-盾牌)
         const boot_can_be_use = [
-            // 2孔盾牌
-            "Rhyme", "Splendor", // "Vigilance",
-            // 3孔盾牌
-            "Ancients' Pledge", "Dragon", "Dream", "Sanctuary",
-            // 4孔盾牌
-            "Exile", "Phoenix", "Spirit",
-            // 2孔头盔
-            "Lore", "Nadir",
-            // 3孔头盔
-            "Bulwark", "Coven", "Cure", "Delirium", "Dream", "Flickering Flame", "Ground", "Hearth", "Metamorphosis", "Radiance", "Temper", "Wisdom"
+            "Spirit"
         ];
 
         // 腰带可用的符文之语 belt (更多有孔装备MOD中设置为-衣服)
         const belt_can_be_use = [
-            // 2孔武器
-            "Leaf", "Steel", "Strength", "White", "Wind", "Zephyr",
-            // 2孔头盔
-            "Nadir", "Lore", 
-            // 2孔护甲
-            "Stealth", "Smoke", "Prudence",
-            // 2孔盾牌
-            "Rhyme", "Splendor", // "Vigilance"
         ];
 
         // 杂物可用的 misl, 留给以后的箭筒MOD, 包括大中小护符char, 
@@ -90,12 +62,6 @@ runesFiles.forEach(runesFilename => {
 
         // 大中小护身符可用的符文之语 char
         const char_can_be_use = [
-            // 2孔头
-            "Lore", "Nadir",
-            // 2孔护甲
-            "Prudence", "Smoke", "Stealth",
-            // 2孔盾牌
-            "Rhyme", "Splendor", "Vigilance"
         ];
 
         // 建立映射关系方便循环处理
