@@ -67,9 +67,9 @@ const Modify_item_names = [
     // append_mode: 1 为追加模式（在原名后加上target_name）, 0 为覆盖模式（直接使用target_name）。
     // SwitchName: "open" 或 config中的开关变量名。
     
-    { id: 20435, color_code: `ÿcP`, target_language: "off", target_name: "", append_mode: 0, SwitchName: "open" },
-    { id: 20436, color_code: `ÿcP`, target_language: "off", target_name: "", append_mode: 0, SwitchName: "open" },
-    { id: 20437, color_code: `ÿcP`, target_language: "off", target_name: "", append_mode: 0, SwitchName: "open" },
+    { id: 20435, color_code: `off`, target_language: "all", target_name: "ÿcP|SC", append_mode: 1, SwitchName: "open" },
+    { id: 20436, color_code: `off`, target_language: "all", target_name: "ÿcP|LC", append_mode: 1, SwitchName: "open" },
+    { id: 20437, color_code: `off`, target_language: "all", target_name: "ÿcP|GC", append_mode: 1, SwitchName: "open" },
     
     // 示例：给暗金项链(id 521)在所有语言下追加“|任务”字样并染成紫色
     // { id: 521, color_code: `ÿcP`, target_language: "all", target_name: "ÿc;|任务", append_mode: 1, SwitchName: "open" },
