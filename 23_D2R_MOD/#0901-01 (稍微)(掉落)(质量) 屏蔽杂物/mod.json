@@ -1,18 +1,49 @@
 {
-  "name": "#0201-04 (稍微)(质量) 屏蔽杂物",
+  "name": "#0901-01 (稍微)(掉落)(质量) 屏蔽杂物",
   "description": "怪物禁止(屏蔽)掉杂物",
-  "author": "lil174",
+  "author": "原作者: lil174 | 自製大改",
   "website": "https://bbs.3dmgame.com/thread-6420759-1-1.html",
   "version": "1.3",
   "file": "treasureclassex.txt",
   "config": [
     {
+      "id": "disdrop_Worldstone",
+      "type": "checkbox",
+      "name": "禁止掉落世界之石碎片",
+      "description": "改成出售藥水的NPC出售",
+      "defaultValue": true
+    },
+    {
+      "id": "NPC_SELL_Worldstone",
+      "type": "checkbox",
+      "name": "NPC可出售世界之石碎片",
+      "description": "改成出售藥水的NPC出售",
+      "defaultValue": true
+    },
+
+    {
       "id": "disdrop_bosstoken",
       "type": "checkbox",
       "name": "禁止所有BOSS掉落精华",
-      "description": "与NPC出售洗点MOD配合使用让BOSS专心掉装备",
-      "defaultValue": false
+      "description": "",
+      "defaultValue": true
     },
+    {
+      "id": "allowToken",
+      "type": "checkbox",
+      "name": "NPC可出洗點徽章",
+      "description": "",
+      "defaultValue": true
+    },
+    {
+      "id": "allowUKey",
+      "type": "checkbox",
+      "name": "NPC可出紅門鑰匙",
+      "description": "",
+      "defaultValue": true
+    },
+
+
     {
       "id": "gemdrop_select",
       "type": "select",
@@ -39,28 +70,15 @@
     {
       "id": "disdrop_potion",
       "type": "select",
-      "name": "禁止怪物掉落药剂",
-      "description": "药剂指的是小紫,红,蓝,精力,解毒,融冰6种(还是有极少数暗金怪会掉,不过影响不大)",
+      "name": "禁止怪物掉落藥劑",
+      "description": "藥劑屏蔽等級（層層遞進）",
       "defaultValue": "dis_potion3",
       "options": [
-        {
-          "value": "dis_def",
-          "label": "官方默认不屏蔽",
-          "description": "游戏默认"
-        },
-        {
-          "value": "dis_potion1",
-          "label": "禁止掉落-精力,解毒,融冰"
-        },
-        {
-          "value": "dis_potion2",
-          "label": "禁止掉落-精力,解毒,融冰,红,蓝"
-        },
-        {
-          "value": "dis_potion3",
-          "label": "禁止掉落-精力,解毒,融冰,红,蓝,小紫",
-          "description": "开荒慎用"
-        }
+        { "value": "dis_def", "label": "官方默認 (不屏蔽)" },
+        { "value": "dis_potion1", "label": "禁止掉落：精力、解毒、融冰" },
+        { "value": "dis_potion2", "label": "禁止掉落：精力、解毒、融冰、紅、藍" },
+        { "value": "dis_potion3", "label": "禁止掉落：精力、解毒、融冰、紅、藍、小紫" },
+        { "value": "dis_potion4", "label": "禁止掉落：所有藥劑 (連大紫也不掉)", "description": "極限過濾：地面將不再掉落任何藥水" }
       ]
     },
     {

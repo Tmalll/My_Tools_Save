@@ -1,0 +1,50 @@
+{
+  "$schema": "../config-schema.json",
+  "name": "#0901-03 (稍微)(掉落)(质量) 增加破免板掉率",
+  "description": "可自定义破免大护身符（Sunder Charms）的掉率，并提供将它们添加到常规 Boss 和普通怪物掉落列表的选项。",
+  "author": "Jobus",
+  "website": "https://www.nexusmods.com/diablo2resurrected/mods/270",
+  "version": "2.0.0",
+  "config": [
+    {
+      "id": "terrorZoneDroprateMultiplier",
+      "type": "number",
+      "name": "恐怖区域掉率倍率",
+      "description": "倍增恐怖区域内破免板的掉落几率。设置为 1 则保持原版掉率。",
+      "defaultValue": 100,
+      "minValue": 0.1,
+      "maxValue": 1000
+    },
+    {
+      "id": "addToBossLootTables",
+      "type": "checkbox",
+      "name": "添加到 Boss 掉落表",
+      "description": "允许地狱难度的常规 Boss（安达利尔、都瑞尔等）和部分小 Boss（血乌、召唤者等）在非恐怖区域也能掉落破免板。",
+      "defaultValue": true
+    },
+    {
+      "id": "bossDropWeight",
+      "type": "number",
+      "name": "Boss 掉落权重",
+      "description": "地狱难度常规 Boss 掉落破免板的概率权重。数值越高掉落越频繁。\n示例：5 = 约 20% 几率。0.5 = 约 2.5% 几率。",
+      "defaultValue": 2.5,
+      "minValue": 0,
+      "maxValue": 1000,
+      "visible": ["value", "addToBossLootTables"]
+    },
+    {
+      "id": "addToGlobalLootTables",
+      "type": "checkbox",
+      "name": "添加到全局掉落表",
+      "description": "允许地狱难度的任何怪物掉落破免板。警告：这会稀释“暗金大护身符”的掉落池，导致基德的幸运变得显著稀有（约稀释 7 倍）。",
+      "defaultValue": true
+    },
+    {
+      "id": "equalizeElementalRatios",
+      "type": "checkbox",
+      "name": "平均元素掉落比例",
+      "description": "移除不同护身符之间的稀有度分级。魔法、物理和毒素破免板将与火焰、寒冰和闪电破免板具有相同的掉落几率。",
+      "defaultValue": true
+    }
+  ]
+}

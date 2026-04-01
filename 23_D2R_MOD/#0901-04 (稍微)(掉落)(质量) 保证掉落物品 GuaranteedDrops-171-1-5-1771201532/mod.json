@@ -1,6 +1,6 @@
 {
   "$schema": "../config-schema.json",
-  "name": "#0306-03 (稍微)(掉落)(质量) 保证掉落物品",
+  "name": "#0901-04 (稍微)(掉落)(质量) 保证掉落物品",
   "description": "修改宝藏类别的 nodrop（不掉落）几率，以模拟特定的 /players（玩家人数）设置。",
   "author": "olegbl",
   "website": "https://www.nexusmods.com/diablo2resurrected/mods/171",

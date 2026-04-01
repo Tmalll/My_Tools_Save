@@ -1,6 +1,6 @@
 {
   "$schema": "../config-schema.json",
-  "name": "#0101-05 (完全不)(界面) 自定义地面上物品颜色 CustomItemColors-190-1-3-1772432462",
+  "name": "#0101-05 (完全不)(界面) 自定义地面上物品颜色",
   "description": "自定义各类项目在地面上显示的颜色。这*不会*改变物品在背包或仓库工具提示中的颜色。",
   "author": "olegbl",
   "website": "https://www.nexusmods.com/diablo2resurrected/mods/190",
