@@ -6,13 +6,13 @@
   "website": "https://www.nexusmods.com/diablo2resurrected/mods/182",
   "version": "1.11",
   "config": [
-    {
-      "id": "itemTypes",
-      "type": "section",
-      "name": "物品类型",
-      "description": "选择哪些类型的物品将应用完美数值。",
-      "defaultExpanded": false,
-      "children": [
+        {
+          "id": "runeword",
+          "type": "checkbox",
+          "name": "符文之语 (Runeword)",
+          "description": "启用后，强制符文之语物品拥有完美数值。",
+          "defaultValue": false
+        },
         {
           "id": "unique",
           "type": "checkbox",
@@ -21,18 +21,11 @@
           "defaultValue": false
         },
         {
-          "id": "set",
+          "id": "setitems",
           "type": "checkbox",
           "name": "套装物品 (Set)",
           "description": "启用后，强制套装物品拥有完美数值。",
           "defaultValue": false
-        },
-        {
-          "id": "blue",
-          "type": "checkbox",
-          "name": "魔法 / 稀有物品 (Magic / Rare)",
-          "description": "启用后，强制蓝色魔法物品和黄色稀有物品拥有完美数值。",
-          "defaultValue": true
         },
         {
           "id": "highquality",
@@ -42,28 +35,19 @@
           "defaultValue": true
         },
         {
-          "id": "runeword",
+          "id": "blue",
           "type": "checkbox",
-          "name": "符文之语 (Runeword)",
-          "description": "启用后，强制符文之语物品拥有完美数值。",
-          "defaultValue": false
-        },
+          "name": "魔法 / 稀有物品 (Magic / Rare)",
+          "description": "启用后，强制蓝色魔法物品和黄色稀有物品拥有完美数值。",
+          "defaultValue": true
+        },        
         {
           "id": "crafted",
           "type": "checkbox",
           "name": "手工制作物品 (Crafted)",
           "description": "启用后，强制通过赫拉迪姆方块配方生成的物品拥有完美数值。",
           "defaultValue": true
-        }
-      ]
-    },
-    {
-      "id": "misc",
-      "type": "section",
-      "name": "其他设置",
-      "description": "关于词缀、属性等部分应该完美化的额外配置选项。",
-      "defaultExpanded": false,
-      "children": [
+        },
         {
           "id": "automagic",
           "type": "checkbox",
@@ -75,7 +59,14 @@
           "id": "skilltab3",
           "type": "checkbox",
           "name": "技能树总是 +3",
-          "description": "启用后，强制增加特定技能树等级的词缀总是给予 +3 奖励，即使其正常最大值较小也是如此。",
+          "description": "启用后，强制增加特定技能树等级的词缀总是给予 +3 奖励，即使其正常最大值较小也是如此。默认排除大板子, 如需修改请查看mod.js然后搜索 skilltab3_exclude_config, 然后在itypes中删除'lcha'",
+          "defaultValue": false
+        },
+        {
+          "id": "rare_switch",
+          "type": "checkbox",
+          "name": "技能+3也包括稀有(黄色)装备",
+          "description": "原版稀有装备最大只能+2, 开启此开关后可以让稀有装备也能+3, PS: 因机制问题, 此项关闭时蓝装的词条在 +2 ~ +3 之间随机.",
           "defaultValue": false
         },
         {
@@ -110,6 +101,4 @@
           ]
         }
       ]
-    }
-  ]
 }

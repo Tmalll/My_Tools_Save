@@ -223,7 +223,7 @@ if (config.unique) {
   });
 }
 
-if (config.set) {
+if (config.setitems) {
   ['global\\excel\\setitems.txt', 'global\\excel\\base\\setitems.txt'].forEach(
     (fileName) => {
       const fileContent = D2RMM.readTsv(fileName);
@@ -312,14 +312,12 @@ if (config.crafted) {
 
 
 
-
-
-
+//
 // ==========================================
 // 词缀修改排除注册表
 // ==========================================
 const skilltab3_exclude_config = {  
-  itypes: ['lcha'], 
+  itypes: ['lcha'], // 格式 'lcha', 'amul' ... 这里排除了大板子 lcha
   names: []
 };
 
@@ -331,20 +329,19 @@ const SmartFlattenRows = (rows) => {
   const excludeSet = new Set(skilltab3_exclude_config.itypes);
 
   rows.forEach((row) => {
-    // 条件 A: 检查是否存在 skilltab 属性
+    // 检查是否存在 skilltab 属性
     const hasSkillTab = (row.mod1code === 'skilltab' || row.mod2code === 'skilltab' || row.mod3code === 'skilltab');
     
-    // 条件 B: 获取所有有效的 itype
+    // 获取所有有效的 itype
     const rowITypes = [];
     for (let i = 1; i <= 7; i++) {
       if (row['itype' + i]) rowITypes.push(row['itype' + i]);
     }
 
-    // 条件 C: 检查底材中是否包含排除项
+    // 检查底材中是否包含排除项
     const hasExcludeIType = rowITypes.some(t => excludeSet.has(t));
 
-    // 执行逻辑：
-    // 只有同时满足 (有技能词条) AND (底材包含排除项) AND (底材数量大于1) 时才拆分
+    // 只有同时满足 (有技能词条) AND (底材包含排除项) AND (底材数量 > 1) 时才拆分
     if (hasSkillTab && hasExcludeIType && rowITypes.length > 1) {
       rowITypes.forEach((type) => {
         const newRow = { ...row };
@@ -353,7 +350,6 @@ const SmartFlattenRows = (rows) => {
         newRows.push(newRow);
       });
     } else {
-      // 其他所有情况（不含技能、不含排除项、或已经是单行）都不拆分
       newRows.push(row);
     }
   });
@@ -361,45 +357,54 @@ const SmartFlattenRows = (rows) => {
 };
 
 // ==========================================
-// 2. 词缀处理逻辑 (此时数据已按需拆分)
+// 2. 词缀处理逻辑
 // ==========================================
 const adjustAffixRow = (row, index, rows) => {
-  // 基础强化 (config.blue)
+  // --- 功能 1: 蓝色装备基本属性强化 ---
   if (config.blue) {
     if (typeof UpdateRow === 'function') {
-      ['mod1', 'mod2', 'mod3'].forEach(m => UpdateRow(row, m+'code', m+'min', m+'max'));
+      UpdateRow(row, 'mod1code', 'mod1min', 'mod1max');
+      UpdateRow(row, 'mod2code', 'mod2min', 'mod2max');
+      UpdateRow(row, 'mod3code', 'mod3min', 'mod3max');
     }
-    if (typeof UpdateFrequency === 'function') UpdateFrequency(row, rows);
+    if (typeof UpdateFrequency === 'function') {
+      UpdateFrequency(row, rows);
+    }
   }
 
-  // 技能 +3 逻辑 (config.skilltab3)
+  // --- 功能 2: 技能等级修改 (含黄装开关逻辑) ---
   if (config.skilltab3) {
-    // 1. 名称排除
+    // A. 排除检查 (Name 或 itype)
     if (skilltab3_exclude_config.names.includes(row.Name)) return;
-
-    // 2. 底材排除检查
-    let isExcludedRow = false;
+    
+    let isExcludedIType = false;
     for (let i = 1; i <= 7; i++) {
-      const t = row['itype' + i];
-      if (t && skilltab3_exclude_config.itypes.includes(t)) {
-        isExcludedRow = true;
+      if (row['itype' + i] && skilltab3_exclude_config.itypes.includes(row['itype' + i])) {
+        isExcludedIType = true;
         break;
       }
     }
-    if (isExcludedRow) return;
+    if (isExcludedIType) return;
 
-    // 3. 将符合条件的 skilltab 修改为 3
+    // B. 决定最终技能等级 (targetSkillLevel)
+    // 如果该词缀 rare=1 (黄装可用) 且 rare_switch 关闭，则最大只给 +2
+    let targetLevel = 3;
+    if (row.rare === '1' && config.rare_switch === false) {
+      targetLevel = 2;
+    }
+
+    // C. 执行修改
     for (let i = 1; i <= 3; i++) {
       if (row['mod' + i + 'code'] === 'skilltab') {
-        row['mod' + i + 'min'] = '3';
-        row['mod' + i + 'max'] = '3';
+        row['mod' + i + 'min'] = targetLevel.toString();
+        row['mod' + i + 'max'] = targetLevel.toString();
       }
     }
   }
 };
 
 // ==========================================
-// 主执行流程
+// 3. 主执行流程
 // ==========================================
 if (config.blue || config.skilltab3) {
   const targetFiles = [
@@ -412,34 +417,20 @@ if (config.blue || config.skilltab3) {
   ];
 
   targetFiles.forEach((fileName) => {
-    let fileContent = D2RMM.readTsv(fileName);
+    const fileContent = D2RMM.readTsv(fileName);
     if (!fileContent) return;
 
-    // 第一步：按需拆分（仅针对含技能且含排除底材的混合行）
+    // A. 按需精准拆分 (只拆含 skilltab 且含排除底材的混合行)
     fileContent.rows = SmartFlattenRows(fileContent.rows);
 
-    // 第二步：重算映射
+    // B. D2RMM 标准处理逻辑
     if (typeof CalculateAffixTierMap === 'function') {
       CalculateAffixTierMap(fileContent.rows);
     }
 
-    // 第三步：执行修改与排除
+    // C. 遍历修改
     fileContent.rows.forEach(adjustAffixRow);
 
     D2RMM.writeTsv(fileName, fileContent);
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
