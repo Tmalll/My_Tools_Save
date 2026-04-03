@@ -1,8 +1,8 @@
 {
   "$schema": "../config-schema.json",
-  "name": "#0900-01 (一般)(装备) 物品满变量(放在各种打孔MOD之前)",
-  "description": "(这个MOD最好放在各种打孔相关MOD之前, 放在后面所有装备都是最大孔数. ) 使所有掉落物品都具备完美的随机属性（满变动数值）| 物品满变量 PerfectDrops-182-1-11-1771396394",
-  "author": "olegbl",
+  "name": "#0900-01 (一般)(装备) 物品满变量 (建议放在各种插槽扩展MOD之前)",
+  "description": "(这个MOD最好放在各种插槽扩展或打孔MOD之前, 如果放在它们后面所有装备默认就都是最大孔数了. ) 使所有掉落物品都具备完美的随机属性（满变动数值）| 物品满变量 PerfectDrops-182-1-11-1771396394",
+  "author": "原作者: olegbl + 自制大修",
   "website": "https://www.nexusmods.com/diablo2resurrected/mods/182",
   "version": "1.11",
   "config": [
