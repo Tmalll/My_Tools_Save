@@ -262,48 +262,6 @@ if (config.highquality) {
   });
 }
 
-const adjustAffixRow = (row, index, rows) => {
-  if (config.blue) {
-    UpdateRow(row, 'mod1code', 'mod1min', 'mod1max');
-    UpdateRow(row, 'mod2code', 'mod2min', 'mod2max');
-    UpdateRow(row, 'mod3code', 'mod3min', 'mod3max');
-    UpdateFrequency(row, rows);
-  }
-
-  // it would be nice to also be able to modify staffmods (+skill to single skill on class items)
-  // but that seems to be hardcoded into D2 without any way to override it from /data/
-  if (config.skilltab3) {
-    if (row.mod1code === 'skilltab') {
-      row.mod1min = 3;
-      row.mod1max = 3;
-    }
-    if (row.mod2code === 'skilltab') {
-      row.mod2min = 3;
-      row.mod2max = 3;
-    }
-    if (row.mod3code === 'skilltab') {
-      row.mod3min = 3;
-      row.mod3max = 3;
-    }
-  }
-};
-
-if (config.blue || config.skilltab3) {
-  [
-    'global\\excel\\magicprefix.txt',
-    'global\\excel\\base\\magicprefix.txt',
-    'global\\excel\\magicsuffix.txt',
-    'global\\excel\\base\\magicsuffix.txt',
-  ].forEach((fileName) => {
-    const fileContent = D2RMM.readTsv(fileName);
-    if (!fileContent) return;
-    SplitAffixesIntoOneAffixPerItemType(fileContent.rows, 1000);
-    CalculateAffixTierMap(fileContent.rows);
-    fileContent.rows.forEach(adjustAffixRow);
-    D2RMM.writeTsv(fileName, fileContent);
-  });
-}
-
 if (config.defense) {
   ['global\\excel\\armor.txt', 'global\\excel\\base\\armor.txt'].forEach(
     (fileName) => {
@@ -351,3 +309,137 @@ if (config.crafted) {
   });
   D2RMM.writeTsv(fileName, fileContent);
 });
+
+
+
+
+
+
+// ==========================================
+// 词缀修改排除注册表
+// ==========================================
+const skilltab3_exclude_config = {  
+  itypes: ['lcha'], 
+  names: []
+};
+
+// ==========================================
+// 1. 精准智能拆分：只有 [含 skilltab] 且 [含排除底材] 的混合行才拆分
+// ==========================================
+const SmartFlattenRows = (rows) => {
+  const newRows = [];
+  const excludeSet = new Set(skilltab3_exclude_config.itypes);
+
+  rows.forEach((row) => {
+    // 条件 A: 检查是否存在 skilltab 属性
+    const hasSkillTab = (row.mod1code === 'skilltab' || row.mod2code === 'skilltab' || row.mod3code === 'skilltab');
+    
+    // 条件 B: 获取所有有效的 itype
+    const rowITypes = [];
+    for (let i = 1; i <= 7; i++) {
+      if (row['itype' + i]) rowITypes.push(row['itype' + i]);
+    }
+
+    // 条件 C: 检查底材中是否包含排除项
+    const hasExcludeIType = rowITypes.some(t => excludeSet.has(t));
+
+    // 执行逻辑：
+    // 只有同时满足 (有技能词条) AND (底材包含排除项) AND (底材数量大于1) 时才拆分
+    if (hasSkillTab && hasExcludeIType && rowITypes.length > 1) {
+      rowITypes.forEach((type) => {
+        const newRow = { ...row };
+        for (let i = 1; i <= 7; i++) { newRow['itype' + i] = ''; }
+        newRow['itype1'] = type;
+        newRows.push(newRow);
+      });
+    } else {
+      // 其他所有情况（不含技能、不含排除项、或已经是单行）都不拆分
+      newRows.push(row);
+    }
+  });
+  return newRows;
+};
+
+// ==========================================
+// 2. 词缀处理逻辑 (此时数据已按需拆分)
+// ==========================================
+const adjustAffixRow = (row, index, rows) => {
+  // 基础强化 (config.blue)
+  if (config.blue) {
+    if (typeof UpdateRow === 'function') {
+      ['mod1', 'mod2', 'mod3'].forEach(m => UpdateRow(row, m+'code', m+'min', m+'max'));
+    }
+    if (typeof UpdateFrequency === 'function') UpdateFrequency(row, rows);
+  }
+
+  // 技能 +3 逻辑 (config.skilltab3)
+  if (config.skilltab3) {
+    // 1. 名称排除
+    if (skilltab3_exclude_config.names.includes(row.Name)) return;
+
+    // 2. 底材排除检查
+    let isExcludedRow = false;
+    for (let i = 1; i <= 7; i++) {
+      const t = row['itype' + i];
+      if (t && skilltab3_exclude_config.itypes.includes(t)) {
+        isExcludedRow = true;
+        break;
+      }
+    }
+    if (isExcludedRow) return;
+
+    // 3. 将符合条件的 skilltab 修改为 3
+    for (let i = 1; i <= 3; i++) {
+      if (row['mod' + i + 'code'] === 'skilltab') {
+        row['mod' + i + 'min'] = '3';
+        row['mod' + i + 'max'] = '3';
+      }
+    }
+  }
+};
+
+// ==========================================
+// 主执行流程
+// ==========================================
+if (config.blue || config.skilltab3) {
+  const targetFiles = [
+    'global\\excel\\magicprefix.txt',
+    'global\\excel\\base\\magicprefix.txt',
+    'global\\excel\\magicsuffix.txt',
+    'global\\excel\\base\\magicsuffix.txt',
+    'global\\excel\\automagic.txt',
+    'global\\excel\\base\\automagic.txt',
+  ];
+
+  targetFiles.forEach((fileName) => {
+    let fileContent = D2RMM.readTsv(fileName);
+    if (!fileContent) return;
+
+    // 第一步：按需拆分（仅针对含技能且含排除底材的混合行）
+    fileContent.rows = SmartFlattenRows(fileContent.rows);
+
+    // 第二步：重算映射
+    if (typeof CalculateAffixTierMap === 'function') {
+      CalculateAffixTierMap(fileContent.rows);
+    }
+
+    // 第三步：执行修改与排除
+    fileContent.rows.forEach(adjustAffixRow);
+
+    D2RMM.writeTsv(fileName, fileContent);
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
