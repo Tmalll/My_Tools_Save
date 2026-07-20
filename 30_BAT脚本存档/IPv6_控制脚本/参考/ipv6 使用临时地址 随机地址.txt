@@ -1,0 +1,14 @@
+
+echo 查看v6设置
+powershell get-netipv6protocol
+
+echo 使用临时地址
+powershell Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+
+echo 随机标识符
+powershell Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+
+
+echo 禁用ipv6隐私模式
+netsh interface ipv6 set privacy state=enable
+netsh interface ipv6 set privacy state=disable

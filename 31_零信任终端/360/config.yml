@@ -1,0 +1,583 @@
+# 基础设置
+mixed-port: 10800                         # http/socks5 对外服务端口
+# allow-lan: true                         # 上面的是否允许局域网连接
+ipv6: true                                # IPv6 总开关
+# geodata-mode: true                      # 使用geoip.dat数据库
+external-controller: 127.3.3.3:80         # WebUI控制器端口 | 配合hosts可使用 http://clash.meta/ui/#/proxies 来进行登录.
+log-level: info                           # 日志等级（ silent / error / warning / info / debug ）
+
+# 主要规则
+rules:
+  # ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+  # - - - 👇优先组👇 - - -
+
+  # 优先组, 放行, 私网和局域网地址...
+  - IP-CIDR,192.168.1.0/24,DIRECT,no-resolve
+  - IP-CIDR,192.168.88.0/24,DIRECT,no-resolve
+  - GEOIP,private,DIRECT,no-resolve
+  - GEOSITE,private,DIRECT
+
+  # 优先组, 放行, 内置网络和内置DNS...
+  - AND,((PROCESS-PATH-WILDCARD,*),(DST-PORT,53),(NETWORK,UDP)),PROXY   # 放行DNS
+  - AND,((PROCESS-PATH-WILDCARD,*),(DST-PORT,123),(NETWORK,UDP)),PROXY  # 放行NTP
+  - AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,53),(NETWORK,UDP)),PROXY   # 放行DNS
+  - AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,123),(NETWORK,UDP)),PROXY  # 放行NTP
+  - IP-CIDR,223.5.5.5/32,HidePROXY,no-resolve
+  - IP-CIDR,223.6.6.6/32,HidePROXY,no-resolve
+  - IP-CIDR,1.12.12.12/32,HidePROXY,no-resolve
+  - IP-CIDR,120.53.53.53/32,HidePROXY,no-resolve
+  - DOMAIN,public.dns.iij.jp,HidePROXY
+  - DOMAIN,dns.google.com,HidePROXY
+  - DOMAIN,07sk21zevc.cloudflare-gateway.com,HidePROXY
+  - DOMAIN,one.one.one.one,HidePROXY
+  - DOMAIN,dns.alidns.com,HidePROXY
+  - DOMAIN,doh.pub,HidePROXY
+
+
+  # ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+  # - - - 👇屏蔽组👇 - - -
+
+  # 屏蔽组, 屏蔽Quic和HTTP3/广告
+  #- AND,((DST-PORT,443),(NETWORK,UDP)),REJECT-DROP # 屏蔽 QUIC / HTTP3
+  - AND,((PROCESS-PATH-WILDCARD,*),(GEOSITE,category-ads-all)),REJECT-DROP # 屏蔽广告
+
+  # 屏蔽组, 微软遥测...
+  - DOMAIN,watson.events.data.microsoft.com,REJECT-DROP  # 微软遥测, Windows 错误报告（WER）
+  - DOMAIN,mobile.events.data.microsoft.com,REJECT-DROP  # 微软遥测, 用于移动端（Android/iOS）应用的事件与诊断上报。
+  - DOMAIN,self.events.data.microsoft.com,REJECT-DROP    # 微软遥测, Microsoft 365 事件上报
+  - DOMAIN,settings-win.data.microsoft.com,REJECT-DROP   # 微软遥测, 远程配置诊断相关设置
+  - DOMAIN,otelrules.svc.static.microsoft,REJECT-DROP    # 微软遥测, 下载 Office 遥测规则文件
+  - DOMAIN,prod.client.wosc.services.microsoft.com,REJECT-DROP # 微软遥测, 订阅许可验证, 设备健康检查, 云策略同步, 在线配置文件下载 
+  - DOMAIN,cs.dds.microsoft.com,REJECT-DROP # 微软遥测, 安全健康报告, 诊断数据上传, 系统错误报告, 设备兼容性检查
+  - DOMAIN,validation-v2.sls.microsoft.com,REJECT-DROP # Windows 操作系统和 Office 办公软件激活与正版验证（Activation and Validation） 的服务器域名
+  - DOMAIN,config.edge.skype.com,REJECT-DROP # 微软遥测, Windows 系统本身（尤其是 Edge 浏览器、Windows Update、Teams 以及 Skype）来拉取最新的客户端配置、实验性功能策略（A/B 测试）和发送匿名的诊断遥测数据。
+
+  # 屏蔽组, 程序...
+  - PROCESS-NAME,NVDisplay.Container.exe,REJECT-DROP  # Nvidia显卡服务
+  - PROCESS-NAME,Everything.exe,REJECT-DROP           # 搜索神器
+  - DOMAIN,updater.catsxp.com,REJECT-DROP             # 猫眼浏览器自动更新
+  - DOMAIN,variations.brave.com,REJECT-DROP           # brave浏览器跟踪?
+  - PROCESS-NAME,ctfmon.exe,REJECT-DROP               # 好像是输入法
+  - DOMAIN,sb.scorecardresearch.com,REJECT-DROP       # Peter Lowe 的广告和跟踪服务器列表
+  - DOMAIN,go-updater.brave.com,REJECT-DROP           # brave 浏览器升级
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\23-CCleaner\CCleaner_6.40_官方便携版\CCleaner*.exe,REJECT-DROP # CCleaner
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\23-CCleaner\CCleaner_6.40_官方便携版\*.exe,REJECT-DROP # CCleaner
+
+  - PROCESS-PATH-WILDCARD,C:\Windows\System32\dllhost.exe,REJECT # 安全加固
+  - PROCESS-PATH-WILDCARD,C:\Windows\SysWOW64\dllhost.exe,REJECT
+  - PROCESS-PATH-WILDCARD,C:\Windows\WinSxS\*\dllhost.exe,REJECT
+
+  # ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+  # - - - 👇程序区👇 - - -
+
+  # MuMu模拟器, 屏蔽区
+  - PROCESS-NAME,MuMuNxUpdater.exe,REJECT-DROP # MuMu模拟器, 更新程序
+  - DOMAIN,fcount-api.webapp.easebar.com,REJECT-DROP # 遥测与数据上报
+  - DOMAIN,fcount-api.webapp.163.com,REJECT-DROP # 遥测与数据上报
+  - DOMAIN,report.mumu.nie.netease.com,REJECT-DROP # 遥测与数据上报
+  - DOMAIN,sentry.netease.com,REJECT-DROP # 遥测与数据上报
+  - DOMAIN,api-pro.mumu.163.com,REJECT-DROP # 模拟器Pro版API——账号登录态、增值功能、云端配置下发
+  - DOMAIN,api.mumu.nie.netease.com,REJECT-DROP # 模拟器核心服务端——版本检测、更新推送、消息中心、设备校验等, 也用于模拟器更新
+  - DOMAIN,event.sc.gearupportal.com,REJECT-DROP # 遥测与数据上报
+
+  # MuMu模拟器, 放行区
+  - PROCESS-PATH,C:\Program Files\MuMuVMMVbox\Hypervisor\MuMuVMMHeadless.exe,MuMuPlayer-PROXY # NAT模式对外连接网关程序, 禁止了的话模拟器内部程序无法连网.
+  - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN,api.map.baidu.com)),MuMuPlayer-PROXY # 虚拟定位API
+  - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN-SUFFIX,bdimg.com)),MuMuPlayer-PROXY # 虚拟定位API
+
+  # thorium_browser
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\01-浏览器\Thorium\#Thorium_BIN\thorium.exe,HidePROXY
+
+  # 放行组, test
+  - DOMAIN,api.bitwarden.com,HidePROXY # 密码管理器
+  - DOMAIN,nmbot.nmnm.fun,HidePROXY # TG验证机器人
+
+  # mozilla相关
+  - DOMAIN,download-installer.cdn.mozilla.net,HidePROXY # mozilla相关
+  - DOMAIN,download.mozilla.org,HidePROXY # 从svchost.exe发出的连接, 好像是mozilla相关软件升级下载用的...
+  
+  # 放行组, WEB端口...
+  #- AND,((PROCESS-PATH-WILDCARD,*),(DST-PORT,80)),HidePROXY # WEB浏览
+  #- AND,((PROCESS-PATH-WILDCARD,*),(DST-PORT,443)),HidePROXY # WEB浏览
+
+  # 放行组, 自有域名...
+  - DOMAIN-SUFFIX,miaosky.party,HidePROXY
+  - DOMAIN-SUFFIX,miaosky.win,HidePROXY
+  - DOMAIN-SUFFIX,miaosky.top,HidePROXY
+  - DOMAIN-SUFFIX,miaosky.men,HidePROXY
+  - DOMAIN-SUFFIX,968050.xyz,HidePROXY
+
+  # 放行组, 走代理通道的...
+  - DOMAIN,cloudflare-ech.com,HidePROXY # CF的ECH域名
+  - DOMAIN,chromewebstore.googleapis.com,HidePROXY # chrome 应用商店
+  - DOMAIN,edgedl.me.gvt1.com,HidePROXY # Google资源分发
+  - DOMAIN,dl.google.com,HidePROXY # Google资源分发
+  - DOMAIN,translate.googleapis.com,HidePROXY # Google翻译相关域名
+  - DOMAIN,translate.google.com,HidePROXY # Google翻译相关域名  
+  - DOMAIN,update.googleapis.com,HidePROXY # Google API
+  - DOMAIN,clients2.google.com,HidePROXY # Google Chrome 浏览器相关
+  - DOMAIN-SUFFIX,googleapis.com,HidePROXY # Google API
+  - DOMAIN,accounts.google.com,HidePROXY
+  - DOMAIN,www.google.com,HidePROXY
+  - DOMAIN,android.clients.google.com,HidePROXY # 它负责设备注册、系统更新检查、应用推送通知（GCM/FCM）以及账号同步
+  - DOMAIN,clients4.google.com,HidePROXY
+  
+  # 放行组, 证书验证相关域名...
+  - IP-ASN,24305,HidePROXY # LE证书相关域名 #- IP-CIDR,103.215.15.0/24 # LE证书相关IP 103.215.15.27 观察再看. AS24305 103.11.9.33
+  - GEOSITE,category-cas,HidePROXY
+  - GEOSITE,sectigo,HidePROXY
+  - GEOSITE,symantec-pki,HidePROXY
+  - GEOSITE,cybertrust,HidePROXY
+  - GEOSITE,verisign-pki,HidePROXY
+
+  # 放行组, 匹配程序名称
+  - PROCESS-PATH,C:\#bat_tools\rclone.exe,HidePROXY
+  - PROCESS-NAME,chrome.exe,HidePROXY
+  - PROCESS-NAME,curl.exe,HidePROXY
+  - PROCESS-NAME,brave.exe,HidePROXY
+  - PROCESS-NAME,catsxp.exe,HidePROXY
+  - PROCESS-NAME,Iceweasel.exe,HidePROXY
+  - PROCESS-NAME,msedge.exe,HidePROXY
+  - PROCESS-NAME,opera.exe,HidePROXY
+  - PROCESS-NAME,thunderbird.exe,HidePROXY
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\*\Vivaldi-bin\vivaldi.exe,HidePROXY
+
+  # 放行组, 微软全家桶
+  - DOMAIN,ntp.msn.cn,HidePROXY # Windows 时间同步
+  - DOMAIN,assets.msn.cn,HidePROXY # MSN 静态资源/内容分发（CDN）域名
+  - DOMAIN,g.live.com,HidePROXY # 微软账户/系统组件引导
+  - DOMAIN,client.wns.windows.com,HidePROXY # 微软通知相关功能
+  #- DOMAIN,wdcp.microsoft.com,HidePROXY # 微软自带杀毒WDF云查杀
+  #- DOMAIN,wdcpalt.microsoft.com,HidePROXY # 微软自带杀毒WDF云查杀
+  #- DOMAIN,tas02.sls.update.microsoft.com,HidePROXY # 微软全家桶, 配合 SIHClient.exe 来修复系统用的...
+  #- DOMAIN,tas02.cws.update.microsoft.com,HidePROXY # 微软全家桶, 配合 SIHClient.exe 来修复系统用的...
+  #- DOMAIN,edge.microsoft.com,HidePROXY # 微软全家桶
+  #- DOMAIN,go.microsoft.com,HidePROXY # 微软全家桶  
+  #- DOMAIN,to-do.microsoft.com,HidePROXY
+
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\System32\AppHostRegistrationVerifier.exe)),HidePROXY # （应用宿主注册验证器）主要服务于 Windows 的 应用模型（App Model）。验证 UWP/商店应用, 支持 PWA / 网页宿主应用
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\System32\BackgroundTransferHost.exe)),HidePROXY # Windows 系统自带的后台传输主机进程，专门用于在后台下载系统更新、应用商店应用或同步OD数据
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\SysWOW64\BackgroundTransferHost.exe)),HidePROXY # Windows 系统自带的后台传输主机进程，专门用于在后台下载系统更新、应用商店应用或同步OD数据
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\System32\SIHClient.exe)),HidePROXY # Server-Initiated Healing Client（服务器启动的修复客户端）负责检查和修复系统
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\System32\lsass.exe)),HidePROXY   # 系统核心进程
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\System32\svchost.exe)),HidePROXY # 系统核心进程, OD同步服务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\SysWOW64\svchost.exe)),HidePROXY # 系统核心进程, OD同步服务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\System32\taskhostw.exe)),HidePROXY # taskhostw.exe 的全名是 Host Process for Windows Tasks（Windows 任务宿主进程）运行那些 以 DLL 形式存在、没有独立 EXE 的系统任务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\SysWOW64\backgroundTaskHost.exe)),HidePROXY # backgroundTaskHost.exe 是 Windows 的后台任务宿主进程（Background Task Host），用于运行 UWP 应用、系统组件、通知、同步服务 等后台任务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\System32\backgroundTaskHost.exe)),HidePROXY # backgroundTaskHost.exe 是 Windows 的后台任务宿主进程（Background Task Host），用于运行 UWP 应用、系统组件、通知、同步服务 等后台任务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\explorer.exe)),HidePROXY # 文件资源管理器
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\SysWOW64\explorer.exe)),HidePROXY # 文件资源管理器 
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH,C:\Windows\SystemApps\Microsoft.LockApp_cw5n1h2txyewy\LockApp.exe)),HidePROXY # Windows锁屏聚焦, 好像是显示锁屏壁纸的那个程序.  
+
+  # EDGE浏览器更新  
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files (x86)\Microsoft\EdgeUpdate\*\MicrosoftEdgeUpdate.exe)),HidePROXY # EDGE浏览器更新 
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe)),HidePROXY # EDGE浏览器更新
+  - DOMAIN,edge.microsoft.com,HidePROXY
+
+  # WebView2  
+  - PROCESS-NAME,msedgewebview2.exe,HidePROXY
+  #- AND,((GEOSITE,microsoft),(PROCESS-NAME,msedgewebview2.exe)),HidePROXY
+  #- PROCESS-PATH,C:\Program Files (x86)\Microsoft\EdgeCore\Optimized\msedgewebview2.exe,PROXY
+  #- PROCESS-PATH,C:\Windows\System32\Microsoft-Edge-WebView\msedgewebview2.exe,PROXY
+  #- PROCESS-PATH,C:\Windows\WinSxS\*\msedgewebview2.exe,PROXY
+  #- PROCESS-PATH-WILDCARD,C:\Program Files (x86)\Microsoft\EdgeCore\Optimized\msedgewebview2.exe,PROXY
+  #- PROCESS-PATH-WILDCARD,C:\Windows\System32\Microsoft-Edge-WebView\msedgewebview2.exe,PROXY
+  #- PROCESS-PATH-WILDCARD,C:\Windows\WinSxS\*\msedgewebview2.exe,PROXY
+  
+  # office 全家桶
+  - DOMAIN,oneclient.sfx.ms,HidePROXY # OneDrive 云盘同步
+  - DOMAIN,substrate.office.com,HidePROXY # 微软 365 数据基座/底层架构
+  - DOMAIN,ecs.office.com,HidePROXY # 微软 Office 实验与配置服务
+  - DOMAIN-SUFFIX,cdn.office.net,HidePROXY # office CDN
+  - DOMAIN,officeclient.microsoft.com,HidePROXY # 微软Offce客户端相关功能
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft Office\*\EXCEL.EXE)),HidePROXY # excel 主程序
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft Office\*\WINWORD.EXE)),HidePROXY # Word 主程序
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft Office\*\POWERPNT.EXE)),HidePROXY # POWERPNT 主程序
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft Office\*\ONENOTE.EXE)),HidePROXY # ONENOTE 主程序
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft Office\*\opushutil.exe)),HidePROXY # office相关
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft Office\*\ActionsServer.exe)),HidePROXY # office相关
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft Office\*\SDXHelper.exe)),HidePROXY # office相关  
+
+  # 放行组, 微软商店应用, 系统自带APP
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller*8wekyb3d8bbwe\winget.exe)),HidePROXY # winget 软件包安装程序...
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\WindowsApps\MicrosoftWindows.Client.WebExperience*cw5n1h2txyewy\Dashboard\Widgets.exe)),HidePROXY # 任务栏小组件, 天气咨询等...
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\WindowsApps\Microsoft.MicrosoftStickyNotes*8wekyb3d8bbwe\Microsoft.Notes.exe)),HidePROXY # 微软便签
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\WindowsApps\Microsoft.Windows.Photos*8wekyb3d8bbwe\Photos.exe)),HidePROXY # 画图
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Windows\ImmersiveControlPanel\SystemSettings.exe)),HidePROXY #  系统设置
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Windows\WinSxS\*\SystemSettings.exe)),HidePROXY #  系统设置
+
+  # OneDrive登录和升级
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Windows\SystemApps\Microsoft.AAD.BrokerPlugin_cw5n1h2txyewy\Microsoft.AAD.BrokerPlugin.exe)),HidePROXY # OD登录专用
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files*\Microsoft OneDrive\OneDrive.exe)),HidePROXY # OD主程序
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files*\Microsoft OneDrive\OneDriveStandaloneUpdater.exe)),HidePROXY # 好像是OD的升级程序
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files*\Microsoft OneDrive\*\OneDriveLauncher.exe)),HidePROXY # OD相关服务  
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files*\Microsoft OneDrive\*\OneDrive.Sync.Service.exe)),HidePROXY # OD相关服务  
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files*\Microsoft OneDrive\*\OneDriveUpdaterService.exe)),HidePROXY # 好像是OD的升级程序
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Windows\System32\WWAHost.exe)),HidePROXY # OD登录服务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Windows\SysWOW64\WWAHost.exe)),HidePROXY # OD登录服务  
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Windows\WinSxS\*\WWAHost.exe)),HidePROXY # OD登录服务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Windows\WinSxS\*\WWAHost.exe)),HidePROXY # OD登录服务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft OneDrive\*\FileCoAuth.exe)),HidePROXY # OD同步服务
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Microsoft OneDrive\*\FileSyncHelper.exe)),HidePROXY # OD同步服务
+
+  # office安装器
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,D:\01.Program_Soft\Office安装器\*\Office Tool Plus.exe)),HidePROXY
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,D:\01.Program_Soft\Office安装器\*\files\setup.exe)),HidePROXY
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\*Office*\ClientX64\OfficeClickToRun.exe)),HidePROXY
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeClickToRun.exe)),HidePROXY
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeC2RClient.exe)),HidePROXY
+
+  # 动态壁纸
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Program Files\WindowsApps\*\Pinnula.DynamicThemeApp.exe)),HidePROXY
+  - AND,((GEOSITE,microsoft),(PROCESS-PATH-WILDCARD,C:\Windows\System32\RuntimeBroker.exe)),HidePROXY
+  - DOMAIN-SUFFIX,apps.pinnula.ca,HidePROXY # 用于链接、变更日志、更新管理、常见问题解答和联系表单
+  - DOMAIN-SUFFIX,bing.com,HidePROXY # 用于必应图片
+  - DOMAIN-SUFFIX,arc.msn.com,HidePROXY # 适用于 Windows 聚焦图片
+  - DOMAIN-SUFFIX,fd.api.iris.microsoft.com,HidePROXY # 适用于 Windows 聚焦图片
+  - DOMAIN-SUFFIX,arc.msn.com.nsatc.net,HidePROXY # 适用于 Windows 聚焦图片  
+  - DOMAIN-SUFFIX,akamaized.net,HidePROXY # 适用于 Windows 聚焦图片  
+  - DOMAIN-SUFFIX,res.public.onecdn.static.microsoft,HidePROXY # 适用于 Windows 聚焦图片
+
+  # Git
+  - PROCESS-PATH,C:\Program Files\GitHub CLI\gh.exe,HidePROXY
+  - PROCESS-PATH,C:\Program Files\Git\mingw64\libexec\git-core\git-remote-https.exe,HidePROXY
+
+  # Vmware虚拟机
+  - PROCESS-PATH-WILDCARD,C:\Windows\SysWOW64\vmnat.exe,VMware-PROXY
+  - PROCESS-PATH-WILDCARD,C:\Program Files (x86)\VMware\VMware Workstation\vmnat.exe,VMware-PROXY
+
+  # sublime_text 文本编辑器
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\SublimeText\*\plugin_host-3.3.exe,REJECT
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\SublimeText\*\plugin_host-3.8.exe,REJECT
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\SublimeText\*\subl.exe,REJECT
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\SublimeText\*\sublime_text.exe,REJECT
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\SublimeText\*\update_installer.exe,REJECT
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\SublimeText\*\elevate.exe,REJECT
+
+  # 放行组, SSH终端Xshell
+  - PROCESS-PATH,C:\Program Files (x86)\NetSarang\Xshell 8\Xshell.exe,HidePROXY # Xshell 主程序
+  - PROCESS-PATH,C:\Program Files (x86)\NetSarang\Xftp 8\Xftp.exe,HidePROXY # Xftp 主程序 
+  - PROCESS-PATH,C:\Program Files (x86)\NetSarang\Xftp 8\LiveUpdate.exe,HidePROXY
+  - PROCESS-PATH,C:\Program Files (x86)\NetSarang\Xshell 8\LiveUpdate.exe,HidePROXY
+  - PROCESS-PATH,C:\Program Files (x86)\NetSarang\Xshell 8\XshellCore.exe,HidePROXY # Xshell
+  #- DST-PORT,60022,HidePROXY # 常用SSH端口
+  #- DST-PORT,22,HidePROXY    # 常用SSH端口
+
+  # yt-dlp
+  - PROCESS-PATH,E:\01.userData\ZhuoMian\YTDL\Core\yt-dlp.exe,HidePROXY
+
+  # 招商证券
+  - PROCESS-PATH,D:\招商证券\TdxW.exe,HidePROXY
+
+  # powershell
+  - PROCESS-PATH-WILDCARD,C:\Windows\WinSxS\*\powershell.exe,HidePROXY
+  - PROCESS-PATH-WILDCARD,C:\Windows\System32\*\powershell.exe,HidePROXY
+  - PROCESS-PATH-WILDCARD,C:\Windows\SysWOW64\*\powershell.exe,HidePROXY
+
+
+  # 最后兜底
+  - MATCH,REJECT    # 漏网之鱼, 兜底
+  
+  # 内置策略
+  # DIRECT        # 直连
+  # REJECT        # 拒绝
+  # REJECT-DROP   # 静默拒绝
+  # PASS          # 跳过此规则
+  # COMPATIBLE    # 兼容，在策略组筛选不出节点时出现，等效 DIRECT
+
+  # Youtube选择器  
+  #- AND,((SRC-IP-CIDR,192.168.1.100/32),(GEOSITE,youtube)),Youtube_select # 来自192.168.1.100, 并且访问youtube, 走送中节点
+  #- AND,((GEOSITE,youtube)),Youtube_select # 剩下的油管连接
+
+  # 屏蔽Quic
+  #- AND,((DST-PORT,443),(NETWORK,UDP)),REJECT                        # 屏蔽QUIC 针对所有链接
+  #- AND,((DST-PORT,443),(NETWORK,UDP),(GEOSITE,google)),REJECT      # 屏蔽QUIC 仅针对谷狗域名
+  #- AND,((DST-PORT,443),(NETWORK,UDP),(GEOIP,google)),REJECT        # 屏蔽QUIC 仅针对谷狗IP
+
+  # 内置连接  
+  #- IN-TYPE,INNER,DIRECT # 所有内置连接
+  #- AND,((IN-TYPE,INNER),(GEOIP,private)),DIRECT # 私有IP和域名的内置连接
+  #- AND,((IN-TYPE,INNER),(GEOIP,CN)),DIRECT # 目标是中国IP的内置连接
+
+  # 主要路由规则
+  #- RULE-SET,0101_Force_to_Warp_rule,Warp_Node # 强制走Warp
+  #- RULE-SET,0102_Force_to_Node2,下载专用👹_10801 # 强制走另外一条线路
+  #- RULE-SET,0103_Force_DIRECT_rule,DIRECT # 强制直连 
+  #- RULE-SET,0104_Force_Proxy_rule,AutoProxy_10800  # 强制代理
+  #- RULE-SET,0105_Game_Data_rule,链式代理📡_10802 # 游戏规则
+  #- RULE-SET,0201_REJECT_rule,REJECT # 屏蔽去广告等  
+  #- RULE-SET,0202_Proxy_rule,AutoProxy_10800 # 优先走代理
+  #- RULE-SET,0203_DIRECT_rule,DIRECT # 默认直连
+  #- DST-PORT,80,HidePROXY # 目标端口
+  #- DST-PORT,443,HidePROXY # 目标端口
+  #- GEOSITE,category-ads-all,REJECT  
+  #- DOMAIN,cube.weixinbridge.com,REJECT # Foxmail.exe 的一个网址好像有监控. PROCESS-PATH-WILDCARD
+  #- AND,((PROCESS-NAME-WILDCARD,*),(GEOSITE,category-ads-all)),REJECT 
+  #- AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,53)),HidePROXY
+  #- AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,123)),HidePROXY
+  #- AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,80)),HidePROXY
+  #- AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,443)),HidePROXY  
+  #- PROCESS-PATH,D:\01.Program_Soft\01-浏览器\01.CentBrowser\New_5.1.1130.129_x64_portable\chrome.exe,HidePROXY # 精确匹配PATH程序
+  #- PROCESS-NAME,curl.exe,HidePROXY # 匹配程序名称
+  
+
+
+
+# 流量嗅探
+sniffer:
+  enable: true
+  force-dns-mapping: true     # 对 redir-host 类型识别的流量进行强制嗅探
+  parse-pure-ip: true         # 对所有未获取到域名的流量进行强制嗅探
+  override-destination: true  # 是否使用嗅探结果作为实际访问，默认为 true
+  sniff:
+    HTTP:
+      ports: [80, 8080, 8880, 2052, 2082, 2086, 2095]
+    TLS:
+      ports: [443, 2053, 2083, 2087, 2096, 8443]
+    QUIC:
+      ports: [443, 2053, 2083, 2087, 2096, 8443]
+#
+
+# HOSTS
+hosts:
+  #'transact.netsarang.com': 127.0.0.1
+  #'update.netsarang.com': 127.0.0.1
+  #'www.netsarang.com': 127.0.0.1
+  #'www.netsarang.co.kr': 127.0.0.1
+  #'sales.netsarang.com': 127.0.0.1
+  'clash.meta': 127.3.3.3
+  dns.cloudflare.com: [104.20.27.100, 104.20.21.108, 104.26.2.180, 104.26.0.61]
+  cfproxy.fdzy.workers.dev: [2606:4700:a9:c5:6482:fd49:c989:79fe, 2a06:98c1:3120:f6:2f83:5116:fbc8:78e7]
+  #e1v16lo23i.968050.xyz: [
+  #  172.65.234.221, 172.65.225.230, 104.20.29.203, 172.67.77.198, 104.20.25.67, 
+  #  172.67.67.149, 104.20.24.172, 104.26.9.220, 104.26.13.21, 104.26.0.162
+  #]
+  one.one.one.one: [1.1.1.1, 1.0.0.1, 2606:4700:4700::1001, 2606:4700:4700::1111]
+#
+
+# Tun模式
+tun:
+  enable: true
+  device: mihomo_tun1 # 接口名称
+  mtu: 9000
+  stack: mixed # https://wiki.metacubex.one/config/inbound/tun/#stack
+    # system 使用系统协议栈，可以提供更稳定/全面的 tun 体验，且占用相对其他堆栈更低
+    # gvisor 通过在用户空间中实现网络协议栈，可以提供更高的安全性和隔离性，同时可以避免操作系统内核和用户空间之间的切换，从而在特定情况下具有更好的网络处理性能
+    # mixed 混合堆栈，tcp 使用 system栈，udp 使用 gvisor栈，使用体验可能相对更好
+    # 安卓上建议使用 gvisor 来获取更好的隐私性, 特别是国产手机中...
+  #
+  #
+  inet6-address: # https://wiki.metacubex.one/config/inbound/tun/#inet6-address
+    - "fdfe:dcba:9800::1/126"
+  # 不写这一段, tun模式无法接管IPv6
+  # 目前会在程序启动时检查系统其他网卡是否有IPV6，如果不存在会禁用该功能，如果需要强制开启tun的v6地址，请手动设置SKIP_SYSTEM_IPV6_CHECK=1系统环境变量
+  # 需要同时将顶层配置中的ipv6设置为true才会生效
+  #
+  #
+  dns-hijack:
+    - 'any:53'                  # 开启劫持
+    - 'tcp://any:53'
+    #- "111.111.111.111:53"     # 关闭劫持
+  #
+  #
+  auto-detect-interface: true # 自动选择流量出口接口，多出口网卡同时连接的设备建议手动指定出口网卡
+  #include-interface: # 指定出口网卡, 还有一个 exclude-interface 排除路由的接口，与 include-interface 冲突，不可一起配置
+  #  - "以太网"
+  #
+  #  
+  strict-route: true
+  #  启用 auto-route 时执行严格的路由规则
+  # 在 Linux 中:
+  #   让不支持的网络无法到达
+  #   将所有连接路由到 tun
+  #   它可以防止地址泄漏，并使 DNS 劫持在 Android 上工作。
+  # 在 Windows 中:
+  #   添加防火墙规则以阻止 Windows 的 普通多宿主 DNS 解析行为 造成的 DNS 泄露
+  #   它可能会使某些应用程序（如 VirtualBox）在某些情况下无法正常工作。
+  auto-route: true
+  route-address:
+    - 0.0.0.0/1
+    - 128.0.0.0/1
+    - "::/1"
+    - "8000::/1"
+  route-exclude-address:
+    # IPv4 私有网络地址段 (RFC 1918)
+    - 10.0.0.0/8         # Class A 私有网络
+    - 172.16.0.0/12      # Class B 私有网络
+    - 192.168.0.0/16     # Class C 私有网络 (包含你的 192.168.1.0/24)
+    # IPv4 特殊/本地环回地址
+    - 127.0.0.0/8        # 本地环回地址 (Localhost, 确保 127.0.0.1 不走代理)
+    - 169.254.0.0/16     # 链路本地地址 (APIPA)
+    # IPv6 地址段
+    - fc00::/7           # 独特的本地地址 (Unique Local Addresses, ULA)
+    - fe80::/10          # 链路本地地址 (Link-local)
+    - ::1/128            # IPv6 本地环回地址
+    - ff00::/8           # 组播地址 (Multicast)
+#
+
+
+# DNS设置
+dns:
+  enable: true
+  listen: 0.0.0.0:53153
+  ipv6: true
+  use-hosts: true
+  use-system-hosts: false
+  enhanced-mode: redir-host  # fake-ip / redir-host
+  #enhanced-mode: fake-ip  # fake-ip / redir-host
+  fake-ip-range: 10.233.0.0/16
+  fake-ip-range6: fdfe:dcba:9876::1/64
+  default-nameserver: 
+    # 默认 DNS, 用于解析 DNS 服务器的域名 | 必须为 IP, 可为加密 DNS
+    - "https://223.5.5.5/dns-query#DNS_select&h3=true" # 阿里H3
+    - "https://223.6.6.6/dns-query#DNS_select"         # 阿里H2
+    - "https://1.12.12.12/dns-query#DNS_select"        # 腾讯H2
+    - "https://120.53.53.53/dns-query#DNS_select"      # 腾讯H2
+  proxy-server-nameserver: 
+    # 解析节点域名专用的服务器
+    # 代理节点域名解析服务器，仅用于解析代理节点的域名，如果不填则遵循 nameserver-policy、nameserver 和 fallback 的配置
+    # 如果要使用 ECH 节点, 特别是CF-Workers.dev, 此处必须是可用的国外加密DNS服务器, 因为国内的都被污染了
+    - "https://public.dns.iij.jp/dns-query#DNS_select&h3=true"    # IIJ DOH3
+    #- "https://e1v16lo23i.968050.xyz/7d2s84642v/https/one.one.one.one/dns-query" # 反代后的 CF-DOH
+    #- "https://07sk21zevc.cloudflare-gateway.com/dns-query" # CF-零信任网关DNS
+  nameserver:
+    # 主要最终DNS, 用来解析代理域名
+    #- "https://15.15.15.15/dns-query#DNS_select" # 测试的假地址
+    #- "https://1.1.1.1/dns-query#DNS_select"
+    #- "https://1.0.0.1/dns-query#DNS_select"
+    #- "https://[2606:4700:4700::1111]/dns-query#DNS_select"
+    #- "https://[2606:4700:4700::1001]/dns-query#DNS_select"
+    - "https://dns.google.com/dns-query#DNS_select&disable-ipv6=false"
+  nameserver-policy:
+    # 指定域名查询的解析服务器，可使用 geosite, 优先于 nameserver/fallback 查询
+    "+.miaosky.party,+.miaosky.men,+.miaosky.win,+.miaosky.top": [https://07sk21zevc.cloudflare-gateway.com/dns-query#DNS_select] # 自用域名
+    "geosite:xiaomi": [https://one.one.one.one/dns-query#DNS_select] # 小米走国外解析
+    "geosite:cn": [
+      https://223.5.5.5/dns-query#DNS_select,
+      https://223.6.6.6/dns-query#DNS_select,
+      https://1.12.12.12/dns-query#DNS_select,
+      https://120.53.53.53/dns-query#DNS_select
+    ]
+    #
+    #"geosite:cn":
+    #  #- "https://dns.alidns.com/dns-query"           # 阿里 DOH2
+    #  - "https://dns.alidns.com/dns-query#h3=true"    # 阿里 DOH3
+    #  #- "https://doh.360.cn/dns-query"
+    #
+    #"translate.googleapis.com" : "https://public.dns.iij.jp/dns-query#DNS_select"
+    #    
+    #  
+#
+
+
+# 转发隧道
+tunnels:
+  # 转发 谷狗翻译 192.168.1.49
+  #- tcp,192.168.1.49:80,translate.googleapis.com:80,AutoProxy_10800
+  #- tcp,192.168.1.49:443,translate.googleapis.com:443,AutoProxy_10800
+  #
+  #- tcp/udp,0.0.0.0:10900,127.0.0.1:10800,AutoProxy_10800                # VPS上的socks5端口 # All_in_VPS_Socks5
+  #- tcp/udp,0.0.0.0:10901,162.159.192.110:2408,AutoProxy_10800            # 中转的warp节点端口, 给手机在外使用. home-v6.miaosky.party:10901
+  #
+  #- network: [tcp]
+  #  address: 127.0.0.1:8011
+  #  target: translate.googleapis.com:80
+  #  proxy: AutoProxy_10800
+  #
+  #- network: [tcp]
+  #  address: 127.0.0.1:4431
+  #  target: translate.googleapis.com:443
+  #  proxy: AutoProxy_10800
+  #  
+  #- network: [tcp, udp]
+  #  address: 127.0.0.1:7777
+  #  target: target.com
+  #  proxy: proxy
+#
+
+# 代理组
+proxy-groups:
+  - name: "PROXY"
+    type: select
+    proxies:
+      - s5_1_40_10800
+      - Socks5_120_10900
+      - Warp_Node
+      - DIRECT
+    use:
+      #- node_Home订阅
+      #- node_主要订阅_ClashConfig
+      #- node_熊猫鸡场
+  ##
+  - name: "DNS_select"
+    type: select
+    proxies:
+      - PROXY
+      - Socks5_120_10900
+      - DIRECT
+  ## 
+  - name: "HidePROXY"
+    type: select
+    proxies:
+      - PROXY
+    use:
+      #- node_Home订阅
+  ##
+  - name: "VMware-PROXY"
+    type: select
+    proxies:
+      - PROXY
+    use:
+      #- node_Home订阅
+  ##
+  - name: "MuMuPlayer-PROXY"
+    type: select
+    proxies:
+      - PROXY
+    use:
+      #- node_Home订阅
+  ##
+    
+# 自带节点
+proxies:
+  - name: "s5_1_40_10800"
+    type: socks5
+    server: 192.168.1.40
+    port: 10800
+    udp: true
+    # username: username
+    # password: password
+    # tls: true
+    # skip-cert-verify: true
+
+  - name: "Socks5_120_10900"
+    type: socks5
+    server: 192.168.1.120
+    port: 10900
+    udp: true
+    # username: username
+    # password: password
+    # tls: true
+    # skip-cert-verify: true
+
+  - name: 'Warp_Node'
+    # 服务器设置
+    server: 'engage.cloudflareclient.com'
+    port: '4500'
+    # 认证配置
+    ipv6: '2606:4700:110:8bae:81e0:c0b6:e00:33a1/128'
+    private-key: 'SKQhGDUDwjoOIsU/3MIW12CjwDAbCK3jtf4pa/xSQlQ='
+    reserved: 'BYVT'
+    # 通用设置
+    type: wireguard
+    ip: '172.16.0.2'
+    public-key: 'bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo='
+    mtu: '1280'
+    persistent-keepalive: 33
+    udp: true
+    remote-dns-resolve: true
+    dns: [1.1.1.1]
+    dialer-proxy: "Socks5_120_10900"
+  #
+
+

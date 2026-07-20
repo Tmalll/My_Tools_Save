@@ -1,0 +1,62 @@
+
+连接目录
+mklink /j "C:\Users\Administrator\ssh_config" "C:\ProgramData\ssh" 
+
+
+
+
+日志
+# 3. 關於登錄檔的訊息資料放置與 daemon 的名稱！
+SyslogFacility AUTHPRIV
+# 當有人使用 SSH 登入系統的時候，SSH 會記錄資訊，這個資訊要記錄在什麼 daemon name
+# 底下？預設是以 AUTH 來設定的，即是 /var/log/secure 裡面！什麼？忘記了！
+# 回到 Linux 基礎去翻一下。其他可用的 daemon name 為：DAEMON,USER,AUTH,
+# LOCAL0,LOCAL1,LOCAL2,LOCAL3,LOCAL4,LOCAL5,
+https://linux.vbird.org/linux_server/centos6/0310telnetssh.php
+
+对于windows SSH
+https://learn.microsoft.com/zh-cn/windows-server/administration/openssh/openssh_server_configuration#syslogfacility
+
+# Logging
+SyslogFacility LOCAL0
+LogLevel INFO
+
+
+
+
+
+
+
+
+
+
+
+
+远程修改密码
+net user administrator "ewP4^k8t9s$P5yr7orcmAp3APws9xv#o2cvebuA2YR!Fw7szfI"
+
+
+
+
+
+
+
+
+
+重启
+sc stop "sshd" && sc start "sshd" && sc config "sshd" start= auto
+sc failure "sshd" reset= 0 actions= restart/5000/restart/15000/restart/30000
+
+
+
+
+
+
+
+
+
+
+
+
+
+

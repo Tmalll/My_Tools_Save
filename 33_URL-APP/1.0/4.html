@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<style>
+body{
+    font-family:sans-serif;
+    max-width:800px;
+    margin:auto;
+    padding:20px;
+}
+
+#t{
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+}
+
+button{
+    padding:6px 12px;
+}
+
+h1,#e{
+    outline:0;
+}
+
+[contenteditable]:empty:before{
+    content:attr(placeholder);
+    color:#999;
+}
+
+#e{
+    min-height:400px;
+    font-size:1.1em;
+}
+</style>
+
+<div id="t">
+    <button onclick="h.innerHTML=e.innerHTML=''">
+        Clear
+    </button>
+
+    <button onclick="
+        a.href='data:text/html,'+encodeURIComponent(document.documentElement.outerHTML);
+        a.download=(h.innerText||'note')+'.html';
+        a.click()
+    ">
+        Save HTML
+    </button>
+
+    <button onclick="
+        a.href='data:text/plain,'+encodeURIComponent(e.innerText);
+        a.download=(h.innerText||'note')+'.txt';
+        a.click()
+    ">
+        Save TXT
+    </button>
+
+    <a id="a" hidden></a>
+</div>
+
+<h1 id="h" contenteditable placeholder="Title..."></h1>
+
+<hr>
+
+<div id="e"
+     contenteditable
+     placeholder="Type your notes here...">
+</div>

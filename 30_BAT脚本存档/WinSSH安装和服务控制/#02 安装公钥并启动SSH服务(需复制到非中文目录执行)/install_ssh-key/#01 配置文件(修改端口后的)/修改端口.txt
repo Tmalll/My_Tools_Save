@@ -1,0 +1,40 @@
+
+
+
+Port 60022
+PubkeyAuthentication yes
+PasswordAuthentication no
+
+
+
+
+
+Port 60022
+PubkeyAuthentication yes
+PasswordAuthentication no
+pause
+pause
+pause
+
+
+echo 运行SCP命令传回配置
+scp -rp -P 60100  "C:\ProgramData\ssh\sshd_config" administrator@home.miaosky.party:E:\\01.userData\\ZhuoMian
+
+echo 手动编辑, 添加, 需要添加到最上面,  添加到下面不行....
+Port 60022
+PubkeyAuthentication yes
+PasswordAuthentication yes
+
+echo 再运行命令传回配置到VPS
+copy  "C:\ProgramData\ssh\sshd_config"   "C:\ProgramData\ssh\sshd_config.bak"
+del /s /q "C:\ProgramData\ssh\sshd_config"
+scp -rp -P 60100   administrator@home.miaosky.party:E:\\01.userData\\ZhuoMian\\sshd_config   "C:\ProgramData\ssh\sshd_config"
+
+echo 到VPSCMD运行以下命令添加防火墙规则
+netsh advfirewall firewall delete rule name="SSHD"
+netsh advfirewall firewall add rule name="SSHD" dir=in action=allow protocol=tcp  localport=60022
+netsh advfirewall firewall add rule name="SSHD" dir=in action=allow protocol=udp  localport=60022
+
+echo 重启SSH服务
+sc stop "sshd"
+sc start "sshd"

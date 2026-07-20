@@ -1,0 +1,184 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HTML Note</title><style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#fff;color:#000;font-family:system-ui,sans-serif;height:100%}
+body{display:flex;flex-direction:column;max-width:900px;margin:auto;padding:0}
+
+/* ── 固定顶部 ── */
+#top{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e0e0e0;padding:6px 14px 4px}
+
+/* 尺寸 + 提示行 */
+#size{font-size:12px;color:#666;margin-bottom:3px;user-select:none}
+#tips{font-size:10px;color:#999;user-select:none;margin-bottom:5px;line-height:1.4}
+#tips b{color:#777;font-weight:600}
+
+/* 常驻按钮区 */
+#btns-main{display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+#btns-main button{flex:1 1 calc(20% - 6px);min-width:80px;padding:7px 6px;border:1px solid #bbb;background:#eee;border-radius:4px;cursor:pointer;color:#000;font-size:13px}
+#btns-main button:hover{background:#ddd}
+
+/* 折叠区 */
+#collapse-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:11px;color:#888;margin-bottom:3px;padding:2px 0}
+#collapse-toggle:hover{color:#555}
+#collapse-arrow{display:inline-block;transition:transform 0.2s;font-size:10px}
+#collapse-arrow.open{transform:rotate(90deg)}
+#collapse-body{display:none;margin-bottom:4px}
+#collapse-body.open{display:block}
+
+#btns-restore{display:flex;gap:6px;margin-bottom:5px;flex-wrap:wrap}
+#btns-restore button{flex:1 1 calc(50% - 6px);min-width:120px;padding:7px 6px;border:1px solid #bbb;background:#eee;border-radius:4px;cursor:pointer;color:#000;font-size:13px}
+#btns-restore button:hover{background:#ddd}
+
+#r{width:100%;height:48px;resize:none;overflow:auto;padding:6px 8px;border:1px solid #aaa;border-radius:4px;font-size:12px;margin-bottom:2px}
+
+/* 格式工具栏 */
+#toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:4px 5px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;margin-bottom:0}
+#toolbar button{min-width:26px;height:26px;padding:0 4px;border:1px solid transparent;background:transparent;border-radius:3px;cursor:pointer;font-size:12px;color:#222;display:flex;align-items:center;justify-content:center;line-height:1}
+#toolbar button:hover{background:#e0e0e0;border-color:#ccc}
+#toolbar button.active{background:#d0e4ff;border-color:#99c0f0}
+#toolbar select{height:26px;padding:0 3px;border:1px solid #ccc;background:#fff;border-radius:3px;font-size:11px;cursor:pointer;color:#222}
+#toolbar .sep{width:1px;height:18px;background:#ccc;margin:0 2px;flex-shrink:0}
+#toolbar input[type=color]{width:26px;height:26px;padding:1px;border:1px solid #ccc;border-radius:3px;cursor:pointer;background:#fff}
+
+/* ── 滚动内容区 ── */
+#scroll{flex:1;overflow-y:auto;padding:14px 14px 40px}
+h1{margin:0 0 10px;font-size:2rem;outline:none;min-height:2.4rem}
+hr{border:none;border-top:2px solid #000;margin:0 0 12px}
+#e{min-height:400px;outline:none;font-size:1.05rem;word-break:break-word;line-height:1.7}
+#e img{display:block;max-width:100%;margin:10px 0}
+[contenteditable]:empty:before{content:attr(placeholder);color:#aaa}
+
+#toast{position:fixed;background:#333;color:#fff;padding:7px 13px;border-radius:4px;font-size:12px;opacity:0;pointer-events:none;transition:opacity 0.25s;z-index:9999}
+
+@media(max-width:600px){
+  #btns-main button{flex:1 1 calc(33% - 6px);font-size:12px;padding:6px 4px}
+  h1{font-size:1.5rem}
+}
+</style><script>
+f=s=>new Blob([s]).size;fmt=b=>{if(b<1024)return b.toFixed(0)+' B';u=['KB','MB','GB','TB'];i=-1;do{b/=1024;i++}while(b>=1024&&i<u.length-1);return b.toFixed(2)+' '+u[i]};
+sync=()=>document.title=h.innerText.trim()||'HTML Note';
+uSize=()=>{x=document.documentElement.outerHTML.length;size.innerHTML='Real Size : '+fmt(x)+' / DataText Size : '+fmt(x*1.33)};
+b64=a=>{let s='',c=0x8000;for(let i=0;i<a.length;i+=c)s+=String.fromCharCode(...a.subarray(i,i+c));return btoa(s)};
+ub64=s=>{b=atob(s);u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u};
+
+// 折叠面板
+toggleCollapse=()=>{
+  const body=document.getElementById('collapse-body');
+  const arrow=document.getElementById('collapse-arrow');
+  const open=body.classList.toggle('open');
+  arrow.classList.toggle('open',open);
+};
+
+tpl=(th,eh)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${(h.innerText.trim()||'HTML Note').replace(/</g,'&lt;')}</title><style>${document.querySelector('style').innerHTML}</style><script>${document.querySelector('script').innerHTML.replace(/<\/script>/g,'<\\/script>')}<\/script></head><body><div id="toast"></div><div id="top"><div id="size"></div><div id="tips"><b>Address Bar</b> &lt;512K &nbsp;|&nbsp; <b>Restore Box</b> &lt;5MB &nbsp;|&nbsp; <b>Import .DataText</b> &gt;5MB</div><div id="btns-main"><button onclick="clr()">Clear</button><button onclick="img.click()">Insert Image</button><button onclick="saveHTML()">Save HTML</button><button onclick="saveTXT()">Save TEXT</button><button onclick="copyDT(event)">Copy DataText</button><input hidden type="file" id="img" accept="image/*" onchange="ins(this.files[0]);this.value=''"><input hidden type="file" id="imp" accept=".DataText,.txt" onchange="impDT(this.files[0]);this.value=''"><a hidden id="a"></a></div><div id="collapse-toggle" onclick="toggleCollapse()"><span id="collapse-arrow">&#9658;</span><span>DataText / Restore</span></div><div id="collapse-body"><div id="btns-restore"><button onclick="imp.click()">Input .DataText</button><button onclick="outDT()">Output .DataText</button></div><button onclick="restoreBox(event)" style="width:100%;padding:7px;border:1px solid #bbb;background:#eee;border-radius:4px;cursor:pointer;font-size:13px;margin-bottom:5px">Restore For BOX</button><textarea id="r" placeholder="Paste DataText here for restore... Recommended under 5MB"></textarea></div><div id="toolbar"><select id="selBlock" onchange="fmtBlock(this.value);this.value='p'"><option value="p">Paragraph</option><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option><option value="h4">H4</option><option value="pre">Code</option></select><div class="sep"></div><button onclick="fmt2('bold')" title="Bold"><b>B</b></button><button onclick="fmt2('italic')" title="Italic"><i>I</i></button><button onclick="fmt2('underline')" title="Underline"><u>U</u></button><button onclick="fmt2('strikeThrough')" title="Strikethrough"><s>S</s></button><div class="sep"></div><button onclick="fmt2('justifyLeft')" title="Left">&#8676;</button><button onclick="fmt2('justifyCenter')" title="Center">&#8700;</button><button onclick="fmt2('justifyRight')" title="Right">&#8677;</button><button onclick="fmt2('justifyFull')" title="Justify">&#8801;</button><div class="sep"></div><button onclick="fmt2('insertUnorderedList')" title="Bullet list">&#8226;&#8212;</button><button onclick="fmt2('insertOrderedList')" title="Numbered list">1&#8212;</button><button onclick="fmt2('outdent')" title="Outdent">&#8676;&#8601;</button><button onclick="fmt2('indent')" title="Indent">&#8677;&#8599;</button><div class="sep"></div><button onclick="fmt2('superscript')" title="Superscript">x&#x207F;</button><button onclick="fmt2('subscript')" title="Subscript">x&#x2082;</button><div class="sep"></div><label style="display:flex;align-items:center;gap:2px;cursor:pointer;font-size:11px;color:#555">A<input type="color" id="fgColor" value="#000000" oninput="applyColor('foreColor',this.value)"></label><label style="display:flex;align-items:center;gap:2px;cursor:pointer;font-size:11px;color:#555">H<input type="color" id="bgColor" value="#ffff00" oninput="applyColor('hiliteColor',this.value)"></label><div class="sep"></div><button onclick="fmt2('removeFormat')" title="Clear format">&#10005;</button></div></div><div id="scroll"><h1 id="h" contenteditable="true" placeholder="Title..." oninput="sync();uSize()">${th}</h1><hr><div id="e" contenteditable="true" placeholder="Type your notes here..." oninput="uSize()" onkeyup="updateToolbar()" onmouseup="updateToolbar()">${eh}</div></div></body></html>`;
+
+gen=()=>{html=tpl(h.innerHTML,e.innerHTML);bytes=new TextEncoder().encode(html);return{html,data:'data:text/html;base64,'+b64(bytes)}};
+dl=(n,t,d)=>{u=URL.createObjectURL(new Blob([d],{type:t}));a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),500)};
+showToast=(msg,x,y)=>{const t=document.getElementById('toast');if(!t)return;t.innerText=msg;t.style.left=x+'px';t.style.top=y+'px';t.style.opacity='1';clearTimeout(t._tid);t._tid=setTimeout(()=>t.style.opacity='0',1500)};
+clipWrite=async text=>{if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(text);return true}catch(e){}}const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();const ok=document.execCommand('copy');document.body.removeChild(ta);if(ok)return true;throw new Error('execCommand failed')};
+copyDT=async evt=>{const px=evt.pageX,py=evt.pageY;try{g=gen();const dt=g.data;if(f(dt)>5*1024*1024){showToast('DataText too large for clipboard',px,py);return}await clipWrite(dt);showToast('DataText copied!',px,py)}catch(err){showToast('Copy failed: '+err.message,px,py)}};
+outDT=()=>{g=gen();dl((h.innerText.trim()||'#HTML_Note')+'.DataText','application/octet-stream',g.data)};
+saveHTML=()=>{g=gen();dl((h.innerText.trim()||'#HTML_Note')+'.html','text/html',g.html)};
+saveTXT=()=>{dl((h.innerText.trim()||'#HTML_Note')+'.txt','text/plain',e.innerText)};
+clr=()=>{if(confirm('Clear all content?')){h.innerHTML='';e.innerHTML='';sync();uSize()}};
+ins=file=>{if(!file)return;rd=new FileReader();rd.onload=x=>{i=document.createElement('img');i.src=x.target.result;e.appendChild(i);uSize()};rd.readAsDataURL(file)};
+restore=s=>{try{s=s.trim();if(!s.startsWith('data:text/html;base64,')){alert('Invalid DataText');return}b=s.split(',')[1];h2=new TextDecoder().decode(ub64(b));document.open();document.write(h2);document.close()}catch(err){alert('Restore failed: '+err)}};
+restoreBox=evt=>{const px=evt.pageX,py=evt.pageY;if(!r.value.trim()){showToast('Restore box is empty',px,py);return}restore(r.value)};
+impDT=file=>{if(!file)return;r2=new FileReader();r2.onload=x=>restore(x.target.result);r2.readAsText(file)};
+
+// 格式化
+fmt2=cmd=>{e.focus();document.execCommand(cmd,false,null);updateToolbar();uSize()};
+fmtBlock=val=>{e.focus();document.execCommand('formatBlock',false,val);updateToolbar();uSize()};
+applyColor=(cmd,val)=>{e.focus();document.execCommand(cmd,false,val);uSize()};
+updateToolbar=()=>{
+  const map={
+    'bold':'[title="Bold"]','italic':'[title="Italic"]','underline':'[title="Underline"]',
+    'strikeThrough':'[title="Strikethrough"]','justifyLeft':'[title="Left"]',
+    'justifyCenter':'[title="Center"]','justifyRight':'[title="Right"]',
+    'justifyFull':'[title="Justify"]','insertUnorderedList':'[title="Bullet list"]',
+    'insertOrderedList':'[title="Numbered list"]','superscript':'[title="Superscript"]',
+    'subscript':'[title="Subscript"]'
+  };
+  Object.entries(map).forEach(([cmd,sel])=>{
+    const btn=document.querySelector('#toolbar '+sel);
+    if(btn)btn.classList.toggle('active',document.queryCommandState(cmd));
+  });
+};
+
+addEventListener('beforeunload',ev=>{ev.preventDefault();ev.returnValue=''});
+addEventListener('load',()=>uSize());
+</script></head><body>
+<div id="toast"></div>
+
+<!-- ── 固定顶部 ── -->
+<div id="top">
+  <div id="size"></div>
+  <div id="tips"><b>Address Bar</b> &lt;512K &nbsp;|&nbsp; <b>Restore Box</b> &lt;5MB &nbsp;|&nbsp; <b>Import .DataText</b> &gt;5MB</div>
+
+  <!-- 常驻按钮 -->
+  <div id="btns-main">
+    <button onclick="clr()">Clear</button>
+    <button onclick="img.click()">Insert Image</button>
+    <button onclick="saveHTML()">Save HTML</button>
+    <button onclick="saveTXT()">Save TEXT</button>
+    <button onclick="copyDT(event)">Copy DataText</button>
+    <input hidden type="file" id="img" accept="image/*" onchange="ins(this.files[0]);this.value=''">
+    <input hidden type="file" id="imp" accept=".DataText,.txt" onchange="impDT(this.files[0]);this.value=''">
+    <a hidden id="a"></a>
+  </div>
+
+  <!-- 折叠区 -->
+  <div id="collapse-toggle" onclick="toggleCollapse()">
+    <span id="collapse-arrow">&#9658;</span>
+    <span>DataText / Restore</span>
+  </div>
+  <div id="collapse-body">
+    <div id="btns-restore">
+      <button onclick="imp.click()">Input .DataText</button>
+      <button onclick="outDT()">Output .DataText</button>
+    </div>
+    <button onclick="restoreBox(event)" style="width:100%;padding:7px;border:1px solid #bbb;background:#eee;border-radius:4px;cursor:pointer;font-size:13px;margin-bottom:5px;text-align:center">Restore For BOX</button>
+    <textarea id="r" placeholder="Paste DataText here for restore... Recommended under 5MB"></textarea>
+  </div>
+
+  <!-- 格式工具栏 -->
+  <div id="toolbar">
+    <select id="selBlock" onchange="fmtBlock(this.value);this.value='p'">
+      <option value="p">Paragraph</option>
+      <option value="h1">H1</option>
+      <option value="h2">H2</option>
+      <option value="h3">H3</option>
+      <option value="h4">H4</option>
+      <option value="pre">Code</option>
+    </select>
+    <div class="sep"></div>
+    <button onclick="fmt2('bold')" title="Bold"><b>B</b></button>
+    <button onclick="fmt2('italic')" title="Italic"><i>I</i></button>
+    <button onclick="fmt2('underline')" title="Underline"><u>U</u></button>
+    <button onclick="fmt2('strikeThrough')" title="Strikethrough"><s>S</s></button>
+    <div class="sep"></div>
+    <button onclick="fmt2('justifyLeft')" title="Left">&#8676;</button>
+    <button onclick="fmt2('justifyCenter')" title="Center">&#8700;</button>
+    <button onclick="fmt2('justifyRight')" title="Right">&#8677;</button>
+    <button onclick="fmt2('justifyFull')" title="Justify">&#8801;</button>
+    <div class="sep"></div>
+    <button onclick="fmt2('insertUnorderedList')" title="Bullet list">&#8226;&#8212;</button>
+    <button onclick="fmt2('insertOrderedList')" title="Numbered list">1&#8212;</button>
+    <button onclick="fmt2('outdent')" title="Outdent">&#8676;&#8601;</button>
+    <button onclick="fmt2('indent')" title="Indent">&#8677;&#8599;</button>
+    <div class="sep"></div>
+    <button onclick="fmt2('superscript')" title="Superscript">x&#x207F;</button>
+    <button onclick="fmt2('subscript')" title="Subscript">x&#x2082;</button>
+    <div class="sep"></div>
+    <label style="display:flex;align-items:center;gap:2px;cursor:pointer;font-size:11px;color:#555">A<input type="color" id="fgColor" value="#000000" oninput="applyColor('foreColor',this.value)"></label>
+    <label style="display:flex;align-items:center;gap:2px;cursor:pointer;font-size:11px;color:#555">H<input type="color" id="bgColor" value="#ffff00" oninput="applyColor('hiliteColor',this.value)"></label>
+    <div class="sep"></div>
+    <button onclick="fmt2('removeFormat')" title="Clear format">&#10005;</button>
+  </div>
+</div>
+
+<!-- ── 滚动内容区 ── -->
+<div id="scroll">
+  <h1 id="h" contenteditable="true" placeholder="Title..." oninput="sync();uSize()"></h1>
+  <hr>
+  <div id="e" contenteditable="true" placeholder="Type your notes here..." oninput="uSize()" onkeyup="updateToolbar()" onmouseup="updateToolbar()"></div>
+</div>
+</body></html>

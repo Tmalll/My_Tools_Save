@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>HTML Temp Note</title>
+
+<style>
+html,body{
+    margin:0;
+    padding:0;
+    background:#fff;
+    color:#000;
+    font-family:system-ui,sans-serif;
+}
+
+body{
+    max-width:900px;
+    margin:auto;
+    padding:14px;
+    box-sizing:border-box;
+}
+
+#top{
+    position:sticky;
+    top:0;
+    z-index:999;
+    background:#fff;
+    padding-bottom:10px;
+}
+
+#restoreBox{
+    width:100%;
+    height:52px;
+    box-sizing:border-box;
+    resize:none;
+    overflow:auto;
+    font-size:13px;
+    padding:8px;
+    border:1px solid #aaa;
+    border-radius:4px;
+    margin-bottom:10px;
+    white-space:nowrap;
+}
+
+#toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:16px;
+}
+
+#toolbar button{
+    flex:1 1 calc(16.66% - 8px);
+    min-width:90px;
+    padding:10px 8px;
+    border:1px solid #bbb;
+    background:#eee;
+    border-radius:4px;
+    cursor:pointer;
+    color:#000;
+    font-size:14px;
+}
+
+#toolbar button:hover{
+    background:#ddd;
+}
+
+h1{
+    margin:0 0 12px;
+    font-size:2rem;
+    outline:none;
+    min-height:2.5rem;
+}
+
+hr{
+    border:none;
+    border-top:2px solid #000;
+    margin:0 0 16px;
+}
+
+#e{
+    min-height:400px;
+    outline:none;
+    font-size:1.05rem;
+    word-break:break-word;
+}
+
+#e img{
+    display:block;
+    max-width:100%;
+    margin:10px 0;
+}
+
+[contenteditable]:empty:before{
+    content:attr(placeholder);
+    color:#888;
+}
+
+@media(max-width:700px){
+
+    #toolbar button{
+        flex:1 1 calc(50% - 8px);
+    }
+
+    h1{
+        font-size:1.6rem;
+    }
+
+}
+</style>
+
+<script>
+
+function syncTitle(){
+    document.title = h.innerText.trim() || 'HTML Temp Note';
+}
+
+function bytesToBase64(bytes){
+
+    let binary='';
+
+    const chunk=0x8000;
+
+    for(let i=0;i<bytes.length;i+=chunk){
+
+        binary += String.fromCharCode(
+            ...bytes.subarray(i,i+chunk)
+        );
+
+    }
+
+    return btoa(binary);
+}
+
+function base64ToBytes(base64){
+
+    const bin=atob(base64);
+
+    const bytes=new Uint8Array(bin.length);
+
+    for(let i=0;i<bin.length;i++){
+        bytes[i]=bin.charCodeAt(i);
+    }
+
+    return bytes;
+}
+
+function buildHTML(titleHTML,bodyHTML){
+
+return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${(h.innerText.trim() || 'HTML Temp Note').replace(/</g,'&lt;')}</title>
+
+<style>
+
+html,body{
+    margin:0;
+    padding:0;
+    background:#fff;
+    color:#000;
+    font-family:system-ui,sans-serif;
+}
+
+body{
+    max-width:900px;
+    margin:auto;
+    padding:14px;
+    box-sizing:border-box;
+}
+
+#top{
+    position:sticky;
+    top:0;
+    z-index:999;
+    background:#fff;
+    padding-bottom:10px;
+}
+
+#restoreBox{
+    width:100%;
+    height:52px;
+    box-sizing:border-box;
+    resize:none;
+    overflow:auto;
+    font-size:13px;
+    padding:8px;
+    border:1px solid #aaa;
+    border-radius:4px;
+    margin-bottom:10px;
+    white-space:nowrap;
+}
+
+#toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:16px;
+}
+
+#toolbar button{
+    flex:1 1 calc(16.66% - 8px);
+    min-width:90px;
+    padding:10px 8px;
+    border:1px solid #bbb;
+    background:#eee;
+    border-radius:4px;
+    cursor:pointer;
+    color:#000;
+    font-size:14px;
+}
+
+#toolbar button:hover{
+    background:#ddd;
+}
+
+h1{
+    margin:0 0 12px;
+    font-size:2rem;
+    outline:none;
+    min-height:2.5rem;
+}
+
+hr{
+    border:none;
+    border-top:2px solid #000;
+    margin:0 0 16px;
+}
+
+#e{
+    min-height:400px;
+    outline:none;
+    font-size:1.05rem;
+    word-break:break-word;
+}
+
+#e img{
+    display:block;
+    max-width:100%;
+    margin:10px 0;
+}
+
+[contenteditable]:empty:before{
+    content:attr(placeholder);
+    color:#888;
+}
+
+@media(max-width:700px){
+
+    #toolbar button{
+        flex:1 1 calc(50% - 8px);
+    }
+
+    h1{
+        font-size:1.6rem;
+    }
+
+}
+
+</style>
+
+<script>
+
+function syncTitle(){
+    document.title = h.innerText.trim() || 'HTML Temp Note';
+}
+
+function bytesToBase64(bytes){
+
+    let binary='';
+
+    const chunk=0x8000;
+
+    for(let i=0;i<bytes.length;i+=chunk){
+
+        binary += String.fromCharCode(
+            ...bytes.subarray(i,i+chunk)
+        );
+
+    }
+
+    return btoa(binary);
+}
+
+function buildHTML(titleHTML,bodyHTML){
+
+return document.documentElement.outerHTML;
+
+}
+
+function generateDataText(){
+
+    const html=buildHTML(
+        h.innerHTML,
+        e.innerHTML
+    );
+
+    const bytes=new TextEncoder().encode(html);
+
+    return 'data:text/html;base64,' + bytesToBase64(bytes);
+}
+
+async function copyDataText(){
+
+    try{
+
+        await navigator.clipboard.writeText(
+            generateDataText()
+        );
+
+        alert('Copied');
+
+    }catch(err){
+
+        alert('Copy failed');
+
+    }
+}
+
+function outputDataText(){
+
+    const blob=new Blob(
+        [generateDataText()],
+        {type:'application/octet-stream'}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    a.href=url;
+
+    a.download=
+        (h.innerText.trim() || 'note')
+        + '.DataText';
+
+    a.click();
+
+    setTimeout(()=>{
+        URL.revokeObjectURL(url);
+    },1000);
+}
+
+function saveHTML(){
+
+    const html=buildHTML(
+        h.innerHTML,
+        e.innerHTML
+    );
+
+    const blob=new Blob(
+        [html],
+        {type:'text/html'}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    a.href=url;
+
+    a.download=
+        (h.innerText.trim() || 'note')
+        + '.html';
+
+    a.click();
+
+    setTimeout(()=>{
+        URL.revokeObjectURL(url);
+    },1000);
+}
+
+function saveTXT(){
+
+    const blob=new Blob(
+        [e.innerText],
+        {type:'text/plain'}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    a.href=url;
+
+    a.download=
+        (h.innerText.trim() || 'note')
+        + '.txt';
+
+    a.click();
+
+    setTimeout(()=>{
+        URL.revokeObjectURL(url);
+    },1000);
+}
+
+function clearAll(){
+
+    if(confirm('Clear all content?')){
+
+        h.innerHTML='';
+        e.innerHTML='';
+
+        syncTitle();
+    }
+}
+
+function insertImage(file){
+
+    if(!file) return;
+
+    const reader=new FileReader();
+
+    reader.onload=e2=>{
+
+        const img=document.createElement('img');
+
+        img.src=e2.target.result;
+
+        e.appendChild(img);
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function restoreFromText(str){
+
+    try{
+
+        str=str.trim();
+
+        if(!str.startsWith('data:text/html;base64,')){
+
+            alert('Invalid DataText');
+
+            return;
+        }
+
+        const base64=
+            str.split(',')[1];
+
+        const bytes=
+            base64ToBytes(base64);
+
+        const html=
+            new TextDecoder().decode(bytes);
+
+        document.open();
+        document.write(html);
+        document.close();
+
+    }catch(err){
+
+        alert('Restore failed');
+    }
+}
+
+function restoreInput(){
+
+    const txt=
+        restoreBox.value.trim();
+
+    if(!txt){
+        alert('Empty');
+        return;
+    }
+
+    restoreFromText(txt);
+}
+
+function importDataText(file){
+
+    if(!file) return;
+
+    const reader=new FileReader();
+
+    reader.onload=e2=>{
+
+        restoreFromText(
+            e2.target.result
+        );
+    };
+
+    reader.readAsText(file);
+}
+
+window.addEventListener(
+    'beforeunload',
+    e=>{
+        e.preventDefault();
+        e.returnValue='';
+    }
+);
+
+<\/script>
+
+</head>
+
+<body>
+
+<div id="top">
+
+<textarea
+id="restoreBox"
+placeholder="Paste DataText here for restore..."
+></textarea>
+
+<div id="toolbar">
+
+<button onclick="restoreInput()">Restore</button>
+
+<button onclick="importBtn.click()">
+Import DataText
+</button>
+
+<button onclick="clearAll()">
+Clear
+</button>
+
+<button onclick="saveHTML()">
+Save HTML
+</button>
+
+<button onclick="saveTXT()">
+Save TXT
+</button>
+
+<button onclick="i.click()">
+Insert Image
+</button>
+
+<button onclick="copyDataText()">
+Copy DataText
+</button>
+
+<button onclick="outputDataText()">
+Output .DataText
+</button>
+
+<input
+hidden
+type="file"
+id="i"
+accept="image/*"
+onchange="insertImage(this.files[0]);this.value='';"
+>
+
+<input
+hidden
+type="file"
+id="importBtn"
+accept=".DataText,.txt"
+onchange="importDataText(this.files[0]);this.value='';"
+>
+
+<a hidden id="a"></a>
+
+</div>
+
+</div>
+
+<h1
+id="h"
+contenteditable="true"
+placeholder="Title..."
+oninput="syncTitle()"
+>${titleHTML}</h1>
+
+<hr>
+
+<div
+id="e"
+contenteditable="true"
+placeholder="Type your notes here..."
+>${bodyHTML}</div>
+
+</body>
+</html>`;
+}
+
+function generateDataText(){
+
+    const html=buildHTML(
+        h.innerHTML,
+        e.innerHTML
+    );
+
+    const bytes=new TextEncoder().encode(html);
+
+    return 'data:text/html;base64,' + bytesToBase64(bytes);
+}
+
+async function copyDataText(){
+
+    try{
+
+        await navigator.clipboard.writeText(
+            generateDataText()
+        );
+
+        alert('Copied');
+
+    }catch(err){
+
+        alert('Copy failed');
+
+    }
+}
+
+function outputDataText(){
+
+    const blob=new Blob(
+        [generateDataText()],
+        {type:'application/octet-stream'}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    a.href=url;
+
+    a.download=
+        (h.innerText.trim() || 'note')
+        + '.DataText';
+
+    a.click();
+
+    setTimeout(()=>{
+        URL.revokeObjectURL(url);
+    },1000);
+}
+
+function saveHTML(){
+
+    const html=buildHTML(
+        h.innerHTML,
+        e.innerHTML
+    );
+
+    const blob=new Blob(
+        [html],
+        {type:'text/html'}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    a.href=url;
+
+    a.download=
+        (h.innerText.trim() || 'note')
+        + '.html';
+
+    a.click();
+
+    setTimeout(()=>{
+        URL.revokeObjectURL(url);
+    },1000);
+}
+
+function saveTXT(){
+
+    const blob=new Blob(
+        [e.innerText],
+        {type:'text/plain'}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    a.href=url;
+
+    a.download=
+        (h.innerText.trim() || 'note')
+        + '.txt';
+
+    a.click();
+
+    setTimeout(()=>{
+        URL.revokeObjectURL(url);
+    },1000);
+}
+
+function clearAll(){
+
+    if(confirm('Clear all content?')){
+
+        h.innerHTML='';
+        e.innerHTML='';
+
+        syncTitle();
+    }
+}
+
+function insertImage(file){
+
+    if(!file) return;
+
+    const reader=new FileReader();
+
+    reader.onload=e2=>{
+
+        const img=document.createElement('img');
+
+        img.src=e2.target.result;
+
+        e.appendChild(img);
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function restoreFromText(str){
+
+    try{
+
+        str=str.trim();
+
+        if(!str.startsWith('data:text/html;base64,')){
+
+            alert('Invalid DataText');
+
+            return;
+        }
+
+        const base64=
+            str.split(',')[1];
+
+        const bytes=
+            base64ToBytes(base64);
+
+        const html=
+            new TextDecoder().decode(bytes);
+
+        document.open();
+        document.write(html);
+        document.close();
+
+    }catch(err){
+
+        alert('Restore failed');
+    }
+}
+
+function restoreInput(){
+
+    const txt=
+        restoreBox.value.trim();
+
+    if(!txt){
+        alert('Empty');
+        return;
+    }
+
+    restoreFromText(txt);
+}
+
+function importDataText(file){
+
+    if(!file) return;
+
+    const reader=new FileReader();
+
+    reader.onload=e2=>{
+
+        restoreFromText(
+            e2.target.result
+        );
+    };
+
+    reader.readAsText(file);
+}
+
+window.addEventListener(
+    'beforeunload',
+    e=>{
+        e.preventDefault();
+        e.returnValue='';
+    }
+);
+</script>
+
+</head>
+
+<body>
+
+<div id="top">
+
+<textarea
+id="restoreBox"
+placeholder="Paste DataText here for restore..."
+></textarea>
+
+<div id="toolbar">
+
+<button onclick="restoreInput()">
+Restore
+</button>
+
+<button onclick="importBtn.click()">
+Import DataText
+</button>
+
+<button onclick="clearAll()">
+Clear
+</button>
+
+<button onclick="saveHTML()">
+Save HTML
+</button>
+
+<button onclick="saveTXT()">
+Save TXT
+</button>
+
+<button onclick="i.click()">
+Insert Image
+</button>
+
+<button onclick="copyDataText()">
+Copy DataText
+</button>
+
+<button onclick="outputDataText()">
+Output .DataText
+</button>
+
+<input
+hidden
+type="file"
+id="i"
+accept="image/*"
+onchange="insertImage(this.files[0]);this.value='';"
+>
+
+<input
+hidden
+type="file"
+id="importBtn"
+accept=".DataText,.txt"
+onchange="importDataText(this.files[0]);this.value='';"
+>
+
+<a hidden id="a"></a>
+
+</div>
+
+</div>
+
+<h1
+id="h"
+contenteditable="true"
+placeholder="Title..."
+oninput="syncTitle()"
+></h1>
+
+<hr>
+
+<div
+id="e"
+contenteditable="true"
+placeholder="Type your notes here..."
+></div>
+
+</body>
+</html>

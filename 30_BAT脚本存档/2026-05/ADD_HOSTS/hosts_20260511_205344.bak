@@ -1,0 +1,10 @@
+
+# 自建反代的优选IP
+104.20.24.101   e1v16lo23i.968050.xyz
+2606:4700:5c::a29f:2e07   07sk21zevc.cloudflare-gateway.com
+
+# 谷狗翻译
+# 自建转发地址
+192.168.1.49   translate.google.com
+192.168.1.49   translate.googleapis.com
+

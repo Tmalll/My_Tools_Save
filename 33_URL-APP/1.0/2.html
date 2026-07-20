@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        html { height: 100%; display: flex; color-scheme: light dark; }
+        body { flex: 1; display: flex; flex-direction: column; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        /* 工具栏样式 */
+        #t { position: sticky; padding: 8px 0; inset: 0 0 auto; gap: 8px; display: flex; align-items: center; border-bottom: 1px solid #eee; margin-bottom: 20px; font-size: 14px; }
+        #t button, #t label { cursor: pointer; padding: 4px 8px; background: #eee; border: 1px solid #ccc; border-radius: 4px; display: inline-flex; align-items: center; }
+        #t button:hover { background: #ddd; }
+        /* 标题样式 */
+        h1 { font-size: 2.5rem; font-weight: bold; margin: 0 0 15px 0; outline: none; text-align: left; min-height: 3.5rem; }
+        /* 75%透明度分割线 */
+        .divider { border: none; border-top: 2px solid rgba(0,0,0,0.75); margin: 0 0 20px 0; width: 100%; }
+        /* 内容区域 */
+        #e { flex: 1; outline: none; font-size: 1.1rem; text-align: left; color: #333; min-height: 400px; }
+        /* 占位符提示（不可选） */
+        [contenteditable]:empty::before { content: attr(placeholder); color: #aaa; font-weight: normal; pointer-events: none; }
+    </style>
+    <script>
+        // 读取本地文件方法
+        r = () => f ?.text().then(x => f.type === 'text/html' ? (e.innerHTML = x) : (e.innerText = x));
+        // 保存文件方法
+        s = () => {
+            let isTxt = p.checked;
+            let ext = isTxt ? 'txt' : 'html';
+            let mime = isTxt ? 'text/plain' : 'text/html';
+            let content = isTxt ? e.innerText : document.documentElement.outerHTML; // HTML模式保存包含标题的完整网页
+            let filename = (h.innerText.trim() || 'note') + '.' + ext;
+            a.href = `data:${mime};charset=utf-8,${encodeURIComponent(content)}`;
+            a.download = filename;
+            a.click();
+        };
+    </script>
+</head>
+<body>
+    <div id="t">
+        <button onclick="h.innerHTML='';e.innerHTML=''">del</button>
+        <button onclick="o.showPicker()">open</button>
+        <button onclick="s()">save</button>
+        <input id="o" hidden type="file" onchange="f=o.files[0];r()">
+        <label><input type="checkbox" id="p" onchange="e.contentEditable=p.checked?'plaintext-only':'true'">保存为纯文本TXT</label>
+        <a hidden id="a"></a>
+    </div>
+
+    <h1 id="h" contenteditable="true" placeholder="请输入标题..."></h1>
+
+    <hr class="divider">
+
+    <div id="e" contenteditable="true" placeholder="在这里输入笔记内容..." ondrop="f=event.dataTransfer.files[0];r();return false"></div>
+</body>
+</html>

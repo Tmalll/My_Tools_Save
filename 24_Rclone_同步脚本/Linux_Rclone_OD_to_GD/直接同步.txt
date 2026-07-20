@@ -1,0 +1,73 @@
+cat << 'EOF' > ~/Rclone.sh
+#!/bin/bash
+
+# 日志配置与初始化
+LOGpath="/root/Rclone.log"
+mkdir -p "$(dirname "$LOGpath")"
+LOG_TMP="${LOGpath}.tmp"
+_finish() {
+    exec 1>&- 2>&-; sleep 0.1
+    if [ -f "$LOG_TMP" ]; then
+        cat "$LOG_TMP" >> "$LOGpath" && rm -f "$LOG_TMP"
+        [ -f "$LOGpath" ] && tail -n 5000 "$LOGpath" > "${LOGpath}.bak" && mv "${LOGpath}.bak" "$LOGpath"
+    fi
+}
+trap _finish EXIT
+exec > >(tee -a "$LOG_TMP") 2>&1
+# 下面放实际的脚本...
+
+# 定义源和目标
+Source="OD-LiveSkype:"
+TargetDIR1="GD-MiaoSKY-YG:/LiveSkype_OneDrive"
+
+# 执行去重
+rclone dedupe newest "${TargetDIR1}/01.latest" --by-hash --log-level ERROR
+
+# 执行同步任务
+rclone sync "${Source}" "${TargetDIR1}/01.latest" \
+  --backup-dir "${TargetDIR1}/02.history/$(date +%Y-%m-%d[%H.%M.%S])" \
+  --onedrive-expose-onenote-files --onedrive-av-override \
+  --drive-use-trash=false \
+  --transfers 16 \
+  --checkers 16 \
+  --copy-links \
+  --timeout 10s \
+  --contimeout 10s \
+  --retries 3 \
+  --low-level-retries 3 \
+  --fast-list \
+  --log-level INFO
+  
+# --log-level LogLevel  Log level DEBUG|INFO|NOTICE|ERROR (default NOTICE)
+EOF
+
+chmod +x ~/Rclone.sh
+~/Rclone.sh
+
+# 链接到计划任务目录, 每小时执行一次
+ln -s ~/Rclone.sh /etc/cron.hourly/Rclone
+
+
+
+
+
+
+
+
+
+
+
+--exclude "/cache/**" \
+--exclude "/code_cache/**" \
+--exclude "/files/home/storage/**" \
+--exclude "/files/usr/bin/**" \
+--exclude "/files/usr/lib/**" \
+--exclude "/files/usr/share/**" \
+--exclude "/files/usr/include/**" \
+--exclude "/files/usr/var/cache/**" \
+--exclude "/files/usr/var/run/**" \
+--exclude "**/supervise/**" \
+--exclude "**/usr/var/log/**" \
+--exclude "**/*.socket" \
+--exclude "**/*.fifo" \
+--exclude "**/*.log" --exclude "**/*.tmp" --exclude "**/*.bash_history" \

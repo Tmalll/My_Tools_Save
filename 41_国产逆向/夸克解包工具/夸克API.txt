@@ -1,0 +1,14 @@
+最新版下载地址: 抓包获取
+http://puds-down.quark.cn/down/u1/rrww9tuzrvwrrsrxv9wtzyrsrrrrrrrrsrrsrrrrt9uo/f1ab1a5e3b38f4255a2f9bb863bc4131/QuarkPC_V6.9.2.881_windows_pf5001_(zh-cn)_release_999_(Build260626141107).exe?split_quark=1
+
+http://puds-down.quark.cn/down/u1/hhmmqjkphlmhhihnlqmjpnhihhhhhhhhihhihhhhjqkl/d3ab1ce91786b51f1e83bb1680987202/QuarkPC_V6.9.2.881_windows_pf5001_(zh-cn)_release_999_(Build260626141107).exe
+
+
+这个API获取到的地址是过期的...
+https://open-cms-api.quark.cn/open-cms?no_decrypt=false&params=NxRrnwVjh%2B5f3fjPWCmzXj1KXwS1iCkKMUmgzHMGHTUKWGB%2Fd4nPbQ1EN0ec7uuUU%2FuovXI5OoN5ydLasUGz7CQ%2BMu%2F6irY3E%2BYIQQEhdhulO1TEFfiHxlGcCDJNpyYUE4NEBgWz3jHp%2B%2B6ZEQFEmNIR8Gpba4KryX5sWuGBts%2Fjr8sqQfk7PqBUBvxKl48RG4aW%2FEvmBHdfYLKAZn3fg6%2Bc0zj29oyiI7iLB1axd%2FUu2Q%3D%3D
+
+curl "https://open-cms-api.quark.cn/open-cms?no_decrypt=false&params=NxRrnwVjh%2B5f3fjPWCmzXj1KXwS1iCkKMUmgzHMGHTUKWGB%2Fd4nPbQ1EN0ec7uuUU%2FuovXI5OoN5ydLasUGz7CQ%2BMu%2F6irY3E%2BYIQQEhdhulO1TEFfiHxlGcCDJNpyYUE4NEBgWz3jHp%2B%2B6ZEQFEmNIR8Gpba4KryX5sWuGBts%2Fjr8sqQfk7PqBUBvxKl48RG4aW%2FEvmBHdfYLKAZn3fg6%2Bc0zj29oyiI7iLB1axd%2FUu2Q%3D%3D" > quck.json
+
+
+
+

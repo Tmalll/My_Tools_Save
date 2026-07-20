@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>极简靠左笔记</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        [contenteditable] {
+            outline: none;
+        }
+        
+        /* 标题部分：加大加粗靠左 */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0 0 15px 0;
+            text-align: left;
+            min-height: 3.5rem; /* 确保没字时撑开高度 */
+        }
+        
+        /* 分割线：75%透明度 */
+        .divider {
+            border: none;
+            border-top: 2px solid rgba(0,0,0,0.75);
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        /* 内容部分：普通字体靠左 */
+        .content {
+            min-height: 400px;
+            font-size: 1.1rem;
+            text-align: left;
+            color: #333;
+            font-weight: normal;
+        }
+
+        /* ✨ 核心：占位符背景样式（不可选、不影响输入） */
+        [contenteditable]:empty::before {
+            content: attr(placeholder);
+            color: #aaa; /* 淡淡的灰色 */
+            font-weight: normal;
+            pointer-events: none; /* 让鼠标事件穿透，无法被选中 */
+            cursor: text;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 contenteditable="true" placeholder="请输入标题..."></h1>
+    
+    <hr class="divider">
+    
+    <div class="content" contenteditable="true" placeholder="在这里输入笔记内容..."></div>
+
+</body>
+</html>

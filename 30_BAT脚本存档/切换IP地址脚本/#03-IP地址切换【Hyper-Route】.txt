@@ -1,0 +1,37 @@
+@title "设置主要IP地址和网络掩码。"
+
+netsh interface ip set address "vEthernet (#01-本地共享LAN（以太网 #5）@宿主机 @域控制器 @旁路LEDE)" source=static addr=192.168.1.130 mask=255.255.255.0
+netsh interface ip add address "vEthernet (#01-本地共享LAN（以太网 #5）@宿主机 @域控制器 @旁路LEDE)"  addr=192.168.1.131 mask=255.255.255.0
+
+
+
+netsh interface ip set address "vEthernet (@虚拟内网@)" source=static addr=192.168.88.130 mask=255.255.255.0
+netsh interface ip add address "vEthernet (@虚拟内网@)"  addr=192.168.88.131 mask=255.255.255.0
+
+
+
+@title "设置网关地址"
+netsh interface ip add address name="vEthernet (#01-本地共享LAN（以太网 #5）@宿主机 @域控制器 @旁路LEDE)" gateway=192.168.1.33 gwmetric=0
+netsh interface ip add address name="vEthernet (@虚拟内网@)" gateway=192.168.88.33 gwmetric=0
+
+
+@title "设置DNS地址"
+netsh interface ip set dns name="vEthernet (#01-本地共享LAN（以太网 #5）@宿主机 @域控制器 @旁路LEDE)" source=static addr=192.168.1.99
+netsh interface ip add dns name="vEthernet (#01-本地共享LAN（以太网 #5）@宿主机 @域控制器 @旁路LEDE)" addr=192.168.1.98
+netsh interface ip add dns name="vEthernet (#01-本地共享LAN（以太网 #5）@宿主机 @域控制器 @旁路LEDE)" addr=192.168.1.131
+netsh interface ip add dns name="vEthernet (#01-本地共享LAN（以太网 #5）@宿主机 @域控制器 @旁路LEDE)" addr=192.168.1.130
+netsh interface ip add dns name="vEthernet (#01-本地共享LAN（以太网 #5）@宿主机 @域控制器 @旁路LEDE)" addr=114.114.114.114
+
+
+netsh interface ip set dns name="vEthernet (@虚拟内网@)" source=static addr=192.168.88.99
+netsh interface ip add dns name="vEthernet (@虚拟内网@)" addr=192.168.88.98
+netsh interface ip add dns name="vEthernet (@虚拟内网@)" addr=192.168.88.131
+netsh interface ip add dns name="vEthernet (@虚拟内网@)" addr=192.168.88.130
+netsh interface ip add dns name="vEthernet (@虚拟内网@)" addr=114.114.114.114
+
+
+
+ipconfig /flushdns
+choice /t 1 /d y /n >nul  
+
+

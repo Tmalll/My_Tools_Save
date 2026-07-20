@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Open URL in Thorium",
+  "version": "1.1",
+  "description": "Open URL in Thorium",
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "action": {
+    "default_title": "Open URL in Thorium"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

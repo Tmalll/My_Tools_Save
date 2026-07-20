@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>HyperNote · Minimal</title>
+    <style>
+        body { font-family: system-ui, sans-serif; line-height: 1.6; max-width: 800px; margin: 20px auto; padding: 0 15px; color: #18181b; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { padding: 8px 12px; cursor: pointer; background: #f4f4f5; border: 1px solid #d4d4d8; border-radius: 4px; font-size: 13px; }
+        button:hover { background: #e4e4e7; }
+        .btn-danger { color: #991b1b; background: #fee2e2; border-color: #fca5a5; }
+        #h { font-size: 24px; outline: none; border-bottom: 1px solid #e4e4e7; padding-bottom: 5px; }
+        #e { min-height: 300px; outline: none; margin-top: 15px; font-size: 16px; white-space: pre-wrap; word-break: break-all; }
+        [contenteditable]:empty:before { content: attr(placeholder); color: #9ca3af; }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <button class="btn-danger" onclick="clearData()">Clear</button>
+    <button onclick="copyEditor()">Copy Editor</button>
+    <button onclick="savePage()">Save Page</button>
+    <button onclick="copyPage()">Copy Page</button>
+</div>
+
+<h1 id="h" contenteditable="true" placeholder="标题..."></h1>
+<div id="e" contenteditable="true" placeholder="输入内容 (URL会自动识别为链接)..."></div>
+
+<script>
+    const h = document.getElementById('h');
+    const e = document.getElementById('e');
+
+    function b64Encode(str) { return btoa(unescape(encodeURIComponent(str))); }
+    
+    function copyToClipboard(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); alert('已复制!'); } catch(err) { alert('复制失败'); }
+        document.body.removeChild(ta);
+    }
+
+    function clearData() { if(confirm('清空内容？')) { h.innerText = ''; e.innerText = ''; } }
+
+    /**
+     * 核心逻辑：以空白字符为界，只要以 http(s) 开头，整段即为 URL
+     */
+    /**
+ * 对 URL 进行 HTML 实体编码，防止特殊字符破坏 HTML 结构
+ */
+function encodeHTMLEntities(str) {
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;');
+}
+
+function linkify(text) {
+    return text.split(/(\s+)/).map(part => {
+        if (part.startsWith('http://') || part.startsWith('https://')) {
+            // 使用编码后的字符串作为 href，原始字符串用于显示
+            const encodedUrl = encodeHTMLEntities(part);
+            return `<a href="${encodedUrl}" target="_blank" style="color:#2563eb;text-decoration:underline;">${part}</a>`;
+        }
+        return part;
+    }).join('');
+}
+
+    function getGeneratedHtml() {
+        // 使用 e.innerText 获取纯文本，处理后转为 HTML
+        const content = linkify(e.innerText);
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${h.innerText}</title></head><body><h1>${h.innerText}</h1><div style="white-space: pre-wrap; word-break: break-all;">${content}</div></body></html>`;
+    }
+
+    function copyEditor() {
+        copyToClipboard('data:text/html;base64,' + b64Encode(document.documentElement.outerHTML));
+    }
+
+    function savePage() {
+        const html = getGeneratedHtml();
+        const blob = new Blob([html], {type: 'text/html'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = (h.innerText || 'note') + '.html';
+        a.click();
+    }
+
+    function copyPage() {
+        const html = getGeneratedHtml();
+        copyToClipboard('data:text/html;base64,' + b64Encode(html));
+    }
+</script>
+</body>
+</html>

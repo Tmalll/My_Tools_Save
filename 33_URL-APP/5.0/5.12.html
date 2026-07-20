@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <title>HyperNote · 专业编辑器</title>
+    <style>
+        *{box-sizing:border-box;}
+        html,body{margin:0;padding:0;background:#fff;color:#000;font-family:system-ui,'Segoe UI',Roboto,sans-serif;}
+        
+        /* 整体容器：宽度800px（原始1600的50%），最大高度2160px（原始4320的50%） */
+        .app-container{max-width:800px;width:100%;margin:0 auto;background:#fff;box-shadow:0 0 10px rgba(0,0,0,0.05);min-height:100vh;max-height:2160px;overflow-y:visible;display:flex;flex-direction:column;}
+        
+        /* 提示区 - 只缩小25%（相对原始，即原始大小的75%） */
+        #top{background:#fff;border-bottom:1px solid #e0e0e0;padding:12px 15px;}
+        #info{font-size:12.75px;margin-bottom:9px;background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);padding:10.5px 15px;border-radius:9px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10.5px;}
+        .info-left{display:flex;flex-wrap:wrap;align-items:center;gap:16.5px;}
+        .info-right{display:flex;flex-wrap:wrap;align-items:center;gap:12.75px;font-size:11.25px;}
+        .author-wrap{display:inline-flex;align-items:center;gap:9px;background:white;padding:6px 13.5px;border-radius:30px;}
+        .author-wrap input{border:1px solid #ddd;border-radius:18px;padding:6px 10.5px;font-size:12.75px;width:150px;}
+        .author-wrap button{border:none;background:#3b82f6;color:#fff;border-radius:18px;padding:6px 13.5px;cursor:pointer;font-size:12.75px;}
+        .author-wrap button:hover{background:#2563eb;}
+        .info-badge{background:white;padding:6px 13.5px;border-radius:30px;font-size:12.75px;font-weight:500;display:inline-flex;align-items:center;gap:6px;}
+        .sz{font-weight:700;transition:color .25s;}
+        
+        /* 按钮区 - 缩小50% */
+        .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:7.5px;}
+        .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:7.5px;}
+        
+        .btn{
+            width:100%;min-height:45px;padding:5px 4px;
+            border:1px solid #bbb;border-radius:6.5px;
+            background:#eee;color:#111;
+            cursor:pointer;
+            display:flex;flex-direction:column;
+            align-items:center;justify-content:center;
+            text-align:center;
+            transition:0.1s;
+        }
+        .btn:hover{background:#ddd;}
+        .btn:active{background:#ccc;}
+        .btn-main{font-size:10px;font-weight:700;line-height:1.3;}
+        .btn small{font-size:7.5px;font-weight:500;margin-top:2.5px;color:#444;display:block;background:rgba(0,0,0,0.05);padding:1.5px 5px;border-radius:10px;}
+        .size-badge{font-size:7.5px;font-weight:600;margin-top:2.5px;background:rgba(0,0,0,0.05);padding:1.5px 5px;border-radius:10px;font-family:monospace;display:block;}
+        
+        /* 工具栏缩小50% */
+        #toolbar{
+            display:flex;flex-wrap:wrap;align-items:center;gap:4px;
+            padding:5px 6.5px;margin-top:5px;
+            background:#f5f5f5;border:1px solid #ddd;border-radius:6.5px;
+        }
+        #toolbar button{
+            min-width:28px;height:24px;padding:0 8px;
+            border:1px solid #bbb;border-radius:5px;
+            background:white;cursor:pointer;
+            display:inline-flex;align-items:center;justify-content:center;
+            font-size:8.5px;color:#222;gap:2.5px;
+        }
+        #toolbar button:hover{background:#e0e0e0;border-color:#999;}
+        #toolbar button.active{background:#d0e4ff;border-color:#3b82f6;}
+        #toolbar .sep{width:1px;height:18px;background:#ccc;margin:0 4px;}
+        #toolbar input[type=color]{width:26px;height:24px;padding:2px;border:1px solid #bbb;border-radius:5px;}
+        
+        .color-btn-red{background:#e11d48 !important;color:white !important;}
+        .color-btn-blue{background:#2563eb !important;color:white !important;}
+        .color-btn-green{background:#16a34a !important;color:white !important;}
+        .color-btn-purple{background:#9333ea !important;color:white !important;}
+        .color-btn-yellow{background:#fef08a !important;color:#854d0e !important;}
+        .color-btn-orange{background:#fed7aa !important;color:#9a3412 !important;}
+        .color-btn-lightblue{background:#bfdbfe !important;color:#1e40af !important;}
+        .color-btn-lightgreen{background:#d9f99d !important;color:#3f6212 !important;}
+        
+        /* 编辑区缩小50% - 初始面积1080px */
+        #scroll{flex:1;overflow-y:visible;padding:10px 12px 25px;min-height:1080px;}
+        h1{margin:0 0 8px;font-size:1.6rem;outline:none;min-height:2rem;}
+        hr{border:none;border-top:1.5px solid #000;margin:0 0 8px;}
+        #e{min-height:1000px;outline:none;font-size:14px;line-height:1.5;word-break:break-word;}
+        #e img{max-width:100%;display:block;margin:6px 0;border-radius:6px;}
+        [contenteditable]:empty:before{content:attr(placeholder);color:#aaa;white-space:pre-wrap;}
+        
+        #toast{position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:5px 12px;border-radius:20px;font-size:11px;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap;}
+        
+        @media (max-width: 860px) {
+            .app-container{max-width:100%;margin:0 10px;}
+        }
+        @media (max-width: 700px) {
+            .grid-5{grid-template-columns:repeat(3,1fr) !important;}
+            .grid-4{grid-template-columns:repeat(2,1fr) !important;}
+            #toolbar{overflow-x:auto;white-space:nowrap;flex-wrap:nowrap;}
+            .info-left,.info-right{flex-wrap:wrap;}
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+<div id="toast"></div>
+<div id="top">
+    <div id="info">
+        <div class="info-left">
+            <span class="author-wrap">
+                ✍️ <input type="text" id="authorInput" placeholder="笔记作者" value="xxx456xxx@gmail.com">
+                <button id="setAuthorBtn">确定</button>
+            </span>
+            <span class="info-badge">🧠 v<span id="versionTag">3.1</span></span>
+            <span class="info-badge">📄 <span id="realSize" class="sz">0 B</span></span>
+            <span class="info-badge">🔗 <span id="dataSize" class="sz">0 B</span></span>
+        </div>
+        <div class="info-right">
+            <span>⚡ Powered by DeepSeek</span>
+            <span>|</span>
+            <span>💡 灵感: xx123xx@.com</span>
+            <span>|</span>
+            <span>🌐 项目: xx123xx.com/note</span>
+        </div>
+    </div>
+    
+    <div class="grid-5">
+        <button class="btn" onclick="clearAll()"><span class="btn-main">🧹 Clear</span><small>清空</small></button>
+        <button class="btn" onclick="insertImage()"><span class="btn-main">🖼️ Insert Image</span><small>插入图片</small></button>
+        <button class="btn" onclick="restoreFromTextarea()"><span class="btn-main">♻️ Restore</span><small>从正文恢复</small></button>
+        <button class="btn" onclick="saveRestorePage()"><span class="btn-main">💾 Save Restore</span><small>保存恢复页</small></button>
+        <button class="btn" onclick="copyRestorePage()"><span class="btn-main">📋 Copy Restore</span><small>复制恢复链接</small></button>
+    </div>
+    
+    <div class="grid-4">
+        <button class="btn" onclick="saveEditor()"><span class="btn-main">💾 Save Editor</span><span id="sizeSave" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="copyEditor()"><span class="btn-main">📋 Copy Editor</span><span id="sizeCopy" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="exportEditor()"><span class="btn-main">📎 Export .DataText</span><span id="sizeExport" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="importEditor()"><span class="btn-main">📂 Import</span><small>导入编辑器</small></button>
+    </div>
+    
+    <div class="grid-4">
+        <button class="btn" onclick="savePage()"><span class="btn-main">📄 Save Page</span><span id="sizePageSave" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="copyPage()"><span class="btn-main">📋 Copy Page</span><span id="sizePageCopy" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="exportPage()"><span class="btn-main">📎 Export Page</span><span id="sizePageExport" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="importPage()"><span class="btn-main">📂 Import Page</span><small>导入纯页面</small></button>
+    </div>
+    
+    <div class="grid-4">
+        <button class="btn" onclick="saveText()"><span class="btn-main">📝 Save TEXT</span><span id="sizeTextSave" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="copyTextBtn()"><span class="btn-main">📋 Copy TEXT</span><span id="sizeTextCopy" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="exportText()"><span class="btn-main">📎 Export TEXT</span><span id="sizeTextExport" class="size-badge">0 B</span></button>
+        <button class="btn" onclick="importText()"><span class="btn-main">📂 Import TEXT</span><small>导入纯文本</small></button>
+    </div>
+    
+    <div id="toolbar">
+        <button onclick="execCmd('removeFormat')">🗑️清除</button>
+        <div class="sep"></div>
+        <button onclick="applyFontSize('16px')">16px</button>
+        <button onclick="applyFontSize('24px')">24px</button>
+        <button onclick="applyFontSize('32px')">32px</button>
+        <button onclick="promptFontSize()">自定义</button>
+        <div class="sep"></div>
+        <button class="color-btn-red" onclick="applyColor('foreColor','#e11d48')">🔴红</button>
+        <button class="color-btn-blue" onclick="applyColor('foreColor','#2563eb')">🔵蓝</button>
+        <button class="color-btn-green" onclick="applyColor('foreColor','#16a34a')">🟢绿</button>
+        <button class="color-btn-purple" onclick="applyColor('foreColor','#9333ea')">🟣紫</button>
+        <label><input type="color" id="fgColor" value="#000000"></label>
+        <div class="sep"></div>
+        <button class="color-btn-yellow" onclick="applyColor('hiliteColor','#fef08a')">🟡黄</button>
+        <button class="color-btn-orange" onclick="applyColor('hiliteColor','#fed7aa')">🟠橙</button>
+        <button class="color-btn-lightblue" onclick="applyColor('hiliteColor','#bfdbfe')">🔵蓝</button>
+        <button class="color-btn-lightgreen" onclick="applyColor('hiliteColor','#d9f99d')">🟢绿</button>
+        <label><input type="color" id="bgColor" value="#ffff00"></label>
+        <div class="sep"></div>
+        <button onclick="execCmd('bold')"><b>B</b></button>
+        <button onclick="execCmd('italic')"><i>I</i></button>
+        <button onclick="execCmd('underline')"><u>U</u></button>
+        <button onclick="execCmd('strikeThrough')"><s>S</s></button>
+        <div class="sep"></div>
+        <button onclick="execCmd('justifyLeft')">◀左</button>
+        <button onclick="execCmd('justifyCenter')">⏺中</button>
+        <button onclick="execCmd('justifyRight')">右▶</button>
+        <div class="sep"></div>
+        <button onclick="execCmd('insertUnorderedList')">•列表</button>
+        <button onclick="execCmd('insertOrderedList')">1.有序</button>
+        <button onclick="execCmd('outdent')">⇠缩出</button>
+        <button onclick="execCmd('indent')">缩进⇢</button>
+        <div class="sep"></div>
+        <button onclick="execCmd('superscript')">x²</button>
+        <button onclick="execCmd('subscript')">x₂</button>
+    </div>
+</div>
+
+<div id="scroll">
+    <h1 id="h" contenteditable="true" placeholder="📌 标题..." oninput="updateTitleAndSizes()"></h1>
+    <hr>
+    <div id="e" contenteditable="true" placeholder="✍️ 写笔记... 也可以粘贴 data:text/html;base64,... 然后点击 Restore 恢复完整页面" oninput="updateSizes()" onkeyup="syncToolbar()" onmouseup="syncToolbar()"></div>
+</div>
+
+<input type="file" id="fileInput" style="display:none" accept=".datatext,.txt">
+<a id="downloadLink" style="display:none"></a>
+</div>
+
+<script>
+var VERSION = "3.1";
+var h, e, realSpan, dataSpan, toast, fgPicker, bgPicker, authorInput, setAuthorBtn, downloadLink, fileInput;
+var currentAuthor = "xxx456xxx@gmail.com";
+
+function getPageTitle() {
+    var titleText = h ? h.innerText.trim() : '';
+    if(titleText && titleText.length > 0) return titleText;
+    return 'HyperNote_' + VERSION;
+}
+function getBrowserTitle() {
+    var titleText = h ? h.innerText.trim() : '';
+    if(titleText && titleText.length > 0) return titleText + ' · HyperNote';
+    return 'HyperNote · ' + VERSION;
+}
+function updateBrowserTitle() { document.title = getBrowserTitle(); }
+function updateTitleAndSizes() { updateBrowserTitle(); updateSizes(); }
+
+function getByteSize(str) { return new TextEncoder().encode(str).length; }
+function formatBytes(b){
+    if(b < 1024) return b.toFixed(0)+' B';
+    var units = ['KB','MB','GB']; var i = -1;
+    do{ b /= 1024; i++; } while(b >= 1024 && i < units.length-1);
+    return b.toFixed(2)+' '+units[i];
+}
+function colorBySize(bytes){
+    var mb = bytes/(1024*1024);
+    if(mb < 0.3) return '#2b8c4a';
+    if(mb < 1) return '#84cc16';
+    if(mb < 2.5) return '#eab308';
+    if(mb < 5) return '#3b82f6';
+    if(mb < 9) return '#f97316';
+    if(mb < 16) return '#dc2626';
+    return '#a855f7';
+}
+function showToast(msg, isErr){
+    if(!toast) return;
+    toast.innerText = msg;
+    toast.style.opacity = '1';
+    toast.style.background = isErr ? '#b91c1c' : '#1e293b';
+    clearTimeout(window._tt);
+    window._tt = setTimeout(function(){ if(toast) toast.style.opacity = '0'; }, 1800);
+}
+function b64Encode(str){
+    var enc = new TextEncoder();
+    var u8 = enc.encode(str);
+    var bin = '';
+    for(var i=0;i<u8.length;i+=0x8000){
+        var chunk = u8.subarray(i, Math.min(i+0x8000, u8.length));
+        bin += String.fromCharCode.apply(null, chunk);
+    }
+    return btoa(bin);
+}
+function decodeBase64(b64){
+    var bin = atob(b64);
+    var u8 = new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) u8[i]=bin.charCodeAt(i);
+    return new TextDecoder().decode(u8);
+}
+function copyToClipboard(text, hint){
+    try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(text).then(function(){
+                showToast(hint + ' (' + formatBytes(getByteSize(text)) + ')');
+            }).catch(function(){ fallbackCopy(text, hint); });
+        } else { fallbackCopy(text, hint); }
+    }catch(e){ showToast('复制失败', true); }
+}
+function fallbackCopy(text, hint){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok) showToast(hint + ' (' + formatBytes(getByteSize(text)) + ')');
+    else showToast('复制失败', true);
+}
+function downloadFile(name, content, mime){
+    if(!downloadLink) return;
+    var blob = new Blob([content], {type: mime || 'application/octet-stream'});
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = name;
+    downloadLink.click();
+    setTimeout(function(){ URL.revokeObjectURL(downloadLink.href); }, 500);
+}
+
+function generateRestorePageHTML() {
+    return '<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>恢复页面工具 · Restore Tool</title><style>*{box-sizing:border-box;} body{max-width:800px;margin:30px auto;padding:20px;font-family:system-ui;} textarea{width:100%;height:300px;padding:12px;font-family:monospace;font-size:13px;border:1px solid #ccc;border-radius:8px;} button{padding:10px 20px;margin:10px 5px;font-size:14px;cursor:pointer;background:#eee;border:1px solid #bbb;border-radius:6px;} button:hover{background:#ddd;} .btn-primary{background:#3b82f6;color:white;border-color:#2563eb;}</style></head><body><h1>📄 页面恢复工具</h1><p>粘贴 data:text/html;base64,... 链接或上传 .datatext 文件，点击下方按钮恢复完整页面</p><textarea id="restoreInput" placeholder="在此粘贴 data:text/html;base64,PGh0bWwg... 链接..."></textarea><br><button class="btn-primary" onclick="restoreFromInput()">♻️ Restore For TextArea</button><button onclick="importFromFile()">📂 Import .DataText</button><input type="file" id="fileInput" style="display:none" accept=".datatext,.txt"><script>function restoreFromInput(){var val=document.getElementById("restoreInput").value.trim();var match=val.match(/data:text\\/html;base64,[A-Za-z0-9+/=]+/);if(!match){alert("未找到有效的 DataText 链接");return;}try{var base64=match[0].split(",")[1];var html=atob(base64);var bytes=new Uint8Array(html.length);for(var i=0;i<html.length;i++)bytes[i]=html.charCodeAt(i);var decoded=new TextDecoder().decode(bytes);document.open();document.write(decoded);document.close();}catch(e){alert("恢复失败: "+e.message);}}function importFromFile(){var inp=document.getElementById("fileInput");inp.onchange=function(e){var file=e.target.files[0];if(!file)return;var rd=new FileReader();rd.onload=function(ev){var content=ev.target.result;if(!content.startsWith("data:")){alert("无效文件");return;}var base64=content.split(",")[1];var html=atob(base64);var bytes=new Uint8Array(html.length);for(var i=0;i<html.length;i++)bytes[i]=html.charCodeAt(i);var decoded=new TextDecoder().decode(bytes);document.open();document.write(decoded);document.close();};rd.readAsText(file);};inp.click();}<\/script></body></html>';
+}
+function saveRestorePage() { var html = generateRestorePageHTML(); downloadFile('restore_page.html', html, 'text/html'); }
+function copyRestorePage() { var html = generateRestorePageHTML(); var dataUrl = 'data:text/html;base64,' + b64Encode(html); copyToClipboard(dataUrl, '📋 复制 Restore Page DataText'); }
+
+function generateEditorHTML() {
+    var styleContent = document.querySelector('style').innerHTML;
+    var scriptContent = document.querySelector('script').innerHTML;
+    var titleHtml = h ? h.innerHTML : '';
+    var bodyHtml = e ? e.innerHTML : '';
+    var topHtml = document.getElementById('top').innerHTML;
+    var pageTitle = getPageTitle();
+    return '<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + pageTitle.replace(/</g,'&lt;') + ' · HyperNote</title><style>' + styleContent + '</style><script>' + scriptContent.replace(/<\/script/g,'<\\/script') + '<\/script></head><body><div class="app-container"><div id="toast"></div><div id="top">' + topHtml + '</div><div id="scroll"><h1 id="h" contenteditable="true">' + titleHtml.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</h1><hr><div id="e" contenteditable="true">' + bodyHtml + '</div></div><input type="file" id="fileInput" style="display:none" accept=".datatext,.txt"><a id="downloadLink" style="display:none"></a></div></body></html>';
+}
+
+function generatePageHTML() {
+    if(!e) return '';
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = e.innerHTML;
+    var urlRegex = /(https?:\/\/[^\s<>"'“”]+)/g;
+    function convert(node){
+        if(node.nodeType === 3){
+            var text = node.nodeValue;
+            if(text && urlRegex.test(text)){
+                var frag = document.createDocumentFragment();
+                var last=0, match;
+                urlRegex.lastIndex=0;
+                while((match = urlRegex.exec(text)) !== null){
+                    if(last < match.index) frag.appendChild(document.createTextNode(text.substring(last, match.index)));
+                    var a = document.createElement('a');
+                    a.href = match[0];
+                    a.target = '_blank';
+                    a.style.color = '#2563eb';
+                    a.innerText = match[0];
+                    frag.appendChild(a);
+                    last = match.index + match[0].length;
+                }
+                if(last < text.length) frag.appendChild(document.createTextNode(text.substring(last)));
+                node.parentNode.replaceChild(frag, node);
+            }
+        } else if(node.nodeType === 1 && !['a','button','script'].includes(node.tagName.toLowerCase())){
+            node.childNodes.forEach(convert);
+        }
+    }
+    tempDiv.childNodes.forEach(convert);
+    var bodyHtml = tempDiv.innerHTML;
+    var titleHtml = h ? h.innerHTML : '无标题';
+    var pageTitle = getPageTitle();
+    var fullHtmlForSize = generateEditorHTML();
+    var realBytes = getByteSize(fullHtmlForSize);
+    var dataUrlForSize = 'data:text/html;base64,' + b64Encode(fullHtmlForSize);
+    var dataBytes = getByteSize(dataUrlForSize);
+    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + pageTitle.replace(/</g,'&lt;') + '</title><style>body{max-width:1100px;margin:30px auto;padding:20px;font-family:system-ui;line-height:1.6;font-size:16px;} img{max-width:100%;border-radius:8px;} a{color:#2563eb;text-decoration:none;} a:hover{text-decoration:underline;} hr{margin:20px 0;} .page-footer{background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);padding:16px 20px;border-radius:12px;margin-top:30px;font-size:14px;color:#495057;text-align:center;border:1px solid #dee2e6;} .page-footer-row{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;margin-bottom:10px;} .page-footer-item{display:inline-flex;align-items:center;gap:6px;}</style></head><body><h1 style="font-size:2rem;">' + titleHtml + '</h1><hr>' + bodyHtml + '<div class="page-footer"><div class="page-footer-row"><span class="page-footer-item">✍️ 笔记作者: ' + currentAuthor.replace(/</g,'&lt;') + '</span><span class="page-footer-item">🧠 HyperNote · ' + VERSION + '</span><span class="page-footer-item">📄 Real.Size: ' + formatBytes(realBytes) + '</span><span class="page-footer-item">🔗 DataText: ' + formatBytes(dataBytes) + '</span></div><div class="page-footer-row"><span class="page-footer-item">⚡ Powered by DeepSeek</span><span class="page-footer-item">💡 灵感: xx123xx@.com</span><span class="page-footer-item">🌐 项目: xx123xx.com/note</span></div></div></body></html>';
+}
+
+function getPlainText() { return e ? e.innerText : ''; }
+
+function updateSizes() {
+    try{
+        if(!h || !e) return;
+        var fullHtml = generateEditorHTML();
+        var dataUrl = 'data:text/html;base64,' + b64Encode(fullHtml);
+        var realBytes = getByteSize(fullHtml);
+        var dataBytes = getByteSize(dataUrl);
+        if(realSpan) { realSpan.innerText = formatBytes(realBytes); realSpan.style.color = colorBySize(realBytes); }
+        if(dataSpan) { dataSpan.innerText = formatBytes(dataBytes); dataSpan.style.color = colorBySize(dataBytes); }
+        var sizeSave = document.getElementById('sizeSave');
+        var sizeCopy = document.getElementById('sizeCopy');
+        var sizeExport = document.getElementById('sizeExport');
+        if(sizeSave) { sizeSave.innerHTML = formatBytes(realBytes); sizeSave.style.color = colorBySize(realBytes); }
+        if(sizeCopy) { sizeCopy.innerHTML = formatBytes(dataBytes); sizeCopy.style.color = colorBySize(dataBytes); }
+        if(sizeExport) { sizeExport.innerHTML = formatBytes(dataBytes); sizeExport.style.color = colorBySize(dataBytes); }
+        var pageHtml = generatePageHTML();
+        var pageDataUrl = 'data:text/html;base64,' + b64Encode(pageHtml);
+        var pageBytes = getByteSize(pageHtml);
+        var pageDataBytes = getByteSize(pageDataUrl);
+        var sizePageSave = document.getElementById('sizePageSave');
+        var sizePageCopy = document.getElementById('sizePageCopy');
+        var sizePageExport = document.getElementById('sizePageExport');
+        if(sizePageSave) { sizePageSave.innerHTML = formatBytes(pageBytes); sizePageSave.style.color = colorBySize(pageBytes); }
+        if(sizePageCopy) { sizePageCopy.innerHTML = formatBytes(pageDataBytes); sizePageCopy.style.color = colorBySize(pageDataBytes); }
+        if(sizePageExport) { sizePageExport.innerHTML = formatBytes(pageDataBytes); sizePageExport.style.color = colorBySize(pageDataBytes); }
+        var plain = getPlainText();
+        var textDataUrl = 'data:text/plain;base64,' + b64Encode(plain);
+        var textBytes = getByteSize(plain);
+        var textDataBytes = getByteSize(textDataUrl);
+        var sizeTextSave = document.getElementById('sizeTextSave');
+        var sizeTextCopy = document.getElementById('sizeTextCopy');
+        var sizeTextExport = document.getElementById('sizeTextExport');
+        if(sizeTextSave) { sizeTextSave.innerHTML = formatBytes(textBytes); sizeTextSave.style.color = colorBySize(textBytes); }
+        if(sizeTextCopy) { sizeTextCopy.innerHTML = formatBytes(textDataBytes); sizeTextCopy.style.color = colorBySize(textDataBytes); }
+        if(sizeTextExport) { sizeTextExport.innerHTML = formatBytes(textDataBytes); sizeTextExport.style.color = colorBySize(textDataBytes); }
+    }catch(err){ console.warn(err); }
+}
+
+function clearAll() { if(confirm('清空所有内容？')){ if(h) h.innerHTML=''; if(e) e.innerHTML=''; updateTitleAndSizes(); showToast('已清空'); } }
+function insertImage() { var input = document.createElement('input'); input.type='file'; input.accept='image/*'; input.onchange=function(){ var file=this.files[0]; if(!file) return; var rd=new FileReader(); rd.onload=function(ev){ var img=document.createElement('img'); img.src=ev.target.result; img.style.maxWidth='100%'; var sel=window.getSelection(); if(sel&&sel.rangeCount>0&&e&&e.contains(sel.anchorNode)){ var range=sel.getRangeAt(0); range.deleteContents(); range.insertNode(img); range.setStartAfter(img); range.collapse(true); sel.removeAllRanges(); sel.addRange(range); } else if(e){ e.appendChild(img); } updateSizes(); }; rd.readAsDataURL(file); }; input.click(); }
+function restoreFromTextarea() { if(!e) return; var bodyText=e.innerText; var match=bodyText.match(/data:text\/html;base64,[A-Za-z0-9+/=]+/); if(!match){ showToast('未找到DataText链接', true); return; } try{ var base64=match[0].split(',')[1]; var html=decodeBase64(base64); document.open(); document.write(html); document.close(); }catch(err){ showToast('恢复失败', true); } }
+function saveEditor() { var html = generateEditorHTML(); downloadFile(getPageTitle() + '_editor.html', html, 'text/html'); }
+function copyEditor() { var html = generateEditorHTML(); var dataUrl = 'data:text/html;base64,'+b64Encode(html); copyToClipboard(dataUrl, '📋 复制 Editor DataText'); }
+function exportEditor() { var html = generateEditorHTML(); var dataUrl = 'data:text/html;base64,'+b64Encode(html); downloadFile(getPageTitle() + '.datatext', dataUrl); }
+function importEditor() { if(fileInput) { fileInput.onchange = function(e){ importFile(e.target.files[0], 'editor'); fileInput.value=''; }; fileInput.click(); } }
+function savePage() { var html = generatePageHTML(); downloadFile(getPageTitle() + '_page.html', html, 'text/html'); }
+function copyPage() { var html = generatePageHTML(); var dataUrl = 'data:text/html;base64,'+b64Encode(html); copyToClipboard(dataUrl, '📋 复制 Page DataText'); }
+function exportPage() { var html = generatePageHTML(); var dataUrl = 'data:text/html;base64,'+b64Encode(html); downloadFile(getPageTitle() + '_page.datatext', dataUrl); }
+function importPage() { if(fileInput) { fileInput.onchange = function(e){ importFile(e.target.files[0], 'page'); fileInput.value=''; }; fileInput.click(); } }
+function saveText() { var txt = getPlainText(); downloadFile(getPageTitle() + '.txt', txt, 'text/plain'); }
+function copyTextBtn() { var txt = getPlainText(); var dataUrl = 'data:text/plain;base64,'+b64Encode(txt); copyToClipboard(dataUrl, '📋 复制 TEXT DataText'); }
+function exportText() { var txt = getPlainText(); var dataUrl = 'data:text/plain;base64,'+b64Encode(txt); downloadFile(getPageTitle() + '_text.datatext', dataUrl); }
+function importText() { if(fileInput) { fileInput.onchange = function(e){ importFile(e.target.files[0], 'text'); fileInput.value=''; }; fileInput.click(); } }
+function importFile(file, mode){ if(!file) return; var rd=new FileReader(); rd.onload=function(ev){ var content=ev.target.result; if(!content.startsWith('data:')){ showToast('无效文件', true); return; } try{ var base64=content.split(',')[1]; var decoded=decodeBase64(base64); if(mode==='editor'){ document.open(); document.write(decoded); document.close(); } else if(mode==='page'){ var parser=new DOMParser(); var doc=parser.parseFromString(decoded,'text/html'); var newH1=doc.querySelector('h1'); if(newH1&&h) h.innerHTML=newH1.innerHTML; var newBody=doc.body.innerHTML; if(e) e.innerHTML=newBody; updateTitleAndSizes(); showToast('导入 Page 成功'); } else if(mode==='text'){ if(e) e.innerText=decoded; updateSizes(); showToast('导入 Text 成功'); } }catch(err){ showToast('解析失败', true); } }; rd.readAsText(file); }
+
+function execCmd(cmd) { if(e) e.focus(); document.execCommand(cmd, false, null); updateSizes(); syncToolbar(); }
+function applyColor(cmd, val) { if(e) e.focus(); document.execCommand(cmd, false, val); updateSizes(); }
+function applyFontSize(val){ if(!val) return; if(/^\d+$/.test(val)) val+='px'; if(!e) return; e.focus(); var sel=window.getSelection(); if(!sel||sel.rangeCount===0) return; var range=sel.getRangeAt(0); if(!e.contains(range.commonAncestorContainer)) return; try{ var span=document.createElement('span'); span.style.fontSize=val; span.style.lineHeight='1.4'; range.surroundContents(span); }catch(err){ document.execCommand('fontSize',false,'7'); var fonts=e.querySelectorAll('font[size="7"]'); for(var i=0;i<fonts.length;i++){ fonts[i].removeAttribute('size'); fonts[i].style.fontSize=val; fonts[i].style.lineHeight='1.4'; } } updateSizes(); }
+function promptFontSize(){ var v = prompt('输入字号'); if(v) applyFontSize(v.trim()); }
+function syncToolbar(){ var cmds=['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight','insertUnorderedList','insertOrderedList','superscript','subscript']; for(var i=0;i<cmds.length;i++){ var cmd=cmds[i]; var btn=document.querySelector('#toolbar button[onclick*="'+cmd+'"]'); if(btn) btn.classList.toggle('active', document.queryCommandState(cmd)); } }
+
+document.addEventListener('DOMContentLoaded', function(){
+    h = document.getElementById('h'); e = document.getElementById('e');
+    realSpan = document.getElementById('realSize'); dataSpan = document.getElementById('dataSize');
+    toast = document.getElementById('toast'); fgPicker = document.getElementById('fgColor'); bgPicker = document.getElementById('bgColor');
+    authorInput = document.getElementById('authorInput'); setAuthorBtn = document.getElementById('setAuthorBtn');
+    downloadLink = document.getElementById('downloadLink'); fileInput = document.getElementById('fileInput');
+    var versionEl = document.getElementById('versionTag'); if(versionEl) versionEl.innerText = VERSION;
+    if(authorInput) authorInput.value = currentAuthor;
+    if(setAuthorBtn) setAuthorBtn.onclick = function(){ var v = authorInput.value.trim(); if(v) currentAuthor=v; showToast('👤 作者: '+currentAuthor); updateSizes(); };
+    if(fgPicker) fgPicker.oninput = function(e){ applyColor('foreColor', e.target.value); };
+    if(bgPicker) bgPicker.oninput = function(e){ applyColor('hiliteColor', e.target.value); };
+    updateBrowserTitle();
+    updateSizes(); syncToolbar();
+});
+window.addEventListener('beforeunload', function(ev){ if(h && (h.innerText.trim().length>0 || (e && e.innerText.trim().length>0))){ ev.preventDefault(); return ''; } });
+</script>
+</body>
+</html>

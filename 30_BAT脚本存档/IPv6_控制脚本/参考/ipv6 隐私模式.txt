@@ -1,0 +1,18 @@
+https://www.admin-magazine.com/Archive/2015/25/Configuring-IPv6-in-Windows-with-NetShell/(offset)/3
+https://www.colorconsole.de/cmd/en/Windows_7/netsh/interface/ipv6/set/privacy.htm
+https://serverfault.com/questions/678365/how-to-disable-temporary-ipv6-address-in-win7
+https://support.binarylane.com.au/support/solutions/articles/1000100517-disable-ipv6-privacy-extension-in-windows
+
+
+echo ipv6 是否使用 隐私模式 临时地址
+netsh interface ipv6 set privacy state=enable
+netsh interface ipv6 set privacy state=disable
+
+echo ipv6 是否使用 随机标识符
+随机标识符只能在全局范围内停用。命令的输出：
+netsh interface ipv6 set global randomizeidentifiers=disable
+netsh interface ipv6 set global randomizeidentifiers=enable
+
+
+echo 设置临时地址有效期
+netsh interface ipv6 set privacy maxvalidlifetime=1d

@@ -1,0 +1,37 @@
+echo 设置主要IP地址和网络掩码。
+netsh interface ip set address "以太网" source=static addr=192.168.1.99 mask=255.255.255.0
+
+echo 添加额外IP地址和掩码
+netsh interface ip add address "%interface%"  addr=%OtherIP% mask=%OtherIPMask%
+
+echo 添加网关地址1
+netsh interface ip add address name="以太网" gateway=192.168.1.33 gwmetric=1
+echo 添加网关地址2
+netsh interface ip add address name="%interface%" gateway=%OtherGateway% gwmetric=2
+
+echo 设置DNS地址
+netsh interface ip set dns name="以太网" source=static addr=192.168.1.131
+echo 添加额外DNS地址
+netsh interface ip add dns name="以太网" addr=192.168.1.130
+netsh interface ip add dns name="%interface%" addr=%OtherDNS2%
+netsh interface ip add dns name="%interface%" addr=%OtherDNS3%
+
+
+以太网2：
+echo 设置主要IP地址和网络掩码。
+netsh interface ip set address "以太网 2" source=static addr=192.168.88.99 mask=255.255.255.0
+
+echo 添加额外IP地址和掩码
+netsh interface ip add address "%interface%"  addr=%OtherIP% mask=%OtherIPMask%
+
+echo 添加网关地址1
+netsh interface ip add address name="以太网 2" gateway=192.168.88.33 gwmetric=1
+echo 添加网关地址2
+netsh interface ip add address name="%interface%" gateway=%OtherGateway% gwmetric=2
+
+echo 设置DNS地址
+netsh interface ip set dns name="以太网 2" source=static addr=192.168.88.131
+echo 添加额外DNS地址
+netsh interface ip add dns name="以太网 2" addr=192.168.88.130
+netsh interface ip add dns name="%interface%" addr=%OtherDNS2%
+netsh interface ip add dns name="%interface%" addr=%OtherDNS3%

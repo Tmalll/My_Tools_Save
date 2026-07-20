@@ -1,0 +1,453 @@
+[
+  {
+    "settings": {
+      "disableAll": false,
+      "exposeIframes": false,
+      "exposeStyleName": false,
+      "keepAlive": 0,
+      "keepAliveIdle": false,
+      "newStyleAsUsercss": false,
+      "openEditInWindow": false,
+      "openEditInWindow.popup": false,
+      "patchCsp": false,
+      "show-badge": true,
+      "styleViaASS": false,
+      "styleViaXhr": false,
+      "urlInstaller": true,
+      "windowPosition": {},
+      "compactWidth": 850,
+      "config.autosave": true,
+      "schemeSwitcher.enabled": "system",
+      "schemeSwitcher.nightStart": "18:00",
+      "schemeSwitcher.nightEnd": "06:00",
+      "popup.enabledFirst": true,
+      "popup.stylesFirst": true,
+      "popup.autoResort": false,
+      "popup.borders": false,
+      "popup.findSort": "w",
+      "manage.onlyEnabled": false,
+      "manage.onlyLocal": false,
+      "manage.onlyUsercss": false,
+      "manage.onlyEnabled.invert": false,
+      "manage.onlyLocal.invert": false,
+      "manage.onlyUsercss.invert": false,
+      "manage.actions.expanded": false,
+      "manage.backup.expanded": true,
+      "manage.filters.expanded": true,
+      "manage.links.expanded": true,
+      "manage.minColumnWidth": 750,
+      "manage.newUI": true,
+      "manage.newUI.favicons": true,
+      "manage.newUI.faviconsGray": false,
+      "manage.newUI.targets": 3,
+      "manage.newUI.sort": "title,asc",
+      "manage.searchMode": "meta",
+      "editor.options": {},
+      "editor.toc.expanded": false,
+      "editor.options.expanded": true,
+      "editor.options.style.expanded": true,
+      "editor.lint.expanded": true,
+      "editor.publish.expanded": true,
+      "editor.lineWrapping": true,
+      "editor.smartIndent": true,
+      "editor.indentWithTabs": false,
+      "editor.tabSize": 4,
+      "editor.keyMap": "default",
+      "editor.theme": "default",
+      "editor.beautify": {
+        "selector_separator_newline": true,
+        "newline_before_open_brace": false,
+        "newline_after_open_brace": true,
+        "newline_between_properties": true,
+        "newline_before_close_brace": true,
+        "newline_between_rules": false,
+        "preserve_newlines": true,
+        "end_with_newline": false,
+        "indent_conditional": true,
+        "indent_mozdoc": true,
+        "space_around_combinator": true,
+        "space_around_cmp": false
+      },
+      "editor.beautify.hotkey": "",
+      "editor.lintDelay": 300,
+      "editor.linter": "csslint",
+      "editor.lintReportDelay": 500,
+      "editor.matchHighlight": "token",
+      "editor.autoCloseBrackets": true,
+      "editor.autocompleteOnTyping": false,
+      "editor.contextDelete": false,
+      "editor.selectByTokens": true,
+      "editor.arrowKeysTraverse": true,
+      "editor.appliesToLineWidget": true,
+      "editor.autosaveDraft": 10,
+      "editor.livePreview": true,
+      "editor.livePreview.delay": 0.2,
+      "editor.targetsFirst": true,
+      "editor.colorpicker": true,
+      "editor.colorpicker.hexUppercase": false,
+      "editor.colorpicker.hotkey": "",
+      "editor.colorpicker.color": "",
+      "editor.colorpicker.maxHeight": 300,
+      "hotkey._execute_browser_action": "",
+      "hotkey.openManage": "",
+      "hotkey.styleDisableAll": "",
+      "sync.enabled": "none",
+      "iconset": -1,
+      "badgeDisabled": "#8B0000",
+      "badgeNormal": "#006666",
+      "headerWidth.edit": 280,
+      "headerWidth.install": 280,
+      "headerWidth.manage": 280,
+      "popup.search.globals": false,
+      "popupWidth": 246,
+      "popupWidthMax": 280,
+      "updateInterval": 24,
+      "updateOnlyEnabled": false
+    },
+    "order": {
+      "main": [],
+      "prio": []
+    }
+  },
+  {
+    "enabled": false,
+    "installDate": 1653987817201,
+    "name": "雅黑",
+    "sections": [
+      {
+        "code": "*:not([class*=\"icon\"]):not([class*=\"star\"]):not([class*=\"button\"]):not(i) {\n    font-family: \"微软雅黑\", \"Arial\",\n    \"controlIcons\", \"Google Sans\", \"Roboto\", \"sans-serif\", \"RobotoDraft\", \"Helvetica\",\n    \"Material Icons Extended\", \"FabricMDL2Icons\",\n    \"Arial\", \"Bowtie\", \"fontAwesome\", \"global-iconfont\", \"iknow-qb_share_icons\", \"Segoe UI\", \"languagefont\", \"sqm\", \"Font Awesome 5 Free\", \"Material Icons Extended\",\n    \"Material Icons Extended\", \"mui-act-font\", \"MWF-MDL2\", \"myfont\", \"office365icons\",\n    \"review-iconfont\", \"sans-serif\", \"stonefont\", \"tm-detail-font\", \"Font Awesome 5 Pro\", \"open sans\", \"lagom-small-icons\" !important;\n}"
+      }
+    ],
+    "updateDate": 1722171201731,
+    "_id": "270efc0a-62e5-469c-8103-f50a2b64e8ab",
+    "_rev": 1765861458814,
+    "id": 1,
+    "exclusions": [
+      "https://home.miaosky.party:38443/*",
+      "*://*.google.com/*",
+      "https://wiki.pixelexperience.org/*",
+      "https://fanqienovel.com/*",
+      "https://music.youtube.com/*",
+      "https://my.vultr.com/*",
+      "https://www.jd.com/*",
+      "https://www.chiphell.com/*",
+      "https://earth.google.com/*",
+      "https://www.nodeseek.com/*",
+      "http://192.168.1.201:8384/*"
+    ]
+  },
+  {
+    "enabled": false,
+    "installDate": 1741613232383,
+    "name": "雅黑2025-AI优化版",
+    "sections": [
+      {
+        "code": "*:not([class*=\"icon\"]):not([class*=\"star\"]):not([class*=\"button\"]):not(i) {\n    font-family: \"微软雅黑\", \"Arial\", \"controlIcons\", \"Google Sans\", \"Roboto\", \n                 \"sans-serif\", \"RobotoDraft\", \"Helvetica\", \"Material Icons Extended\", \n                 \"FabricMDL2Icons\", \"Bowtie\", \"fontAwesome\", \"global-iconfont\", \n                 \"iknow-qb_share_icons\", \"Segoe UI\", \"languagefont\", \"sqm\", \n                 \"Font Awesome 5 Free\", \"mui-act-font\", \"MWF-MDL2\", \"myfont\", \n                 \"office365icons\", \"review-iconfont\", \"stonefont\", \"tm-detail-font\", \n                 \"Font Awesome 5 Pro\", \"open sans\", \"lagom-small-icons\" !important;\n}\n"
+      }
+    ],
+    "updateDate": 1742361001427,
+    "_id": "2d127c56-8727-4d8e-aced-bde2dca2dd36",
+    "_rev": 1765861457340,
+    "id": 2,
+    "exclusions": [
+      "https://home.miaosky.party:38443/*",
+      "*://*.google.com/*",
+      "https://wiki.pixelexperience.org/*",
+      "https://fanqienovel.com/*",
+      "https://music.youtube.com/*",
+      "https://my.vultr.com/*",
+      "https://www.jd.com/*",
+      "https://www.chiphell.com/*",
+      "https://earth.google.com/*",
+      "https://www.nodeseek.com/*",
+      "http://192.168.1.201:8384/*",
+      "https://learn.microsoft.com/*",
+      "https://account.live.com/*",
+      "https://zh.wikisource.org/*",
+      "https://d2r.world/*",
+      "https://rclone.org/*",
+      "https://onedrive.live.com/*"
+    ]
+  },
+  {
+    "enabled": true,
+    "installDate": 1764697411086,
+    "sections": [
+      {
+        "code": ""
+      }
+    ],
+    "sourceCode": "/* ==UserStyle==\n@name           Youtube Small Thumbnails\n@namespace      youtube.com\n@version        0.9.8\n@description    small thumbnails for youtube\n@author         hdyzen\n@preprocessor \tstylus\n\n@var number rowsHomePag \t\t'Columns' [6, 1, 12, 1]\n@var number horizontalM\t\t\t'Horizontal margin columns' [8, 0, 200, 1, 'px']\n@var number verticalM\t\t\t'Vertival margin rows' [10, 0, 200, 1, 'px']\n@var number fontSizeT \t\t\t'Font size title' [1.4, 1, 6, 0.1, 'rem']\n@var number fontSizeM \t\t\t'Font size metadata' [1.3, 1, 6, 0.1, 'rem']\n@var number fontWeightT \t\t'Font weight title' [500, 100, 900, 100]\n@var number fontWeightM \t\t'Font weight metadata' [400, 100, 900, 100]\n@var number thumbSizeS\t\t\t'Thumb size search page' [240, 50, 900, 1, 'px']\n\n@var checkbox searchTwoColumns\t'Two columns in search page' 0\n\t\t\n@var checkbox videoP\t\t\t'Hide video preview when hover thumbnail' 0\n\t\t\n@var select viewedVideo \t\t'Video viewed mode' ['None', 'Grayscale', 'Remove']\n@var select viewedGrayS \t\t'Video viewed grayscale style' ['Default', 'Thumbnail', 'Slider', 'ThumbSlider:Thumb+Slider']\n@var range viewedGray\t\t\t'Video viewed grayscale' [80, 0, 100, 1, '%']\n\t\t\n@var range widthContH\t\t\t'Width container videos home page' [100, 0, 100, 1, '%']\n\t\t\n@var checkbox bloatH\t\t\t'Remove banner and survey' 0\n@var checkbox shorts            'Remove shorts' 0\n@var checkbox autoDubbedVideos\t'Remove videos autodub' 0\n@var checkbox mixPlaylist \t\t'Remove mix playlists' 0\n@var checkbox onlyMembers       'Remove for only members' 0\n@var checkbox recommendedVideos 'Remove recommended videos in search page' 0\n\n==/UserStyle== */\n@-moz-document domain(\"youtube.com\") {\t\n\ti=!important;\n\n\t/* Set columns */\n\thtml {\n\t\t--ytd-rich-grid-item-margin: horizontalM i;\n\t\t--ytd-rich-grid-item-margin-row: verticalM i;\n\t}\n\t:is(ytd-rich-grid-renderer, ytd-grid-video-renderer, ytd-rich-item-renderer, ytd-grid-playlist-renderer.yt-horizontal-list-renderer, ytd-reel-item-renderer) {\n\t\t--ytd-rich-grid-items-per-row: rowsHomePag i;\n\t}\n    ytd-grid-video-renderer:not(.ytd-downloaded-video-grid-video-renderer), ytd-rich-item-renderer, ytd-grid-playlist-renderer.yt-horizontal-list-renderer, :is(ytd-search, [page-subtype=\"channels\"]) ytd-reel-item-renderer {\n\t\t--ytd-grid-video-width: calc(100% / var(--ytd-rich-grid-items-per-row) - var(--ytd-rich-grid-item-margin)) i;\n\t\twidth: calc(100% / var(--ytd-rich-grid-items-per-row) - var(--ytd-rich-grid-item-margin)) i;\n\t\t\n\t\t& ytd-thumbnail, & ytd-playlist-thumbnail {\n\t\t\twidth: 100% i;\n\t\t\theight: max-content i;\n\t\t\taspect-ratio: 16/9 i;\n\t\t\t\n\t\t\t&::before {\n\t\t\t\tdisplay: none i;\n\t\t\t}\n\t\t\t\n\t\t\t& #thumbnail, & #playlist-thumbnails, & ytd-playlist-video-thumbnail-renderer {\n\t\t\t\tposition: relative i;\n\t\t\t}\n\t\t}\n\t}\n\tytd-rich-item-renderer[rendered-from-rich-grid] {\n\t\tmargin: 0 i;\n\t}\n\t#scroll-container {\n\t\twidth: 100% i;\n\t\t\n\t\t#items {\n\t\t\twidth: 100% i;\n\t\t}\n\t}\n\t#contents.ytd-rich-grid-renderer {\n\t\tcolumn-gap: var(--ytd-rich-grid-item-margin) i;\n\t\trow-gap: var(--ytd-rich-grid-item-margin-row) i;\n\t\tdisplay: flex i;\n\t}\n\tytd-rich-grid-row.style-scope.ytd-rich-grid-renderer,\n\tytd-rich-grid-row.style-scope.ytd-rich-grid-renderer > #contents {\n\t\tdisplay: contents i;\n\t}\n\tytd-rich-grid-row ytd-rich-item-renderer {\n\t\tmargin: 0 i;\n\t\twidth: calc(100% / var(--ytd-rich-grid-items-per-row) - var(--ytd-rich-grid-item-margin)) i;\n\t}\n\tytd-browse[page-subtype=\"home\"] ytd-rich-grid-renderer {\n\t\tmargin: 0 24px;\n\t}\n\tytd-browse[page-subtype=\"home\"] ytd-rich-section-renderer > #content {\n\t\tmargin-inline: 0 i;\n\t}\n\tytd-feed-filter-chip-bar-renderer[fluid-width] #chips-content.ytd-feed-filter-chip-bar-renderer {\n\t\tpadding: 0;\n\t}\n\t/* VIDEOS CONTAINER HOME PAGE */\n\tytd-two-column-browse-results-renderer {\n\t\twidth: widthContH i;\n\t}\n\t/* TITLE */\n\t#video-title.ytd-rich-grid-media,\n\t#video-title.ytd-radio-renderer,\n\t#video-title.ytd-video-renderer,\n\t#channel-title.ytd-channel-renderer,\n\t#video-title.ytd-playlist-renderer,\n\t#video-title.ytd-compact-video-renderer,\n\t#video-title.ytd-playlist-panel-video-renderer,\n\tytd-grid-video-renderer #video-title.yt-simple-endpoint.ytd-grid-video-renderer,\n \t.yt-lockup-metadata-view-model-wiz__title,\n \t.yt-lockup-metadata-view-model__title {\n\t\tfont-size: fontSizeT i;\n\t\tfont-weight: fontWeightT i;\n\t}\n\t/* DETAILS */\n\tytd-video-meta-block[rich-meta] #byline-container.ytd-video-meta-block,\n\tytd-video-meta-block:not([inline-badges]) #metadata-line.ytd-video-meta-block span.ytd-video-meta-block,\n\t#contents #text.ytd-channel-name:has(a),\n\t#metadata-line,\n\t.metadata-snippet-container-one-line.ytd-video-renderer,\n\t.metadata-snippet-container.ytd-video-renderer,\n\t#metadata.ytd-channel-renderer,\n\t#description.ytd-channel-renderer,\n\t#video-title.ytd-child-video-renderer,\n\t#length.ytd-child-video-renderer,\n\t#channel-name.long-byline.ytd-video-meta-block,\n\t#byline.ytd-playlist-panel-video-renderer,\n \t.yt-content-metadata-view-model-wiz--medium-text .yt-content-metadata-view-model-wiz__metadata-text,\n \t.yt-content-metadata-view-model--medium-text .yt-content-metadata-view-model__metadata-text {\n\t\tfont-size: fontSizeM i;\n\t\tfont-weight: fontWeightM i;\n\t}\n\t/* SIZE THUMB VIDEOS SEARCH PAGE */\n\tytd-radio-renderer {\n\t\t--ytd-thumbnail-max-width: 240px i;\n\t\t--ytd-thumbnail-min-width 240px i;\n\t}\n\tytd-search .ytd-movie-renderer {\n\t\tmax-width: var(--ytd-thumbnail-max-width) i;\n\t\tmin-width: var(--ytd-thumbnail-min-width) i;\n\t\t--ytd-thumbnail-max-width: 240px i;\n\t\t--ytd-thumbnail-min-width 240px i;\n\t}\n\tytd-search :is(ytd-video-renderer[use-search-ui] ytd-thumbnail.ytd-video-renderer,\n\tytd-playlist-renderer[is-search] ytd-playlist-thumbnail.ytd-playlist-renderer,\n\t#avatar-section.ytd-channel-renderer,\n\tytd-video-renderer:not([use-search-ui]) ytd-thumbnail.ytd-video-renderer,\n\tytd-thumbnail.ytd-radio-renderer,\n\tytd-playlist-thumbnail.ytd-radio-renderer,\n\tyt-lockup-view-model > div > a.yt-lockup-view-model-wiz__content-image,\n\t.yt-lockup-view-model--horizontal .yt-lockup-view-model__content-image) {\n\t\tmax-width: thumbSizeS i;\n\t\tmin-width: thumbSizeS i;\n\t}\n\t/* TWO COLUMNS IN SEARCH PAGE */\n\tif searchTwoColumns {\n\t\tytd-item-section-renderer.ytd-section-list-renderer > #contents.ytd-item-section-renderer,\n\t\tytd-vertical-list-renderer.ytd-shelf-renderer > #items.ytd-vertical-list-renderer {\n\t\t\tdisplay: flex i;\n\t\t\tflex-wrap: wrap i;\n\t\t\tgap: var(--ytd-item-section-item-margin, 16px) i;\n\n\t\t\t& > ytd-video-renderer,\n\t\t\t& > ytd-radio-renderer,\n\t\t\t& > ytd-playlist-renderer {\n\t\t\t\tflex: 1 0 calc((100% - var(--ytd-item-section-item-margin, 16px)) / 2) i;\n\t\t\t\tmargin: 0 i;\n\t\t\t\tmax-width: calc((100% - var(--ytd-item-section-item-margin, 16px)) / 2);\n\t\t\t}\n\t\t\t& > ytd-reel-shelf-renderer {\n\t\t\t\tmax-width: 100%;\n\t\t\t}\n\t\t}\n\t\tytd-vertical-list-renderer.ytd-shelf-renderer > #items.ytd-vertical-list-renderer {\n\t\t\tdisplay: flex i;\n\t\t\tflex-wrap: wrap i;\n\t\t\tgap: var(--ytd-item-section-item-margin, 16px) i;\n\n\t\t\t& > ytd-video-renderer {\n\t\t\t\tflex: 1 0 calc((100% - var(--ytd-item-section-item-margin, 16px)) / 2) i;\n\t\t\t\tmargin: 0 i;\n\t\t\t}\n\t\t}\n\t}\n\t/* VIDEO PREVIEW THUMBNAIL */\n\tif videoP {\n\t\t#video-preview.ytd-app {\n\t\t\tdisplay: none i;\n\t\t}\n\t}\n\t\n\tselectorViewed = ':is(ytd-rich-item-renderer, ytd-compact-video-renderer, ytd-playlist-panel-video-renderer, ytd-video-renderer):has(#progress)';\n\tif viewedVideo=='Grayscale' {\n\t\t/* VIEWED VIDEOS */\n\t\t/* CONTAINER VIDEO ITEM */\n\t\tif viewedGrayS=='Default' {\n\t\t\t{selectorViewed} {\n\t\t\t\tfilter: grayscale(viewedGray) i;\n\t\t\t}\n\t\t}\n\t\t/* VIDEO VIEWED SLIDER */\n\t\telse if viewedGrayS=='Slider' {\n\t\t\tytd-thumbnail-overlay-resume-playback-renderer {\n\t\t\t\tfilter: grayscale(viewedGray) i;\n\t\t\t}\n\t\t}\n\t\t/* THUMBNAIL */\n\t\telse if viewedGrayS=='Thumbnail' {\n\t\t\t{selectorViewed}  yt-image.style-scope.ytd-thumbnail {\n\t\t\t\tfilter: grayscale(viewedGray) i;\n\t\t\t}\n\t\t}\n\t\t/* CONTAINER THUMBNAIL */\n\t\telse if viewedGrayS=='ThumbSlider' {\n\t\t\t{selectorViewed}  #thumbnail {\n\t\t\t\tfilter: grayscale(viewedGray) i;\n\t\t\t}\n\t\t}\n\t}\n\tif viewedVideo=='Remove' {\n\t\t{selectorViewed}  {\n\t\t\tdisplay: none i;\n\t\t}\n\t}\n\tif bloatH { \n\t\t#big-yoodle,  ytd-rich-section-renderer:has(a[title][href=\"/feed/storefront\"], ytd-inline-survey-renderer) {\n\t\t\tdisplay: none i;\n\t\t}\n\t}\n\tif shorts {\n\t\tytd-rich-section-renderer:has([is-shorts]), ytd-browse[page-subtype=\"subscriptions\"] ytd-rich-item-renderer:has([overlay-style=\"SHORTS\"]), ytd-browse[page-subtype=\"subscriptions\"] ytd-video-renderer:has([overlay-style=\"SHORTS\"]), ytd-browse[page-subtype=\"subscriptions\"] ytd-grid-video-renderer:has([overlay-style=\"SHORTS\"]), [tab-title=\"Shorts\"], ytd-reel-shelf-renderer, ytd-search ytd-video-renderer:has([overlay-style=\"SHORTS\"]), #guide [title=\"Shorts\"], .ytd-mini-guide-entry-renderer[title=\"Shorts\"], #related ytd-compact-video-renderer:has([overlay-style=\"SHORTS\"]) {\n\t\t\tdisplay: none i;\n\t\t}\n\t}\n\t/* AUTO DUB */\n\tif autoDubbedVideos {\n\t\tytd-rich-item-renderer:has([d^=\"M11.72 11.928A4\"]) {\n\t\t\tdisplay: none i;\n\t\t}\n\t}\n\t\n\t/* REMOVE MIX PLAYLISTS */\n\tif mixPlaylist {\n\t\tytd-item-section-renderer.ytd-watch-next-secondary-results-renderer > div > yt-lockup-view-model,\n \t\tytd-rich-item-renderer:has(> div > yt-lockup-view-model) {\n/* \t\t\tdisplay: none i; */\n\t\t}\n\t}\n\t\n\tif onlyMembers {\n\t\tytd-rich-item-renderer:has(.badge-style-type-members-only) {\n\t\t\tdisplay: none i;\n\t\t}\n\t}\n\n\t/* REMOVE RECOMMENDED VIDEOS IN SEARCH PAGE */\n\tif recommendedVideos {\n\t\tselectorRecommended = 'ytd-item-section-renderer.ytd-section-list-renderer > #contents.ytd-item-section-renderer > ytd-shelf-renderer';\n\t\t{selectorRecommended} {\n\t\t\tdisplay: none i;\n\t\t}\n\t}\n}",
+    "usercssData": {
+      "name": "Youtube Small Thumbnails",
+      "namespace": "youtube.com",
+      "version": "0.9.8",
+      "description": "small thumbnails for youtube",
+      "author": "hdyzen",
+      "preprocessor": "stylus",
+      "vars": {
+        "rowsHomePag": {
+          "type": "number",
+          "label": "Columns",
+          "name": "rowsHomePag",
+          "value": 5,
+          "default": 6,
+          "options": null,
+          "min": 1,
+          "max": 12,
+          "step": 1,
+          "units": null
+        },
+        "horizontalM": {
+          "type": "number",
+          "label": "Horizontal margin columns",
+          "name": "horizontalM",
+          "value": null,
+          "default": 8,
+          "options": null,
+          "min": 0,
+          "max": 200,
+          "step": 1,
+          "units": "px"
+        },
+        "verticalM": {
+          "type": "number",
+          "label": "Vertival margin rows",
+          "name": "verticalM",
+          "value": null,
+          "default": 10,
+          "options": null,
+          "min": 0,
+          "max": 200,
+          "step": 1,
+          "units": "px"
+        },
+        "fontSizeT": {
+          "type": "number",
+          "label": "Font size title",
+          "name": "fontSizeT",
+          "value": null,
+          "default": 1.4,
+          "options": null,
+          "min": 1,
+          "max": 6,
+          "step": 0.1,
+          "units": "rem"
+        },
+        "fontSizeM": {
+          "type": "number",
+          "label": "Font size metadata",
+          "name": "fontSizeM",
+          "value": null,
+          "default": 1.3,
+          "options": null,
+          "min": 1,
+          "max": 6,
+          "step": 0.1,
+          "units": "rem"
+        },
+        "fontWeightT": {
+          "type": "number",
+          "label": "Font weight title",
+          "name": "fontWeightT",
+          "value": null,
+          "default": 500,
+          "options": null,
+          "min": 100,
+          "max": 900,
+          "step": 100,
+          "units": null
+        },
+        "fontWeightM": {
+          "type": "number",
+          "label": "Font weight metadata",
+          "name": "fontWeightM",
+          "value": null,
+          "default": 400,
+          "options": null,
+          "min": 100,
+          "max": 900,
+          "step": 100,
+          "units": null
+        },
+        "thumbSizeS": {
+          "type": "number",
+          "label": "Thumb size search page",
+          "name": "thumbSizeS",
+          "value": null,
+          "default": 240,
+          "options": null,
+          "min": 50,
+          "max": 900,
+          "step": 1,
+          "units": "px"
+        },
+        "searchTwoColumns": {
+          "type": "checkbox",
+          "label": "Two columns in search page",
+          "name": "searchTwoColumns",
+          "value": null,
+          "default": "0",
+          "options": null
+        },
+        "videoP": {
+          "type": "checkbox",
+          "label": "Hide video preview when hover thumbnail",
+          "name": "videoP",
+          "value": null,
+          "default": "0",
+          "options": null
+        },
+        "viewedVideo": {
+          "type": "select",
+          "label": "Video viewed mode",
+          "name": "viewedVideo",
+          "value": null,
+          "default": "None",
+          "options": [
+            {
+              "name": "None",
+              "label": "None",
+              "value": "None"
+            },
+            {
+              "name": "Grayscale",
+              "label": "Grayscale",
+              "value": "Grayscale"
+            },
+            {
+              "name": "Remove",
+              "label": "Remove",
+              "value": "Remove"
+            }
+          ]
+        },
+        "viewedGrayS": {
+          "type": "select",
+          "label": "Video viewed grayscale style",
+          "name": "viewedGrayS",
+          "value": null,
+          "default": "Default",
+          "options": [
+            {
+              "name": "Default",
+              "label": "Default",
+              "value": "Default"
+            },
+            {
+              "name": "Thumbnail",
+              "label": "Thumbnail",
+              "value": "Thumbnail"
+            },
+            {
+              "name": "Slider",
+              "label": "Slider",
+              "value": "Slider"
+            },
+            {
+              "name": "ThumbSlider",
+              "label": "Thumb+Slider",
+              "value": "ThumbSlider"
+            }
+          ]
+        },
+        "viewedGray": {
+          "type": "range",
+          "label": "Video viewed grayscale",
+          "name": "viewedGray",
+          "value": null,
+          "default": 80,
+          "options": null,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "units": "%"
+        },
+        "widthContH": {
+          "type": "range",
+          "label": "Width container videos home page",
+          "name": "widthContH",
+          "value": null,
+          "default": 100,
+          "options": null,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "units": "%"
+        },
+        "bloatH": {
+          "type": "checkbox",
+          "label": "Remove banner and survey",
+          "name": "bloatH",
+          "value": null,
+          "default": "0",
+          "options": null
+        },
+        "shorts": {
+          "type": "checkbox",
+          "label": "Remove shorts",
+          "name": "shorts",
+          "value": null,
+          "default": "0",
+          "options": null
+        },
+        "autoDubbedVideos": {
+          "type": "checkbox",
+          "label": "Remove videos autodub",
+          "name": "autoDubbedVideos",
+          "value": null,
+          "default": "0",
+          "options": null
+        },
+        "mixPlaylist": {
+          "type": "checkbox",
+          "label": "Remove mix playlists",
+          "name": "mixPlaylist",
+          "value": null,
+          "default": "0",
+          "options": null
+        },
+        "onlyMembers": {
+          "type": "checkbox",
+          "label": "Remove for only members",
+          "name": "onlyMembers",
+          "value": null,
+          "default": "0",
+          "options": null
+        },
+        "recommendedVideos": {
+          "type": "checkbox",
+          "label": "Remove recommended videos in search page",
+          "name": "recommendedVideos",
+          "value": null,
+          "default": "0",
+          "options": null
+        }
+      }
+    },
+    "author": "hdyzen",
+    "description": "small thumbnails for youtube",
+    "name": "Youtube Small Thumbnails",
+    "updateUrl": "https://userstyles.world/api/style/9935.user.css",
+    "originalDigest": "eee6218b75d8b337856db2d51ccfa4a7aad8099b",
+    "_id": "62d3dac8-ab48-45a1-8bd3-1d6e1df4c851",
+    "_rev": 1765685656596,
+    "url": "https://userstyles.world/style/9935",
+    "installationUrl": "https://userstyles.world/style/9935",
+    "id": 3
+  },
+  {
+    "enabled": true,
+    "installDate": 1765861398614,
+    "name": "雅黑2025-AI智能版v1",
+    "sections": [
+      {
+        "code": "/* \n * Force Microsoft YaHei Font – Core Stylus Version\n * 无 JS / 无闪烁 / 无动画\n */\n\n/* ===== 全局默认字体（最高优先级） ===== */\nhtml,\nbody {\n    font-family:\n        \"Microsoft YaHei\",\n        \"微软雅黑\",\n        \"PingFang SC\",\n        system-ui,\n        sans-serif !important;\n}\n\n/* ===== 正文内容字体强制（安全排除） ===== */\nbody *:not(\n    /* 代码 / 编辑器 */\n    code, pre, kbd, samp, tt,\n    .monaco-editor, .monaco-editor *,\n    .CodeMirror, .CodeMirror *,\n    .ace_editor, .ace_editor *,\n\n    /* 表单 / 控件 / 按钮 */\n    input, textarea, select, option, button,\n    [type=\"button\"], [type=\"submit\"], [type=\"reset\"],\n    [role=\"button\"],\n\n    /* 图标 / 符号字体 */\n    i, i[class],\n    svg, svg *, canvas,\n    [class*=\"icon\"], [class^=\"icon-\"],\n    [class^=\"fa\"], .fa, .fas, .far, .fab,\n    .material-icons,\n    .material-symbols-outlined,\n    .material-symbols-rounded,\n    .material-symbols-sharp,\n    .iconfont, [class*=\"iconfont\"],\n\n    /* 数学 / 公式 */\n    math, mjx-container, .MathJax,\n    .katex, .katex *\n) {\n    font-family:\n        \"Microsoft YaHei\",\n        \"微软雅黑\",\n        \"PingFang SC\",\n        system-ui,\n        sans-serif !important;\n}\n"
+      }
+    ],
+    "updateDate": 1765861840601,
+    "_id": "e26de269-b42d-49d4-a20f-5fea4caff8e1",
+    "_rev": 1765861840601,
+    "id": 4
+  }
+]

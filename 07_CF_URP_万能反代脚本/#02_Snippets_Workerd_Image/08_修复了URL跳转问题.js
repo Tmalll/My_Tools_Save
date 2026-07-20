@@ -1,0 +1,459 @@
+// CF_Workers_万能图片反代脚本 (硬核魔数 + 架构精炼优化版)
+
+// 模块1：全局核心参数配置
+const CONFIG = {
+    AUTH_PREFIX: '/SP3eHm618kN71DD',
+    SHARE_PREFIX: '/dis',
+    REFINING_PREFIX: '/ref',
+    REFINING_OUT_PREFIX: '/simp', 
+    ShortName_PREFIX: '/sho',
+    hide64_PREFIX: '/hid',
+    DECODE_B64_PREFIX: '/dcb',
+    UHM_PREFIX_1: '/uhm1', UHM_OUTPUT_1: '/uem1',
+    UHM_PREFIX_2: '/uhm2', UHM_OUTPUT_2: '/uem2',
+    UHM_PREFIX_3: '/uhm3', UHM_OUTPUT_3: '/uem3',
+    STEALTH_KEY: 'Tmalll_Secret_Salt_2026',
+    DEBUG_MODE: 1,
+    CACHE_TTL: 2592000,
+    FRONTEND_MAX_SIZE_KB: 15360     // 前端编码大小限制(KB)
+};
+
+// 模块2：统一魔数映射注册表 (字节/Base64一体化探测)
+const MAGIC_REGISTRY = [
+    { mime: "image/png",      ext: "png",  bytes: [0x89, 0x50, 0x4E, 0x47], b64: "iVBORw" },
+    { mime: "image/jpeg",     ext: "jpg",  bytes: [0xFF, 0xD8, 0xFF],       b64: "/9j/"   },
+    { mime: "image/gif",      ext: "gif",  bytes: [0x47, 0x49, 0x46, 0x38], b64: "R0lGOD" },
+    { mime: "image/webp",     ext: "webp", bytes: [0x52, 0x49, 0x46, 0x46], b64: "UklGR"  },
+    { mime: "image/x-icon",   ext: "ico",  bytes: [0x00, 0x00, 0x01, 0x00], b64: "AAABAA" },
+    { mime: "image/bmp",      ext: "bmp",  bytes: [0x42, 0x4D],             b64: "Qk0"    },
+    { mime: "image/svg+xml",  ext: "svg",  bytes: [0x3C, 0x3F, 0x78, 0x6D], b64: "PHN2Zy" }, // <?xml
+    { mime: "image/svg+xml",  ext: "svg",  bytes: [0x3C, 0x73, 0x76, 0x67], b64: "PHN2Zy" }, // <svg
+    { mime: "image/avif",     ext: "avif", bytes: null,                     b64: "AAAAIG" }
+];
+
+const REFINING_REGISTRY = [
+    {
+        name: "GIST", shortName: "gis", aliasPrefix: "/gis", ref_URL: "https://gist.githubusercontent.com/raw/",
+        match_group: [
+            { regex: /gist\.github\.com\/[^\/]+\/([0-9a-f]{32})/i },
+            { regex: /gist\.githubusercontent\.com\/[^\/]+\/([0-9a-f]{32})/i },
+            { regex: /gist\.githubusercontent\.com\/raw\/([0-9a-f]{32})/i }
+        ],
+        toRaw: (id) => `https://gist.githubusercontent.com/raw/${id}`
+    },
+    {
+        name: "PASTEBIN", shortName: "pas", aliasPrefix: "/pas", ref_URL: "https://pastebin.com/raw/",
+        match_group: [
+            { regex: /pastebin\.com\/raw\/([a-zA-Z0-9]{8})/i },
+            { regex: /pastebin\.com\/([a-zA-Z0-9]{8})/i }
+        ],
+        toRaw: (id) => `https://pastebin.com/raw/${id}`
+    }
+];
+
+// 全局基础工具复用
+const encoder = new TextEncoder(), decoder = new TextDecoder();
+const REGEX_HTTP = /^https?[:\/]+/i;
+const REGEX_IMG_TAIL = /\/(image\.[a-z0-9]+)$/i;
+
+function normalizeUrl(urlStr) {
+    return urlStr.trim().replace(REGEX_HTTP, 'https://').replace('http/', 'http://');
+}
+
+function parseRefRegistry(urlStr) {
+    if (!urlStr) return null;
+    let cleanUrl = urlStr.trim();
+    for (const site of REFINING_REGISTRY) {
+        for (const item of site.match_group) {
+            const match = cleanUrl.match(item.regex);
+            if (match && match[1]) {
+                return { site, ID: match[1], ref_URL: site.toRaw(match[1]), shortName: site.shortName, aliasPrefix: site.aliasPrefix };
+            }
+        }
+    }
+    return null;
+}
+
+function parseRouteContext(pathname, prefixLength, searchAndHash) {
+    let remain = pathname.substring(prefixLength + 2) + searchAndHash;
+    let fullUrl = normalizeUrl(remain);
+    
+    let cleanUrlForName = fullUrl.replace(/\/+$/, '');
+    if (REGEX_IMG_TAIL.test(cleanUrlForName)) {
+        cleanUrlForName = cleanUrlForName.substring(0, cleanUrlForName.lastIndexOf('/'));
+    }
+    let lastSlashIdx = cleanUrlForName.lastIndexOf('/');
+    let name = lastSlashIdx === -1 ? cleanUrlForName : cleanUrlForName.substring(lastSlashIdx + 1);
+    
+    // Deep Decode
+    try { while (name.includes('%')) { let next = decodeURIComponent(name); if (next === name) break; name = next; } } catch {}
+    name = name.replace(/[\?#].*$/, '');
+
+    let registryResult = parseRefRegistry(fullUrl);
+    if (registryResult && registryResult.ID && name === registryResult.ID) name = "";
+    
+    return { fullUrl, binaryName: name, registryResult, tail: name ? `/${encodeURIComponent(name)}` : '' };
+}
+
+function makeFullUrlPart(urlStr, pShare) {
+    let c = urlStr.trim();
+    c = /^https?:\/\//i.test(c) ? c.replace(/^https?:\/\//i, m => m.toLowerCase().replace('://', '/')) : (!/^https?\//i.test(c) ? 'https/' + c : c);
+    return `${pShare}/${c}`;
+}
+
+// Crypto 优化：单例缓存 Context
+let cryptoCtxCache = null;
+async function getStealthCryptoContext(seed) {
+    if (cryptoCtxCache) return cryptoCtxCache;
+    const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(seed)), hashArray = new Uint8Array(hashBuffer);
+    cryptoCtxCache = { key: await crypto.subtle.importKey('raw', hashArray.subarray(0, 16), { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']), iv: hashArray.subarray(16, 28) };
+    return cryptoCtxCache;
+}
+
+function bytesToBase64Url(arr) { return btoa(String.fromCharCode(...new Uint8Array(arr))).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); }
+function base64UrlToBytes(s) {
+    const cleanS = s.replace(/-/g, '+').replace(/_/g, '/'), pad = (4 - (cleanS.length % 4)) % 4;
+    const rawStr = atob(cleanS + "=".repeat(pad)), arr = new Uint8Array(rawStr.length);
+    for (let i = 0; i < rawStr.length; i++) arr[i] = rawStr.charCodeAt(i);
+    return arr.buffer;
+}
+
+async function encryptStealthText(plainText, seed, mode = 1) {
+    let srcBytes = encoder.encode(plainText);
+    if (mode === 3) {
+        const cs = new CompressionStream('deflate'), writer = cs.writable.getWriter();
+        writer.write(srcBytes); writer.close();
+        srcBytes = new Uint8Array(await new Response(cs.readable).arrayBuffer());
+    }
+    const ctx = await getStealthCryptoContext(seed);
+    const encryptedBuffer = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: ctx.iv }, ctx.key, srcBytes);
+    return mode === 2 ? Array.from(new Uint8Array(encryptedBuffer)).map(b => b.toString(16).padStart(2, '0')).join('') : bytesToBase64Url(encryptedBuffer);
+}
+
+async function decryptStealthText(cipherText, seed, mode = 1) {
+    try {
+        let cipherBytes = (mode === 2) ? new Uint8Array(cipherText.match(/.{1,2}/g).map(byte => parseInt(byte, 16))).buffer : base64UrlToBytes(cipherText);
+        const ctx = await getStealthCryptoContext(seed);
+        let decryptedBuffer = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: ctx.iv }, ctx.key, cipherBytes);
+        if (mode === 3) {
+            const ds = new DecompressionStream('deflate'), writer = ds.writable.getWriter();
+            writer.write(new Uint8Array(decryptedBuffer)); writer.close();
+            decryptedBuffer = await new Response(ds.readable).arrayBuffer();
+        }
+        return decoder.decode(decryptedBuffer);
+    } catch { return null; }
+}
+
+function makeImageResponse(body, mime, isB64Ext, cacheKey, cache, ctx) {
+    const respHeaders = new Headers({
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": mime,
+        "Cache-Control": CONFIG.DEBUG_MODE === 1 ? "no-store" : `public, max-age=${CONFIG.CACHE_TTL}`
+    });
+    if (isB64Ext) respHeaders.set("Content-Disposition", `inline; filename="image.${isB64Ext}"`);
+    const response = new Response(body, { status: 200, headers: respHeaders });
+    if (CONFIG.DEBUG_MODE !== 1) ctx.waitUntil(cache.put(cacheKey, response.clone()));
+    return response;
+}
+
+export default {
+    async fetch(request, env, ctx) {
+        const realProto = request.headers.get("x-real-scheme"), realHost = request.headers.get("x-real-host");
+        if (realProto && realHost) {
+            const u = new URL(request.url);
+            request = new Request(`${realProto}://${realHost}${u.pathname}${u.search}${u.hash}`, { method: request.method, headers: request.headers, body: request.method === "GET" || request.method === "HEAD" ? null : request.body, redirect: "manual" });
+        }
+        
+        const url = new URL(request.url),
+              [pAdmin, pShare, pRef, pSimp, pSho, pHid, pDcb] = [CONFIG.AUTH_PREFIX, CONFIG.SHARE_PREFIX, CONFIG.REFINING_PREFIX, CONFIG.REFINING_OUT_PREFIX, CONFIG.ShortName_PREFIX, CONFIG.hide64_PREFIX, CONFIG.DECODE_B64_PREFIX].map(p => p.replace(/^\/|\/$/g, '')),
+              pUhm = [CONFIG.UHM_PREFIX_1, CONFIG.UHM_PREFIX_2, CONFIG.UHM_PREFIX_3].map(p => p.replace(/^\/|\/$/g, '')),
+              pUem = [CONFIG.UHM_OUTPUT_1, CONFIG.UHM_OUTPUT_2, CONFIG.UHM_OUTPUT_3].map(p => p.replace(/^\/|\/$/g, ''));
+
+        if (['/favicon.ico', '/apple-touch-icon.png', '/site.webmanifest'].some(p => url.pathname.toLowerCase().startsWith(p))) return new Response(null, { status: 204 });
+        if (url.pathname === '/' + pAdmin || url.pathname === '/' + pAdmin + '/') return new Response(getPanelHTML(), { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+
+        // =================【/ref 与 /sho 模式合并归一】=================
+        if (url.pathname.startsWith('/' + pRef + '/') || url.pathname.startsWith('/' + pSho + '/')) {
+            const isRef = url.pathname.startsWith('/' + pRef + '/');
+            const ctx = parseRouteContext(url.pathname, isRef ? pRef.length : pSho.length, url.search + url.hash);
+            
+            if (ctx.registryResult) {
+                return Response.redirect(`${url.origin}/${isRef ? pSimp : ctx.registryResult.site.aliasPrefix.replace(/^\//,'')}/${isRef ? ctx.registryResult.ref_URL.replace('://', '/') : ctx.registryResult.ID}${ctx.tail}`, 302);
+            }
+            if (!isRef) {
+                let cleanId = (url.pathname.substring(pSho.length + 2) + url.search + url.hash).split('/')[0];
+                if (/^[0-9a-f]{32}$/i.test(cleanId)) return Response.redirect(`${url.origin}/gis/${cleanId}${ctx.tail}`, 302);
+                if (/^[a-zA-Z0-9]{8}$/.test(cleanId)) return Response.redirect(`${url.origin}/pas/${cleanId}${ctx.tail}`, 302);
+            }
+            return Response.redirect(`${url.origin}/${makeFullUrlPart(ctx.fullUrl, pShare)}`, 302);
+        }
+
+        // =================【/hid 与 /uhm1.2.3 加密路由闭环】=================
+        let cryptoMode = url.pathname.startsWith('/' + pHid + '/') ? 0 : pUhm.findIndex(p => url.pathname.startsWith('/' + p + '/')) + 1;
+        if (cryptoMode > 0 || url.pathname.startsWith('/' + pHid + '/')) {
+            const prefix = cryptoMode === 0 ? pHid : pUhm[cryptoMode - 1];
+            const routeCtx = parseRouteContext(url.pathname, prefix.length, url.search + url.hash);
+            
+            let routingPayload = makeFullUrlPart(routeCtx.fullUrl, pShare);
+            let encryptedPayload = btoa(routingPayload).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+            if (cryptoMode > 0) encryptedPayload = await encryptStealthText(encryptedPayload, CONFIG.STEALTH_KEY, cryptoMode);
+
+            return Response.redirect(`${url.origin}/${cryptoMode === 0 ? pDcb : pUem[cryptoMode - 1]}/${encryptedPayload}${routeCtx.tail}`, 302);
+        }
+
+        // =================【核心解密还原落地】=================
+        let workingPath = url.pathname;
+        let uemIdx = pUem.findIndex(p => url.pathname.startsWith('/' + p + '/'));
+        
+        if (uemIdx !== -1 || url.pathname.startsWith('/' + pDcb + '/')) {
+            const isDcb = url.pathname.startsWith('/' + pDcb + '/');
+            let cryptPart = url.pathname.substring((isDcb ? pDcb : pUem[uemIdx]).length + 2).split('/')[0];
+            let decryptedB64 = isDcb ? cryptPart : await decryptStealthText(cryptPart, CONFIG.STEALTH_KEY, uemIdx + 1);
+            if (!decryptedB64) return new Response("Forbidden: Invalid Crypto Stream", { status: 403 });
+            
+            try { 
+                let cleanB64 = decryptedB64.replace(/-/g, '+').replace(/_/g, '/');
+                let mod = cleanB64.length % 4; if (mod > 0) cleanB64 += "=".repeat(4 - mod);
+                workingPath = atob(cleanB64).trim(); 
+                if (!workingPath.startsWith('/')) workingPath = '/' + workingPath;
+            } catch { return new Response("Forbidden: Corrupted Payload", { status: 403 }); }
+        }
+
+        // 别名与快捷路径展开支持
+        let activeAlias = REFINING_REGISTRY.find(site => workingPath.startsWith(site.aliasPrefix + '/'));
+        if (activeAlias) workingPath = '/' + pShare + '/' + activeAlias.ref_URL.replace('://', '/') + workingPath.substring(activeAlias.aliasPrefix.length + 1).split('/')[0];
+        if (workingPath.startsWith('/' + pSimp + '/')) workingPath = '/' + pShare + workingPath.substring(pSimp.length + 1);
+        
+        // 统一在底层对连续的多斜杠进行清洗，确保抓取层健壮
+        workingPath = workingPath.replace(/\/+/g, '/');
+        if (!workingPath.startsWith('/' + pShare + '/')) return new Response("Forbidden: Access Denied", { status: 403 });
+
+        let isNativeDisMode = url.pathname.startsWith('/' + pShare + '/');
+        if (isNativeDisMode && url.pathname.includes('://')) {
+            let cleanPath = `/${pShare}/${url.pathname.replace(/\/+$/, '').replace(/^https?:\/\/[^\/]+\/dis\//i, '').replace('://', '/')}`.replace(/\/+/g, '/').replace(/^\/dis\/dis\//i, '/dis/');
+            return Response.redirect(`${url.origin}${cleanPath}${url.search}${url.hash}`, 302);
+        }
+
+        let pureUpstreamPath = workingPath.substring(pShare.length + 2);
+        if (REGEX_IMG_TAIL.test(pureUpstreamPath)) pureUpstreamPath = pureUpstreamPath.substring(0, pureUpstreamPath.lastIndexOf('/'));
+        if (!isNativeDisMode) {
+            let parts = pureUpstreamPath.split('/');
+            if (parts.length > 3 && (pureUpstreamPath.includes('gist.githubusercontent.com/raw') || pureUpstreamPath.includes('pastebin.com/raw'))) pureUpstreamPath = parts.slice(0, 4).join('/');
+        }
+
+        let upstreamUrl = null;
+        try { upstreamUrl = new URL(pureUpstreamPath.replace(REGEX_HTTP, 'https://')); } catch { return new Response("Invalid Upstream Target", { status: 400 }); }
+
+        const cache = caches.default, cacheKey = new Request(url.toString(), request);
+        if (CONFIG.DEBUG_MODE !== 1) { const cachedResponse = await cache.match(cacheKey); if (cachedResponse) return cachedResponse; }
+
+        let upstream = await fetch(upstreamUrl, { method: 'GET', headers: new Headers({ 'User-Agent': request.headers.get('User-Agent') || 'Mozilla/5.0' }), redirect: "follow" });
+        if (upstream.status !== 200) return new Response(`Upstream Error: ${upstream.status}`, { status: upstream.status });
+
+        // =================【双重底层硬核魔数校验与响应工厂】=================
+        const cleanMime = (upstream.headers.get("Content-Type") || "").split(';')[0].trim().toLowerCase();
+        const RAW_IMAGE_MIME_WHITELIST = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/svg+xml", "image/x-icon", "image/bmp"];
+
+        if (RAW_IMAGE_MIME_WHITELIST.includes(cleanMime) || cleanMime === "application/octet-stream") {
+            const reader = upstream.body.getReader(), { done, value } = await reader.read();
+            if (done || !value) return new Response("Forbidden: Empty Stream", { status: 403 });
+
+            let isRealImage = false, detectedMime = cleanMime;
+            for (const item of MAGIC_REGISTRY) {
+                if (item.bytes && value.length >= item.bytes.length && item.bytes.every((b, i) => value[i] === b)) {
+                    isRealImage = true; detectedMime = item.mime; break;
+                }
+            }
+            if (!isRealImage && cleanMime === "image/avif") {
+                const textChunk = decoder.decode(value.subarray(0, 30));
+                if (textChunk.includes("ftypavif") || textChunk.includes("ftypavis")) isRealImage = true;
+            }
+            if (!isRealImage) return new Response("Forbidden: Non-image assets blocked.", { status: 403 });
+
+            const remainderStream = new ReadableStream({
+                start(controller) {
+                    controller.enqueue(value);
+                    function push() { reader.read().then(({ done, value }) => { if (done) { controller.close(); return; } controller.enqueue(value); push(); }); }
+                    push();
+                }
+            });
+            return makeImageResponse(remainderStream, detectedMime, null, cacheKey, cache, ctx);
+        }
+
+        // Base64 纯文本图片探测
+        const previewStream = upstream.clone(), b64Reader = previewStream.body.getReader(), chunkData = await b64Reader.read();
+        if (!chunkData.value) return new Response("Forbidden: Empty Stream", { status: 403 });
+        const chunkText = decoder.decode(chunkData.value).trim().substring(0, 30).replace(/[\r\n\s\t]+/g, '').replace(/^data:[^,]+,/, '');
+        
+        let matchedMeta = MAGIC_REGISTRY.find(item => item.b64 && chunkText.startsWith(item.b64));
+        if (!matchedMeta) return new Response("Forbidden: Non-image or unsupported assets blocked.", { status: 403 });
+
+        let expectedTail = `image.${matchedMeta.ext}`;
+        
+        // =================【精修：自动补全后缀之宿主路径智能分流（闭环核心）】=================
+        let needsRedirect = false;
+        let redirectPath = "";
+
+        if (isNativeDisMode) {
+            // 1. 明文 /dis 模式下：直接基于规整好无重复的内部 workingPath 状态机，优雅杜绝 /dis//dis/
+            let cleanWorkingPath = workingPath.replace(/\/+$/, '');
+            if (!cleanWorkingPath.toLowerCase().endsWith('/' + expectedTail)) {
+                needsRedirect = true;
+                redirectPath = cleanWorkingPath + '/' + expectedTail;
+            }
+        } else {
+            // 2. 加密模式（/dcb, /uem）或缩写别名模式（/gis, /pas, /simp）：
+            // 必须坚守浏览器能看到的外部可见的真实 url.pathname，防止将内部解密后的明文直接回弹给浏览器
+            let browserPath = url.pathname.replace(/\/+$/, '');
+            if (!browserPath.toLowerCase().endsWith('/' + expectedTail)) {
+                needsRedirect = true;
+                let pathParts = browserPath.split('/');
+                let lastPart = pathParts[pathParts.length - 1].toLowerCase();
+                // 如果末尾残留有旧的文件名占位符、旧后缀或 .b64，将其弹出替换
+                if (lastPart.endsWith('.b64') || lastPart.endsWith('.base64') || lastPart.startsWith('image.')) {
+                    pathParts.pop();
+                }
+                redirectPath = pathParts.join('/') + '/' + expectedTail;
+            }
+        }
+
+        if (needsRedirect) {
+            return Response.redirect(`${url.origin}${redirectPath}${url.search}${url.hash}`, 302);
+        }
+
+        try {
+            let cleaned = (await upstream.text()).replace(/[\r\n\s\t]+/g, '').replace(/^data:[^,]+,/, '');
+            const mod = cleaned.length % 4; if (mod > 1) cleaned += "=".repeat(4 - mod);
+            const binary = atob(cleaned), bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return makeImageResponse(bytes.buffer, matchedMeta.mime, matchedMeta.ext, cacheKey, cache, ctx);
+        } catch (e) { return new Response(`Decoder Exception: ${e.message}`, { status: 500 }); }
+    }
+};
+
+// 模块8：控制面板前端
+function getPanelHTML() {
+    return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CDN 纯净图片中转站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; background: #f4f6f9; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .box { width: 100%; max-width: 650px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 40px; }
+        h3 { margin-top: 0; color: #2c3e50; }
+        input[type="text"] { width: 100%; padding: 14px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; outline: none; }
+        input[type="text"]:focus { border-color: #409eff; }
+        .btn-row { display: flex; gap: 12px; margin-bottom: 15px; }
+        .btn { flex: 1; padding: 14px; font-size: 14px; color: #fff; background: #409eff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: center; box-sizing: border-box; }
+        .btn:hover { background: #66b1ff; }
+        .btn-green { background: #67c23a; }
+        .btn-green:hover { background: #85ce61; }
+        .btn-purple { background: #8e44ad; }
+        .btn-purple:hover { background: #9b59b6; }
+        .result-box { background: #f8f9fa; border: 1px dashed #dcdfe6; border-radius: 4px; padding: 12px; margin-top: 10px; font-family: monospace; font-size: 13px; word-break: break-all; display: none; }
+        .error-tip { color: #f56c6c; font-weight: bold; }
+        .success-tip { color: #67c23a; font-weight: bold; }
+        .progress-wrapper { width: 100%; background: #ebeef5; border-radius: 10px; margin-top: 15px; display: none; overflow: hidden; position: relative; height: 18px; }
+        .progress-bar { height: 100%; width: 0%; background: #67c23a; transition: width 0.1s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 11px; font-weight: bold; color: #333; line-height: 18px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>CDN 纯净图片中转控制面板</h3>
+        <input type="text" id="urlInput" placeholder="直接粘贴各种完整的图片或 Base64 RAW URL...">
+        <div class="btn-row">
+            <button class="btn" id="btnGo">生成并跳转反代直链</button>
+            <button class="btn btn-purple" id="btnRefine">精炼链接</button>
+            <button class="btn btn-green" id="btnPick">图片转 Base64 编码</button>
+        </div>
+        <div id="resultArea" class="result-box"></div>
+        <div class="progress-wrapper" id="progressWrapper">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="progress-text" id="progressText">准备编码... 0%</div>
+        </div>
+        <input type="file" id="fileFile" accept="image/*" style="display:none">
+    </div>
+
+    <script>
+        const FRONTEND_MAX_SIZE_KB = ${CONFIG.FRONTEND_MAX_SIZE_KB};
+        const BASE = window.location.origin;
+        const resBox = document.getElementById('resultArea');
+
+        // 从后端核心元数据中动态解析映射规则，保持数据的 Single Source of Truth
+        const REFINING_REGISTRY = ${JSON.stringify(REFINING_REGISTRY.map(r => ({ name: r.name, rawPath: 'https/' + r.ref_URL.split('://')[1], regexs: r.match_group.map(g => g.regex.source) })))};
+
+        function showUI(isErr, text) {
+            resBox.style.display = 'block';
+            resBox.innerHTML = isErr ? "<span class='error-tip'>错误：" + text + "</span>" : text;
+        }
+
+        function getCleanInput() {
+            const v = document.getElementById('urlInput').value.trim();
+            if (!v) showUI(true, "请输入有效链接！");
+            return v;
+        }
+
+        document.getElementById('btnGo').onclick = function(e) {
+            const v = getCleanInput(); if (!v) return false;
+            let c = /^https?:\\/\\//i.test(v) ? v.replace(/^https?:\\/\\//i, m => m.toLowerCase().replace('://', '/')) : (!/^https?\\//i.test(v) ? 'https/' + v : v);
+            window.open(BASE + '/dis/' + c, '_blank');
+            return false;
+        };
+
+        document.getElementById('btnRefine').onclick = function() {
+            const v = getCleanInput(); if (!v) return;
+            let matched = null;
+            for (let item of REFINING_REGISTRY) {
+                for (let regStr of item.regexs) {
+                    let m = v.match(new RegExp(regStr, 'i'));
+                    if (m && m[1]) { matched = { name: item.name, id: m[1], rawPath: item.rawPath }; break; }
+                }
+                if (matched) break;
+            }
+            if (!matched) return showUI(true, "暂不支持精炼此链接（未匹配到托管平台的特征 ID）");
+            const targetUrl = BASE + '/simp/' + matched.rawPath + matched.id;
+            showUI(false, "<span class='success-tip'>精炼提取成功 (" + matched.name + "):</span><br><a href='" + targetUrl + "' target='_blank'>" + targetUrl + "</a>");
+        };
+
+        document.getElementById('btnPick').onclick = function() { document.getElementById('fileFile').click(); };
+        document.getElementById('fileFile').onchange = function() {
+            if (this.files.length === 0) return;
+            const f = this.files[0];
+            if (f.size > FRONTEND_MAX_SIZE_KB * 1024) {
+                showUI(true, "文件大小超过前端限制（最大 " + FRONTEND_MAX_SIZE_KB + " KB）");
+                this.value = ""; return;
+            }
+            const w = document.getElementById('progressWrapper'), b = document.getElementById('progressBar'), t = document.getElementById('progressText');
+            w.style.display = 'block'; b.style.width = '0%'; t.textContent = "初始化...";
+            
+            const s = 1024 * 256; let o = 0, bin = "";
+            const r = () => {
+                const reader = new FileReader(), blob = f.slice(o, o + s);
+                reader.onload = function(e) {
+                    const bytes = new Uint8Array(e.target.result);
+                    let ch = ""; for (let i = 0; i < bytes.length; i++) ch += String.fromCharCode(bytes[i]);
+                    bin += ch; o += s;
+                    let p = Math.min(100, Math.floor((o / f.size) * 100));
+                    b.style.width = p + '%'; t.textContent = "编码中: " + p + "%";
+                    if (o < f.size) { setTimeout(r, 1); } else {
+                        t.textContent = "正在打包...";
+                        setTimeout(() => {
+                            try {
+                                const res = btoa(bin), out = new Blob([res], { type: "text/plain;charset=utf-8" }), u = URL.createObjectURL(out), a = document.createElement('a');
+                                a.href = u; a.download = f.name + ".b64"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u);
+                                t.textContent = "转换成功！文件已开始下载";
+                            } catch (err) { t.textContent = "异常：" + err.message; } finally { document.getElementById('fileFile').value = ""; setTimeout(() => { w.style.display = 'none'; }, 3000); }
+                        }, 50);
+                    }
+                };
+                reader.readAsArrayBuffer(blob);
+            };
+            r();
+        };
+    </script>
+</body>
+</html>`;
+}

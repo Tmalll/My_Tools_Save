@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HTML Note</title>
+<style>
+  body{max-width:900px;margin:20px auto;padding:0 10px;font-family:system-ui,sans-serif}
+  .sticky-top{position:sticky;top:0;background:#fff;padding:10px 0;z-index:999;border-bottom:1px solid #eee;margin-bottom:15px}
+  
+  /* 按钮区域：多行网格自适应边界对齐 */
+  .btn-row-4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+  .btn-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+  .btn-row-3:last-child{margin-bottom:0}
+  
+  button{padding:8px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  button:hover{background:#e8e8e8}
+  button.primary{background:#e6f2ff;border-color:#a3c2e6;font-weight:bold}
+  button.primary:hover{background:#cce2ff}
+  
+  [contenteditable]{border:1px solid #ddd;border-radius:6px;padding:12px;background:#fafafa;outline:none}
+  [contenteditable]:focus{border-color:#666;background:#fff}
+  #h{font-size:24px;font-weight:bold;margin-bottom:15px;min-height:30px}
+  #e{min-height:400px;max-height:60vh;overflow-y:auto;font-size:16px;line-height:1.6;word-break:break-word}
+  
+  /* 审核高亮样式：常驻蓝色加下划线 */
+  .hl-url-span {color:#0066cc !important;text-decoration:underline !important;cursor:text}
+  [contenteditable]:empty:before{content:attr(placeholder);color:#aaa}
+</style>
+<script>
+f=s=>new Blob([s]).size;
+fmt=b=>b<1024?b+' B':(b/1024).toFixed(2)+' KB';
+sync=()=>document.title=h.innerText.trim()||'HTML Note';
+uSize=()=>{
+  x=document.documentElement.outerHTML.length;
+  info.innerHTML=`<b>HTML Note v3.7</b> | <b>Size:</b> ${fmt(x)} | <b>DataText:</b> ${fmt(x*1.33)} | <small style="color:#666">打字极速流畅 | 聚焦与失焦精准染色已就绪</small>`;
+};
+b64=a=>{let s='',c=0x8000;for(let i=0;i<a.length;i+=c)s+=String.fromCharCode(...a.subarray(i,i+c));return btoa(s)};
+ub64=s=>{b=atob(s);u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u};
+
+tpl=(th,eh)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>`+(h.innerText.trim()||'HTML Note').replace(/</g,'&lt;')+'</title><style>'+document.querySelector('style').innerHTML+'</style><script>'+document.querySelector('script').innerHTML.replace(/<\/script>/g,'<\\\\/script>')+`<\/script></head><body><div class="sticky-top"><div id="info"></div><div class="btn-row-4"><button onclick="clr()">Clear</button><button onclick="img.click()">Insert Image</button><button onclick="restoreFromPage()">Restore FTA</button><button onclick="imp.click()">Import .DT</button></div><div class="btn-row-3"><button onclick="saveHTML()">Save Editor</button><button class="primary" onclick="downloadPureHTML()">Save Page</button><button onclick="saveTXT()">Save TEXT</button></div><div class="btn-row-3"><button onclick="copyDT()">Copy Editor</button><button class="primary" onclick="copyPostDT()">Copy Page</button><button onclick="outDT()">Export .DT</button><input hidden type="file" id="img" accept="image/*" onchange="ins(this.files[0]);this.value=''"><input hidden type="file" id="imp" accept=".DataText,.txt" onchange="impDT(this.files[0]);this.value=''"><a hidden id="a"></a></div></div><div id="h" contenteditable="true" placeholder="Title..." oninput="sync();uSize()">`+th+`</div><div id="e" contenteditable="true" placeholder="Type notes here..." oninput="uSize()">`+eh+`</div></body></html>`;
+gen=()=>{html=tpl(h.innerHTML,e.innerHTML);return{html,data:'data:text/html;base64,'+b64(new TextEncoder().encode(html))}};
+dl=(n,t,d)=>{u=URL.createObjectURL(new Blob([d],{type:t}));a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),500)};
+
+clipWrite=async text=>{
+  if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(text);return true}catch(e){}}
+  const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);ta.focus();ta.select();const ok=document.execCommand('copy');document.body.removeChild(ta);
+  if(ok)return true;throw new Error('failed');
+};
+
+copyDT=async()=>{
+  removeEditorHighlight();
+  try{g=gen();await clipWrite(g.data);alert('Copied Editor! ('+fmt(f(g.data))+')')}
+  catch(e){alert('Copy failed: '+e.message)}
+};
+outDT=()=>{removeEditorHighlight();g=gen();dl((h.innerText.trim()||'#HTML_Note')+'.DataText','application/octet-stream',g.data)};
+saveHTML=()=>{removeEditorHighlight();g=gen();dl((h.innerText.trim()||'#HTML_Note')+'.html','text/html',g.html)};
+saveTXT=()=>{dl((h.innerText.trim()||'#HTML_Note')+'.txt','text/plain',e.innerText)};
+clr=()=>{if(confirm('Clear all?')){h.innerHTML='';e.innerHTML='';sync();uSize()}};
+ins=file=>{
+  if(!file)return;const rd=new FileReader();
+  rd.onload=x=>{
+    const img=document.createElement('img');img.src=x.target.result;img.style.maxWidth='100%';
+    e.appendChild(img);uSize();
+  };rd.readAsDataURL(file)
+};
+restore=s=>{
+  try{s=s.trim();if(!s.startsWith('data:text/html;base64,')){alert('Invalid DataText');return}
+  document.open();document.write(new TextDecoder().decode(ub64(s.split(',')[1])));document.close()}catch(err){alert('Failed: '+err)}
+};
+restoreFromPage=()=>{const m=e.innerText.match(/data:text\/html;base64,[A-Za-z0-9+/=]+/);m?restore(m[0]):alert('No DataText found')};
+impDT=file=>{if(file){r2=new FileReader();r2.onload=x=>restore(x.target.result);r2.readAsText(file)}};
+
+// =================【高亮引擎（点击级隔离，打字完全不触发）】=================
+const removeEditorHighlight = () => {
+  const existingSpans = e.querySelectorAll('.hl-url-span');
+  if(existingSpans.length > 0) {
+    existingSpans.forEach(sp => { sp.outerHTML = sp.innerText; });
+    e.normalize();
+  }
+};
+
+const applyEditorHighlight = () => {
+  const sel = window.getSelection();
+  let savedOffset = 0, targetContainer = null;
+  if (sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    if (e.contains(range.startContainer)) {
+      targetContainer = range.startContainer;
+      savedOffset = range.startOffset;
+    }
+  }
+
+  removeEditorHighlight();
+  const urlReg = /(https?:\/\/[^\s<]+)/gi;
+
+  function walkAndHighlight(nd) {
+    if (nd.nodeType === 3) {
+      const txt = nd.textContent;
+      if (urlReg.test(txt)) {
+        const frag = document.createDocumentFragment();
+        let lastIdx = 0;
+        txt.replace(urlReg, (url, p1, idx) => {
+          let cleanUrl = url.replace(/[\s\u00A0]+$/, '');
+          if (idx > lastIdx) frag.appendChild(document.createTextNode(txt.slice(lastIdx, idx)));
+          
+          const span = document.createElement('span');
+          span.className = 'hl-url-span';
+          span.innerText = cleanUrl;
+          frag.appendChild(span);
+          
+          const trailingLen = url.length - cleanUrl.length;
+          if (trailingLen > 0) frag.appendChild(document.createTextNode(url.slice(cleanUrl.length)));
+          lastIdx = idx + url.length;
+        });
+        if (lastIdx < txt.length) frag.appendChild(document.createTextNode(txt.slice(lastIdx)));
+        nd.parentNode.replaceChild(frag, nd);
+      }
+    } else {
+      Array.from(nd.childNodes).forEach(ch => walkAndHighlight(ch));
+    }
+  }
+  walkAndHighlight(e);
+
+  if (targetContainer && e.contains(targetContainer)) {
+    try {
+      const newRange = document.createRange();
+      newRange.setStart(targetContainer, Math.min(savedOffset, targetContainer.textContent.length));
+      newRange.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    } catch(err) {}
+  }
+};
+
+// =================【干净成品发布页转换引擎】=================
+const genPurePostHTML = () => {
+  const titleText = h.innerText.trim() || 'Untitled Post';
+  const sandbox = document.createElement('div');
+  sandbox.innerHTML = e.innerHTML;
+  
+  sandbox.querySelectorAll('.hl-url-span, a').forEach(el => { el.outerHTML = el.innerText; });
+  sandbox.normalize();
+
+  const urlReg = /(https?:\/\/[^\s<]+)/gi;
+
+  function processFinalLinks(nd) {
+    if (nd.nodeType === 3) {
+      const txt = nd.textContent;
+      if (urlReg.test(txt)) {
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        txt.replace(urlReg, (url, p1, idx) => {
+          let cleanUrl = url.replace(/[\s\u00A0]+$/, '');
+          if (idx > last) frag.appendChild(document.createTextNode(txt.slice(last, idx)));
+          
+          const a = document.createElement('a');
+          a.href = cleanUrl; a.target = '_blank'; a.innerText = cleanUrl;
+          frag.appendChild(a);
+          
+          const trailingSpaces = url.length - cleanUrl.length;
+          if (trailingSpaces > 0) frag.appendChild(document.createTextNode(url.slice(cleanUrl.length)));
+          last = idx + url.length;
+        });
+        if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+        nd.parentNode.replaceChild(frag, nd);
+      }
+    } else {
+      Array.from(nd.childNodes).forEach(ch => processFinalLinks(ch));
+    }
+  }
+  processFinalLinks(sandbox);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${titleText}</title>
+  <style>
+    body{max-width:800px;margin:40px auto;padding:0 20px;font-family:system-ui,sans-serif;line-height:1.6;color:#333}
+    h1{font-size:28px;border-bottom:2px solid #eee;padding-bottom:10px;margin-bottom:20px}
+    .content{font-size:16px;word-break:break-word}
+    .content img{max-width:100%;height:auto;margin:10px 0;display:block}
+    a{color:#0066cc;text-decoration:underline}
+    a:hover{color:#004499}
+  </style>
+</head>
+<body>
+  <h1>${titleText}</h1>
+  <div class="content">${sandbox.innerHTML}</div>
+</body>
+</html>`;
+};
+
+const downloadPureHTML = () => {
+  const pureHtml = genPurePostHTML();
+  dl((h.innerText.trim()||'#Pure_Post')+'.pure.html','text/html',pureHtml);
+};
+
+const copyPostDT = async () => {
+  const pureHtml = genPurePostHTML();
+  const dataText = 'data:text/html;base64,' + b64(new TextEncoder().encode(pureHtml));
+  try {
+    await clipWrite(dataText);
+    alert('Copied Pure Page DataText! ('+fmt(f(dataText))+')');
+  } catch(err) {
+    alert('Copy failed: ' + err.message);
+  }
+};
+
+window.addEventListener('beforeunload', ev => { if (h.innerText.trim() || e.innerText.trim()) { ev.preventDefault(); return '' } });
+addEventListener('load', () => { uSize(); applyEditorHighlight(); });
+</script>
+</head>
+<body>
+<div class="sticky-top">
+  <div id="info"></div>
+  
+  <div class="btn-row-4">
+    <button onclick="clr()">Clear</button>
+    <button onclick="img.click()">Insert Image</button>
+    <button onclick="restoreFromPage()">Restore FTA</button>
+    <button onclick="imp.click()">Import .DT</button>
+  </div>
+  
+  <div class="btn-row-3">
+    <button onclick="saveHTML()">Save Editor</button>
+    <button class="primary" onclick="downloadPureHTML()">Save Page</button>
+    <button onclick="saveTXT()">Save TEXT</button>
+  </div>
+  
+  <div class="btn-row-3">
+    <button onclick="copyDT()">Copy Editor</button>
+    <button class="primary" onclick="copyPostDT()">Copy Page</button>
+    <button onclick="outDT()">Export .DT</button>
+  </div>
+
+  <input hidden type="file" id="img" accept="image/*" onchange="ins(this.files[0]);this.value=''">
+  <input hidden type="file" id="imp" accept=".DataText,.txt" onchange="impDT(this.files[0]);this.value=''">
+  <a hidden id="a"></a>
+</div>
+
+<div id="h" contenteditable="true" placeholder="Title..." oninput="sync();uSize()"></div>
+<div id="e" contenteditable="true" placeholder="Type your notes here..." onfocus="applyEditorHighlight()" onblur="applyEditorHighlight()" oninput="uSize()"></div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>HyperNote</title>
+    <style>
+        body{font-family:system-ui,sans-serif;max-width:800px;margin:20px auto;padding:0 15px;color:#18181b}
+        .controls{display:flex;gap:8px;margin-bottom:20px}
+        button{padding:6px 12px;cursor:pointer;background:#f4f4f5;border:1px solid #d4d4d8;border-radius:4px;font-size:13px}
+        .b-d{color:#991b1b;background:#fee2e2;border-color:#fca5a5}
+        #h{font-size:24px;outline:0;border-bottom:1px solid #e4e4e7;padding-bottom:5px}
+        #e{min-height:400px;outline:0;margin-top:15px;white-space:pre-wrap;word-break:break-all}
+        [contenteditable]:empty:before{content:attr(placeholder);color:#9ca3af}
+        #t{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#18181b;color:#fff;padding:6px 16px;border-radius:4px;font-size:12px;opacity:0;transition:opacity .2s;pointer-events:none}
+    </style>
+</head>
+<body>
+<div class="controls">
+    <button class="b-d" onclick="clearData()">Clear</button>
+    <button onclick="copyEditor()">Copy Editor</button>
+    <button onclick="savePage()">Save Page</button>
+    <button onclick="copyPage()">Copy Page</button>
+</div>
+<h1 id="h" contenteditable="true" placeholder="标题..."></h1>
+<div id="e" contenteditable="true" placeholder="输入内容 (URL会自动识别为链接)..."></div>
+<div id="t"></div>
+<script>
+    const h = document.getElementById('h'), e = document.getElementById('e'), t = document.getElementById('t');
+    const b64 = s => btoa(unescape(encodeURIComponent(s)));
+    const showTip = m => { t.innerText = m; t.style.opacity = '1'; clearTimeout(window.to); window.to = setTimeout(() => t.style.opacity = '0', 1000); };
+    const copy = (txt, m) => { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); showTip(m); } catch(e) { showTip('失败'); } document.body.removeChild(ta); };
+    const clearData = () => { h.innerText = ''; e.innerText = ''; showTip('已清空'); };
+    const enc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const getHtml = () => {
+        const c = e.innerText.split(/(\s+)/).map(p => (p.startsWith('http://') || p.startsWith('https://')) ? `<a href="${enc(p)}" target="_blank" style="color:#2563eb;text-decoration:underline;">${p}</a>` : p).join('');
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${h.innerText}</title></head><body><h1>${h.innerText}</h1><div style="white-space:pre-wrap;word-break:break-all;">${c}</div></body></html>`;
+    };
+    function copyEditor() {
+        const style = document.getElementsByTagName('style')[0].innerHTML;
+        const script = document.getElementsByTagName('script')[0].innerHTML;
+        copy('data:text/html;base64,' + b64(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>HyperNote</title><style>${style}</style></head><body><div class="controls"><button class="b-d" onclick="clearData()">Clear</button> <button onclick="copyEditor()">Copy Editor</button> <button onclick="savePage()">Save Page</button> <button onclick="copyPage()">Copy Page</button></div><h1 id="h" contenteditable="true" placeholder="标题..."></h1><div id="e" contenteditable="true" placeholder="输入内容 (URL会自动识别为链接)..."></div><div id="t"></div>\<script>${script}\<\/script></body></html>`), '编辑器已复制');
+    }
+    const copyPage = () => copy('data:text/html;base64,' + b64(getHtml()), '页面链接已复制');
+    function savePage() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([getHtml()], {type: 'text/html'})); a.download = (h.innerText.trim() || 'note') + '.html'; a.click(); showTip('已下载'); }
+</script>
+</body>
+</html>

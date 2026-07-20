@@ -1,0 +1,33 @@
+
+echo "设置IP地址和网络掩码。"
+netsh interface ip set address "以太网" source=static addr=192.168.1.99 mask=255.255.255.0
+netsh interface ip set address "以太网 2" source=static addr=192.168.88.99 mask=255.255.255.0
+netsh interface ip set address "以太网 3" source=static addr=192.168.1.98 mask=255.255.255.0
+
+
+echo "设置网关地址"
+netsh interface ip add address name="以太网" gateway=192.168.1.33 gwmetric=0
+netsh interface ip add address name="以太网 2" gateway=192.168.88.33 gwmetric=0
+netsh interface ip add address name="以太网 3" gateway=192.168.1.10 gwmetric=0
+
+
+echo "设置【以太网】DNS地址"
+netsh interface ip set dns name="以太网" source=static addr=192.168.1.99
+netsh interface ip add dns name="以太网" addr=192.168.1.131
+netsh interface ip add dns name="以太网" addr=192.168.1.130
+netsh interface ip add dns name="以太网" addr=114.114.114.114
+
+echo "设置【以太网 2】DNS地址"
+netsh interface ip set dns name="以太网 2" source=static addr=192.168.88.99
+netsh interface ip add dns name="以太网 2" addr=192.168.88.131
+netsh interface ip add dns name="以太网 2" addr=192.168.88.130
+netsh interface ip add dns name="以太网 2" addr=114.114.114.114
+
+echo "设置【以太网 3】DNS地址"
+netsh interface ip set dns name="以太网 3" source=static addr=114.114.114.114
+netsh interface ip add dns name="以太网 3" addr=223.5.5.5
+netsh interface ip add dns name="以太网 3" addr=223.6.6.6
+
+ipconfig /flushdns
+
+

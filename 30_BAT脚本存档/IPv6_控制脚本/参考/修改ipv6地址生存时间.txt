@@ -1,0 +1,34 @@
+
+DefaultHopLimit               : 128
+NeighborCacheLimit(Entries)   : 256
+RouteCacheLimit(Entries)      : 4096
+ReassemblyLimit(Bytes)        : 267911648
+IcmpRedirects                 : Enabled
+SourceRoutingBehavior         : DontForward
+DhcpMediaSense                : Enabled
+MediaSenseEventLog            : Disabled
+MldLevel                      : All
+MldVersion                    : Version2
+MulticastForwarding           : Disabled
+GroupForwardedFragments       : Disabled
+RandomizeIdentifiers          : Enabled
+AddressMaskReply              : Disabled
+UseTemporaryAddresses         : Enabled
+MaxTemporaryDadAttempts       : 3
+MaxTemporaryValidLifetime     : 7.00:00:00
+MaxTemporaryPreferredLifetime : 1.00:00:00 #最低11分钟 不能比MaxTemporaryDesyncTime小
+TemporaryRegenerateTime       : 00:00:05
+MaxTemporaryDesyncTime        : 00:10:00
+DeadGatewayDetection          : Enabled
+
+get-NetIPv6Protocol
+Set-NetIPv6Protocol -DeadGatewayDetection Enabled
+
+临时地址首选周期最长值默认 0.00:10:00
+
+Set-NetIPv6Protocol -TemporaryRegenerateTime 00:00:05
+Set-NetIPv6Protocol -MaxTemporaryDesyncTime 0.00:00:30
+Set-NetIPv6Protocol -MaxTemporaryValidLifetime 0.00:01:00
+Set-NetIPv6Protocol -MaxTemporaryPreferredLifetime 0.00:01:00
+
+

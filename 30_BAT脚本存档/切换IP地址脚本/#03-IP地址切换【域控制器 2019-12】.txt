@@ -1,0 +1,16 @@
+
+echo "设置IP地址和网络掩码。"
+netsh interface ip set address "以太网" source=static addr=192.168.1.97 mask=255.255.255.0
+
+echo "设置网关地址"
+netsh interface ip add address name="以太网" gateway=192.168.1.10 gwmetric=0
+
+echo "设置【以太网】DNS地址"
+netsh interface ip set dns name="以太网" source=static addr=192.168.1.99
+netsh interface ip add dns name="以太网" addr=114.114.114.114
+netsh interface ip add dns name="以太网" addr=223.5.5.5
+netsh interface ip add dns name="以太网" addr=223.6.6.6
+
+ipconfig /flushdns
+
+

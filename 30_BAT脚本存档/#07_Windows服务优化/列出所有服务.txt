@@ -1,0 +1,10 @@
+# 仅导出正在运行的服务, 在桌面生成列表.
+Get-Service | Where-Object {$_.Status -eq "Running"} |
+Select-Object Name, DisplayName, Status, StartType |
+Export-Csv "$env:USERPROFILE\Desktop\running_services.csv" -NoTypeInformation -Encoding UTF8
+
+
+# 导出所有服务到 CSV（包括运行中和停止的）
+Get-Service |
+Select-Object Name, DisplayName, Status, StartType |
+Export-Csv "$env:USERPROFILE\Desktop\all_services.csv" -NoTypeInformation -Encoding UTF8
