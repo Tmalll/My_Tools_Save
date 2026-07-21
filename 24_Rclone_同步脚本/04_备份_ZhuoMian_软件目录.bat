@@ -33,8 +33,6 @@ rclone sync "%Source1%"  "%TargetDIR3%\01.latest" ^
     --no-update-dir-modtime ^
     --no-update-modtime ^
     --modify-window 2s ^
-    --fast-list ^
-    --checksum  ^
     --drive-chunk-size 128M ^
     --transfers 3 ^
     --checkers 3 ^
@@ -57,6 +55,22 @@ echo 所有任务都已完成, 10秒后退出脚本...
 timeout /t 10 > NUL
 exit
 :: ---------- 脚本结束分割线 ---------- 脚本结束分割线 ---------- 脚本结束分割线 ---------- 脚本结束分割线 ----------
+
+
+--fast-list ^
+
+
+
+
+--checksum  ^
+
+
+
+
+
+
+
+
 
 :: --dedupe-mode interactive        - 如上所示，具有交互性。
 :: --dedupe-mode skip               - 删除相同的文件，然后跳过剩余的所有内容。
