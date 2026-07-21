@@ -60,8 +60,7 @@ rules:
   - PROCESS-NAME,ctfmon.exe,REJECT-DROP               # 好像是输入法
   - DOMAIN,sb.scorecardresearch.com,REJECT-DROP       # Peter Lowe 的广告和跟踪服务器列表
   - DOMAIN,go-updater.brave.com,REJECT-DROP           # brave 浏览器升级
-  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\23-CCleaner\CCleaner_6.40_官方便携版\CCleaner*.exe,REJECT-DROP # CCleaner
-  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\23-CCleaner\CCleaner_6.40_官方便携版\*.exe,REJECT-DROP # CCleaner
+  - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\23-CCleaner\*.exe,REJECT-DROP # CCleaner
 
   - PROCESS-PATH-WILDCARD,C:\Windows\System32\dllhost.exe,REJECT # 安全加固
   - PROCESS-PATH-WILDCARD,C:\Windows\SysWOW64\dllhost.exe,REJECT
