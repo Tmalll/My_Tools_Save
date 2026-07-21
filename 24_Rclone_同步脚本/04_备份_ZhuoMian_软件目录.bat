@@ -30,10 +30,8 @@ echo 同步 [ %Source1% ] 到 [ %TargetDIR3% ] 开始...
 echo. & echo.
 rclone sync "%Source1%"  "%TargetDIR3%\01.latest" ^
     --backup-dir         "%TargetDIR3%\02.history\%timestamp%" ^
-    --no-update-dir-modtime ^
-    --no-update-modtime ^
     --modify-window 2s ^
-    --drive-chunk-size 128M ^
+    --buffer-size 64M ^
     --transfers 3 ^
     --checkers 3 ^
     --copy-links ^
@@ -56,6 +54,8 @@ timeout /t 10 > NUL
 exit
 :: ---------- 脚本结束分割线 ---------- 脚本结束分割线 ---------- 脚本结束分割线 ---------- 脚本结束分割线 ----------
 
+--no-update-dir-modtime ^
+--no-update-modtime ^
 
 --fast-list ^
 
