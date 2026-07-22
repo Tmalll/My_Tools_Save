@@ -21,6 +21,7 @@ for %%f in (*.bat) do (
     set "Skip="
     for %%i in (
         "%~nx0"
+        "*.bat-dis"
         "测试.bat"
         "模板.bat"
         "备份.bat"
