@@ -47,7 +47,7 @@ echo 运行主体程序...
 set SKIP_SYSTEM_IPV6_CHECK=1
 
 :: 带日志过滤的启动, git的Grep实现方式
-"%PRpath%" -f "%~dp0\config.yml" -d "%configDIR%" -ext-ui "%configDIR%\webui" | grep -E --line-buffered -v "Auto detect interface|REJECT-DROP|GeoSite|using HidePROXY|using DNS_select|get empty name|interface not found|]:445|to avoid lookback|using DIRECT|may not have any sent data|i/o timeout" > "%~dp0mihomo_RunLOG.log"
+"%PRpath%" -f "%~dp0\config.yml" -d "%configDIR%" -ext-ui "%configDIR%\webui" | grep -E --line-buffered -v "Auto detect interface|REJECT-DROP|GeoSite|using HidePROXY|using DNS_select|get empty name|interface not found|]:445|to avoid lookback|using DIRECT|may not have any sent data|i/o timeout|context deadline exceeded" > "%~dp0mihomo_RunLOG.log"
 echo.
 :: 这里使用了git的grep做排除了, 需要把C:\Program Files\Git\usr\bin添加到系统变量.
 

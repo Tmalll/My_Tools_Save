@@ -1,0 +1,237 @@
+给便编写一个在debian11/12上运行的 ikuai-DDNS.sh
+脚本流程如下:
+第一部分, 获取ikuai的ipv6地址.
+1. 通过命令获取 sess_key= , 命令如下, 注意要带-v 才能看到.
+root@home-web-1-40:~#   curl 'http://192.168.1.33/Action/login' \
+>   -H 'Accept: application/json, text/plain, */*' \
+>   -H 'Accept-Language: zh-CN,zh-TW;q=0.9,zh;q=0.8,en;q=0.7' \
+>   -H 'Connection: keep-alive' \
+>   -H 'Content-Type: application/json;charset=UTF-8' \
+>   -H 'DNT: 1' \
+>   -H 'Origin: http://192.168.1.33' \
+>   -H 'Referer: http://192.168.1.33/login' \
+>   -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36' \
+>   --data-raw '{"username":"admin","passwd":"14d39d5ab4318092575a2732f6036660","pass":"c2FsdF8xMWlLdWFpQFRFekBOUEUlYWthVVEyN0xnMDJnXk5Hdw==","remember_password":""}' \
+>   --compressed \
+>   --insecure -v
+*   Trying 192.168.1.33:80...
+* Connected to 192.168.1.33 (192.168.1.33) port 80
+* using HTTP/1.x
+> POST /Action/login HTTP/1.1
+> Host: 192.168.1.33
+> Accept-Encoding: deflate, gzip, br, zstd
+> Accept: application/json, text/plain, */*
+> Accept-Language: zh-CN,zh-TW;q=0.9,zh;q=0.8,en;q=0.7
+> Connection: keep-alive
+> Content-Type: application/json;charset=UTF-8
+> DNT: 1
+> Origin: http://192.168.1.33
+> Referer: http://192.168.1.33/login
+> User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36
+> Content-Length: 149
+> 
+* upload completely sent off: 149 bytes
+< HTTP/1.1 200 OK
+< Date: Sat, 25 Jul 2026 00:32:39 GMT
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Connection: close
+< Server: Nginx
+< Expires: 0
+< Pragma: no-cache
+< Cache-Control: no-cache
+< X-LANG: 1
+< X-Timezone: 0800
+< X-Timestamp: 1784939559
+< X-Arch: x86
+< X-Sysbit: x32
+< X-Enterprise: 0
+< X-Support-i18n: 0
+< X-Support-wifi: 0
+< X-Default-IP: 0
+< Set-Cookie: sess_key=ad62cb4f7585e5afbf7e2b1bfaa280b0; path=/; 
+< 
+* shutting down connection #0
+{"Result":10000,"ErrMsg":"Success"}root@home-web-1-40:~# 
+
+过滤筛选 < Set-Cookie: sess_key=ad62cb4f7585e5afbf7e2b1bfaa280b0; path=/; 
+筛选出 ad62cb4f7585e5afbf7e2b1bfaa280b0 并且赋予变量给接下来的命令使用.
+这里换个变量名称 iKuaiAPI_key=ad62cb4f7585e5afbf7e2b1bfaa280b0
+echo ${iKuaiAPI_key} 
+sleep 3
+让它显示一次, 用来排错
+
+
+2. 吧上面的获取的 sess_key= 拼接进下面这个命令获取ipv6地址.
+root@home-web-1-40:~# curl 'http://192.168.1.33/Action/call' \
+>   -H 'Accept: application/json, text/plain, */*' \
+>   -H 'Accept-Language: zh-CN,zh-TW;q=0.9,zh;q=0.8,en;q=0.7' \
+>   -H 'Connection: keep-alive' \
+>   -H 'Content-Type: application/json;charset=UTF-8' \
+>   -H 'Cookie: username=admin; login=1; sess_key=ad62cb4f7585e5afbf7e2b1bfaa280b0' \
+>   -H 'DNT: 1' \
+>   -H 'Origin: http://192.168.1.33' \
+>   -H 'Referer: http://192.168.1.33/' \
+>   -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36' \
+>   --data-raw '{"func_name":"ipv6","action":"show","param":{"TYPE":"data,total","limit":"0,20","ORDER_BY":"","ORDER":""}}' \
+>   --compressed \
+>   --insecure -v
+*   Trying 192.168.1.33:80...
+* Connected to 192.168.1.33 (192.168.1.33) port 80
+* using HTTP/1.x
+> POST /Action/call HTTP/1.1
+> Host: 192.168.1.33
+> Accept-Encoding: deflate, gzip, br, zstd
+> Accept: application/json, text/plain, */*
+> Accept-Language: zh-CN,zh-TW;q=0.9,zh;q=0.8,en;q=0.7
+> Connection: keep-alive
+> Content-Type: application/json;charset=UTF-8
+> Cookie: username=admin; login=1; sess_key=ad62cb4f7585e5afbf7e2b1bfaa280b0
+> DNT: 1
+> Origin: http://192.168.1.33
+> Referer: http://192.168.1.33/
+> User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36
+> Content-Length: 106
+> 
+* upload completely sent off: 106 bytes
+< HTTP/1.1 200 OK
+< Date: Sat, 25 Jul 2026 00:36:12 GMT
+< Content-Type: application/json;charset=UTF-8
+< Connection: close
+< Server: Nginx
+< Expires: 0
+< Pragma: no-cache
+< Cache-Control: no-cache
+< X-LANG: 1
+< X-Timezone: 0800
+< X-Timestamp: 1784939772
+< X-Arch: x86
+< X-Sysbit: x32
+< X-Enterprise: 0
+< X-Support-i18n: 0
+< X-Support-wifi: 0
+< X-Default-IP: 0
+< Content-Length: 520
+< 
+{"Result":30000,"ErrMsg":"Success","Data":{"data":[{"internet":"dhcp","dhcp6_dns1":"2408:8888::8","prefix":"64","prefix_hint":"","force_prefix":0,"force_gen_duid":1,"link_addr":"fe80::c975:763d:7189:3f85","dhcp6_ip_gateway":"fe80::76e9:bfff:fecb:c045","preferred_lft":"170584","valid_lft":"256984","dhcp6_prefix1":"2408:8278:4282:7040::\/60","dhcp6_dns2":"2408:8899::8","ipv6_addr":"","ipv6_gateway":"","id":1,"enabled":"yes","dhcp6_ip_addr":"2408:8278:4180:c8f:18a8:3795:6ab3:f549\/64","interface":"wan3"}],"total":1}}
+* shutting down connection #0
+root@home-web-1-40:~# 
+
+然后筛选出 "dhcp6_ip_addr":"2408:8278:4180:c8f:18a8:3795:6ab3:f549\/64", 里面的
+2408:8278:4180:c8f:18a8:3795:6ab3:f549 赋予变量,  给下面的DDNS部分使用.
+echo  ${dhcp6_ip_addr}
+sleep 3
+让它显示一次, 用来排错
+
+
+3. 通过筛选上面命令返回的结果. 获取
+"dhcp6_ip_addr":"2408:8278:4180:c8f:18a8:3795:6ab3:f549\/64"}
+里面的ipv6地址
+2408:8278:4180:c8f:18a8:3795:6ab3:f549
+以后
+丢给DDNS.sh 脚本.
+
+
+第二部分, DDNS脚本, 加强版.
+脚本有现成的, 改改就能用.
+
+
+#!/bin/bash
+
+# Cloudflare API Token (区域 API Token)
+CF_API_TOKEN="9MvmrZxW4qvTWg0pCm5x1ecNPSJIMOGWl4nUczOP"
+
+# Cloudflare Zone ID (你的域名的 Zone ID)
+ZONE_ID="d362e0bd36b803be9068be789bf22747"
+
+# 需要更新的主机名 (例如 "note12v6.miaosky.top")
+HOSTNAME="ikuai.miaosky.top" 这行删掉
+
+# 获取当前公网 IPv6 地址
+IP=$(curl --doh-url https://223.5.5.5/dns-query -s -6 https://test.ipw.cn) # 这里改成用上面传入的ipv6地址.
+下面命令也做些适配. 这个删掉
+
+另外可以再完善一些, 
+ipv4=使用命令获取, 如下
+root@home-web-1-40:~# curl https://a.ident.me/ -4
+42.63.26.29root@home-web-1-40:~# curl https://a.ident.me/ -6
+2408:8278:4282:7041:2460:56ea:ee09:771broot@home-web-1-40:~# 
+v4可以改成用
+$(curl --doh-url https://223.5.5.5/dns-query -s -4 https://a.ident.me)
+来获取.
+
+
+ip6=用上面API获取的 ${dhcp6_ip_addr}
+
+另外域名改成可以用一组.
+域名1 ikuai.miaosky.top 同步ipv4 + ipv6
+域名2 ikuia-v4.miaosky.top 只同步v4
+域名3 ikuia-v6.miaosky.top 只同步v6
+最好上面这些, v4/v6/,  域名1/2/3的设置可以做成一个注册表, 方便后期维护,  只用简单修改.
+先用变量ipv4=/ipv6=设置要同步上去的IP.
+然后注册表中:
+1.要同步的域名1, 2.同步哪些ip(v4/v6/v4+v6/cname等.), 3.记录类型(A/AAAA/CNAME) .... 其他还需要什么你补充一下...
+2.要同步的域名2, .....
+3.要同步的域名3, .....
+
+# 接下来就是脚本流程...
+让它们适应新的注册表方式的DDNS同步.
+
+
+# 查询是否已存在该 DNS 记录（A/AAAA/cname等记录）
+RECORD_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=AAAA&name=$HOSTNAME" \
+     -H "Authorization: Bearer $CF_API_TOKEN" \
+     -H "Content-Type: application/json" | jq -r '.result[0].id')
+这里在增强一下,  如果ip地址一样,  就直接跳过此次DDNS脚本...
+
+# 如果记录已存在，更新该记录
+if [ "$RECORD_ID" != "null" ]; then
+  echo "Found existing DNS record. Updating IPv6 address..."
+  curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
+       -H "Authorization: Bearer $CF_API_TOKEN" \
+       -H "Content-Type: application/json" \
+       --data "{\"type\":\"AAAA\",\"name\":\"$HOSTNAME\",\"content\":\"$IP\",\"ttl\":1,\"proxied\":false}"
+  echo "DNS record for $HOSTNAME updated to IPv6: $IP"
+else
+  # 如果记录不存在，创建新的 DNS 记录
+  echo "No existing DNS record found. Creating new record..."
+  curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
+       -H "Authorization: Bearer $CF_API_TOKEN" \
+       -H "Content-Type: application/json" \
+       --data "{\"type\":\"AAAA\",\"name\":\"$HOSTNAME\",\"content\":\"$IP\",\"ttl\":1,\"proxied\":false}"
+  echo "DNS record for $HOSTNAME created with IPv6: $IP"
+fi
+
+echo "$(date) - Script executed" >> /data/data/com.termux/files/home/ddns.log
+
+echo ""
+echo ""
+
+  
+
+最后把脚本两个模块分开,  上部分 爱快API 获取ipv6地址.
+
+下部分, DDNS.sh 脚本注册表加强版
+
+这样以后有用,  可以单独摘出来拿来直接用.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

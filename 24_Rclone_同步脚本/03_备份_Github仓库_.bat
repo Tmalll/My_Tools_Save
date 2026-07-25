@@ -42,6 +42,7 @@ rclone sync "%Source1%"  "%TargetDIR3%\01.latest" ^
     --exclude "/.git/**" ^
     --exclude "**/.git/**" ^
     --exclude "desktop.ini" ^
+    --exclude "mihomo_RunLOG.log" ^
     --timeout 10s ^
     --contimeout 10s ^
     --retries 3 ^
@@ -84,6 +85,7 @@ rclone sync "%Source1%"  "%TargetDIR4%\01.latest" ^
     --exclude "/.git/**" ^
     --exclude "**/.git/**" ^
     --exclude "desktop.ini" ^
+    --exclude "mihomo_RunLOG.log" ^
     --timeout 10s ^
     --contimeout 10s ^
     --retries 3 ^
@@ -103,7 +105,10 @@ exit
 :: ---------- 脚本结束分割线 ---------- 脚本结束分割线 ---------- 脚本结束分割线 ---------- 脚本结束分割线 ----------
 
 
-
+    --exclude "mihomo_RunLOG.log" ^ 排除特定文件
+    --exclude "/.git/**" ^
+    --exclude "**/.git/**" ^
+    --exclude "desktop.ini" ^
 
 
 
