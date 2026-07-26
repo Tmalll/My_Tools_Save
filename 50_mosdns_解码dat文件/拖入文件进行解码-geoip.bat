@@ -30,26 +30,26 @@ echo  正在处理文件: !inputFullFileName!
 echo ==================================================
 
 :: 3. 在拖入文件所在的目录下新建工作目录: DIR-拖入文件名.dat
-set "targetDir=!inputDir!DIR-!inputFullFileName!"
+set "targetDir=!inputDir!!inputFullFileName!-DIR-"
 
 if exist "!targetDir!" rmdir /s /q "!targetDir!"
 mkdir "!targetDir!"
 
-:: 4. 复制目标文件到工作目录并重命名为 geosite.dat
-copy /y "!inputFile!" "!targetDir!\geosite.dat" >nul
+:: 4. 复制目标文件到工作目录（保持原文件名）
+copy /y "!inputFile!" "!targetDir!\!inputFullFileName!" >nul
 
-:: 5. 切换到工作目录并执行 MosDNS 转换命令
+:: 5. 切换到工作目录并执行 MosDNS 转换命令（动态传入拖入的文件名）
 cd /d "!targetDir!"
 
 echo 正在调用 MosDNS 进行解码转换...
-"%mosdnsPath%" -conv-v2ray-domain-dat geosite.dat
+"%mosdnsPath%" -conv-v2ray-ip-dat "!inputFullFileName!"
 
-:: 6. 切回脚本目录并删除工作目录中的临时 geosite.dat
+:: 6. 切回脚本目录并删除工作目录中的临时原文件
 cd /d "%~dp0"
-if exist "!targetDir!\geosite.dat" del /f /q "!targetDir!\geosite.dat"
+if exist "!targetDir!\!inputFullFileName!" del /f /q "!targetDir!\!inputFullFileName!"
 
 echo ==================================================
-echo 处理完成！已自动删除临时 geosite.dat。
+echo 处理完成！已自动清理工作目录中的临时 !inputFullFileName!。
 echo 转换后的文件夹位于源文件目录:
 echo "!targetDir!"
 echo ==================================================
