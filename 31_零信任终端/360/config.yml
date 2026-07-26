@@ -1,8 +1,8 @@
 # 基础设置
 mixed-port: 10800                         # http/socks5 对外服务端口
-# allow-lan: true                         # 上面的是否允许局域网连接
+allow-lan: true                           # 上面的是否允许局域网连接
 ipv6: true                                # IPv6 总开关
-# geodata-mode: true                      # 使用geoip.dat数据库
+geodata-mode: true                        # 使用geoip.dat数据库
 external-controller: 127.3.3.3:80         # WebUI控制器端口 | 配合hosts可使用 http://clash.meta/ui/#/proxies 来进行登录.
 log-level: info                           # 日志等级（ silent / error / warning / info / debug ）
 
@@ -318,8 +318,9 @@ rules:
   #- AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,443)),HidePROXY  
   #- PROCESS-PATH,D:\01.Program_Soft\01-浏览器\01.CentBrowser\New_5.1.1130.129_x64_portable\chrome.exe,HidePROXY # 精确匹配PATH程序
   #- PROCESS-NAME,curl.exe,HidePROXY # 匹配程序名称
-  
-
+###
+##
+#
 
 
 # 流量嗅探
@@ -335,7 +336,10 @@ sniffer:
       ports: [443, 2053, 2083, 2087, 2096, 8443]
     QUIC:
       ports: [443, 2053, 2083, 2087, 2096, 8443]
+###
+##
 #
+
 
 # HOSTS
 hosts:
@@ -352,7 +356,10 @@ hosts:
   #  172.67.67.149, 104.20.24.172, 104.26.9.220, 104.26.13.21, 104.26.0.162
   #]
   one.one.one.one: [1.1.1.1, 1.0.0.1, 2606:4700:4700::1001, 2606:4700:4700::1111]
+###
+##
 #
+
 
 # Tun模式
 tun:
@@ -364,41 +371,32 @@ tun:
     # gvisor 通过在用户空间中实现网络协议栈，可以提供更高的安全性和隔离性，同时可以避免操作系统内核和用户空间之间的切换，从而在特定情况下具有更好的网络处理性能
     # mixed 混合堆栈，tcp 使用 system栈，udp 使用 gvisor栈，使用体验可能相对更好
     # 安卓上建议使用 gvisor 来获取更好的隐私性, 特别是国产手机中...
-  ###
-  ##
-  #
+  ###  
   inet6-address: # https://wiki.metacubex.one/config/inbound/tun/#inet6-address
-    - "fdfe:dcba:9800::1/126"
+    - "6666:ffff:ffff:6666::1/126"
   # 不写这一段, tun模式无法接管IPv6
   # 目前会在程序启动时检查系统其他网卡是否有IPV6，如果不存在会禁用该功能，如果需要强制开启tun的v6地址，请手动设置SKIP_SYSTEM_IPV6_CHECK=1系统环境变量
   # 需要同时将顶层配置中的ipv6设置为true才会生效
   ###
-  ##
-  #
   dns-hijack:
-    - 'any:53'                  # 开启劫持
-    - 'tcp://any:53'
+    - 'udp://any:53'
+    #- 'any:53'                  # 开启劫持
+    #- 'tcp://any:53'
     #- "111.111.111.111:53"     # 关闭劫持
   ###
-  ##
-  #
-  # 自动选择流量出口接口，多出口网卡同时连接的设备建议手动指定出口网卡
-  auto-detect-interface: true
-  #
-  # 指定出口网卡, 还有一个 exclude-interface 排除路由的接口，与 include-interface 冲突，不可一起配置
-  #include-interface:
+  auto-detect-interface: true # 自动选择流量出口接口，多出口网卡同时连接的设备建议手动指定出口网卡
+  #include-interface: # 指定出口网卡, 还有一个 exclude-interface 排除路由的接口，与 include-interface 冲突，不可一起配置
   #  - "以太网"
-  #
-  #  启用 auto-route 时执行严格的路由规则
-  strict-route: true
-  #
-  # 在 Linux 中:
-  #   让不支持的网络无法到达
-  #   将所有连接路由到 tun
-  #   它可以防止地址泄漏，并使 DNS 劫持在 Android 上工作。
-  # 在 Windows 中:
-  #   添加防火墙规则以阻止 Windows 的 普通多宿主 DNS 解析行为 造成的 DNS 泄露
-  #   它可能会使某些应用程序（如 VirtualBox）在某些情况下无法正常工作。
+  ###
+  strict-route: true #  启用 auto-route 时执行严格的路由规则
+    # 在 Linux 中:
+    #   让不支持的网络无法到达
+    #   将所有连接路由到 tun
+    #   它可以防止地址泄漏，并使 DNS 劫持在 Android 上工作。
+    # 在 Windows 中:
+    #   添加防火墙规则以阻止 Windows 的 普通多宿主 DNS 解析行为 造成的 DNS 泄露
+    #   它可能会使某些应用程序（如 VirtualBox）在某些情况下无法正常工作。
+  ###
   auto-route: true
   route-address:
     - 0.0.0.0/1
@@ -418,6 +416,10 @@ tun:
     - fe80::/10          # 链路本地地址 (Link-local)
     - ::1/128            # IPv6 本地环回地址
     - ff00::/8           # 组播地址 (Multicast)
+    #
+    # 备注: 在fakeIP模式下如果以上排除段里包含了fakeIP所使用的网段, 会造成DNS解析问题!!!
+###
+##
 #
 
 
@@ -427,39 +429,43 @@ dns:
   listen: 0.0.0.0:53153
   ipv6: true
   use-hosts: true
-  use-system-hosts: false
-  enhanced-mode: redir-host  # fake-ip / redir-host
-  #enhanced-mode: fake-ip  # fake-ip / redir-host
-  fake-ip-range: 10.233.0.0/16
-  fake-ip-range6: fdfe:dcba:9876::1/64
+  use-system-hosts: true
+  enhanced-mode: fake-ip  # fake-ip / redir-host
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-range6: 8888:ffff:ffff:8888::1/64
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - 'geosite:private'
+    - 'geosite:category-doh'
+    - 'geosite:category-httpdns-cn'
+    - 'geosite:category-ntp'
+    - 'geosite:category-stun'
   default-nameserver: 
-    - "tcp://192.168.1.41:53141"
     # 默认 DNS, 用于解析 DNS 服务器的域名 | 必须为 IP, 可为加密 DNS
-    #- "https://223.5.5.5/dns-query#DNS_select&h3=true" # 阿里H3
-    #- "https://223.6.6.6/dns-query#DNS_select"         # 阿里H2
-    #- "https://1.12.12.12/dns-query#DNS_select"        # 腾讯H2
-    #- "https://120.53.53.53/dns-query#DNS_select"      # 腾讯H2
-  proxy-server-nameserver: 
-    - "tcp://192.168.1.41:53141"
-    # 解析节点域名专用的服务器
-    # 代理节点域名解析服务器，仅用于解析代理节点的域名，如果不填则遵循 nameserver-policy、nameserver 和 fallback 的配置
+    - "https://223.5.5.5/dns-query#DNS_select&h3=true" # 阿里H3
+    - "https://223.6.6.6/dns-query#DNS_select"         # 阿里H2
+    - "https://1.12.12.12/dns-query#DNS_select"        # 腾讯H2
+    - "https://120.53.53.53/dns-query#DNS_select"      # 腾讯H2
+  proxy-server-nameserver:
+    # 解析节点域名专用的服务器, 仅用于解析代理节点的域名，如果不填则遵循 nameserver-policy、nameserver 和 fallback 的配置    
     # 如果要使用 ECH 节点, 特别是CF-Workers.dev, 此处必须是可用的国外加密DNS服务器, 因为国内的都被污染了
-    #- "https://public.dns.iij.jp/dns-query#DNS_select&h3=true"    # IIJ DOH3
-    #- "https://07sk21zevc.cloudflare-gateway.com/dns-query#DNS_select" # CF-零信任网关DNS
-    #- "https://e1v16lo23i.968050.xyz/7d2s84642v/https/one.one.one.one/dns-query" # 反代后的 CF-DOH
+    - "https://public.dns.iij.jp/dns-query#DNS_select&h3=true"          # IIJ DOH3
+    - "https://07sk21zevc.cloudflare-gateway.com/dns-query#DNS_select"  # CF-零信任网关DNS
   nameserver:
-    - "tcp://192.168.1.41:53141"
     # 主要最终DNS, 用来解析代理域名
     #- "https://15.15.15.15/dns-query#DNS_select" # 测试的假地址
-    #- "https://15.15.15.15/dns-query#DNS_select" # 测试的假地址
-    #- "https://1.1.1.1/dns-query#DNS_select"
-    #- "https://1.0.0.1/dns-query#DNS_select"
-    #- "https://[2606:4700:4700::1111]/dns-query#DNS_select"
-    #- "https://[2606:4700:4700::1001]/dns-query#DNS_select"
     #- "https://dns.google.com/dns-query#DNS_select&disable-ipv6=false"
+    - "https://public.dns.iij.jp/dns-query#DNS_select&h3=true"          # IIJ DOH3
+    - "https://07sk21zevc.cloudflare-gateway.com/dns-query#DNS_select"  # CF-零信任网关DNS
   nameserver-policy:
-    "geosite:cn": ["tcp://192.168.1.41:53141"]
     # 指定域名查询的解析服务器，可使用 geosite, 优先于 nameserver/fallback 查询
+    "geosite:cn":
+      - "https://223.5.5.5/dns-query#DNS_select&h3=true" # 阿里H3
+      - "https://223.6.6.6/dns-query#DNS_select"         # 阿里H2
+      - "https://1.12.12.12/dns-query#DNS_select"        # 腾讯H2
+      - "https://120.53.53.53/dns-query#DNS_select"      # 腾讯H2
+      #- "https://doh.360.cn/dns-query"
+    #    
     #"+.miaosky.party,+.miaosky.men,+.miaosky.win,+.miaosky.top": [https://07sk21zevc.cloudflare-gateway.com/dns-query#DNS_select] # 自用域名
     #"geosite:xiaomi": [https://one.one.one.one/dns-query#DNS_select] # 小米走国外解析
     #"geosite:cn": [
@@ -468,15 +474,11 @@ dns:
     #  https://1.12.12.12/dns-query#DNS_select,
     #  https://120.53.53.53/dns-query#DNS_select
     #]
-    #
-    #"geosite:cn":
-    #  #- "https://dns.alidns.com/dns-query"           # 阿里 DOH2
-    #  - "https://dns.alidns.com/dns-query#h3=true"    # 阿里 DOH3
-    #  #- "https://doh.360.cn/dns-query"
-    #
+    #    
     #"translate.googleapis.com" : "https://public.dns.iij.jp/dns-query#DNS_select"
     #    
-    #  
+###
+##
 #
 
 
@@ -503,7 +505,10 @@ tunnels:
   #  address: 127.0.0.1:7777
   #  target: target.com
   #  proxy: proxy
+###
+##
 #
+
 
 # 代理组
 proxy-groups:
@@ -512,29 +517,26 @@ proxy-groups:
     proxies:
       - Socks5_1_40_10800
       - Socks5_1_120_10800
-      - 直连出口
+      - 直连出口40
       - Warp_Node
     use:
       #- node_Home订阅
-      #- node_主要订阅_ClashConfig
-      #- node_熊猫鸡场
   ##
   - name: "DNS_select"
     type: select
     proxies:
       - AutoPROXY
+      - Socks5_1_40_10800
       - Socks5_1_120_10800
-      - 直连出口
-      - DIRECT
+      - 直连出口40
   ##
   - name: "Warp_select"
     type: select
     proxies:
       - AutoPROXY
+      - Socks5_1_40_10800
       - Socks5_1_120_10800
-      - 直连出口
-      - DIRECT
-  ###
+      - 直连出口40
   ##
   #
 
@@ -562,14 +564,11 @@ proxy-groups:
       #- node_Home订阅
     hidden: true
   ##
-  #- name: "GLOBAL"
-  #  type: select
-  #  hidden: true
-  #  proxies:
-  #    - AutoPROXY
-  #  use:
-  ##
-    
+###
+##
+#
+
+
 # 自带节点
 proxies:
   - name: "Socks5_1_40_10800"
@@ -592,7 +591,7 @@ proxies:
     # tls: true
     # skip-cert-verify: true
 
-  - name: "直连出口"
+  - name: "直连出口40"
     type: socks5
     server: 192.168.1.40
     port: 10805

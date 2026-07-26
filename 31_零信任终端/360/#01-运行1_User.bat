@@ -8,29 +8,18 @@ echo 结束后台程序...
 taskkill /f /t /im #mihomo.exe
 taskkill /f /t /im #mihomo.exe
 taskkill /f /t /im #mihomo.exe
-timeout /t 2 > NUL
+timeout /t 1 > NUL
 echo.
 
 echo 设置变量...
-rem set "PRpath=%~dp0#core_and_data\#mihomo.exe"
-set "PRpath=C:\#mihomo_latest\#mihomo.exe"
+set "PRpath=%~dp0#core_and_data\#mihomo.exe"
 set "configDIR=%~dp0#core_and_data"
 echo.
-
-:: 更新防火墙规则...
-netsh advfirewall firewall delete rule name="mihomo.exe"
-timeout /t 1 > NUL
-netsh advfirewall firewall add rule name="mihomo.exe" dir=in    action=allow protocol=tcp  program="%PRpath%"
-netsh advfirewall firewall add rule name="mihomo.exe" dir=in    action=allow protocol=udp  program="%PRpath%"
-netsh advfirewall firewall add rule name="mihomo.exe" dir=in    action=allow protocol=any  program="%PRpath%"
-netsh advfirewall firewall add rule name="mihomo.exe" dir=out   action=allow protocol=tcp  program="%PRpath%"
-netsh advfirewall firewall add rule name="mihomo.exe" dir=out   action=allow protocol=udp  program="%PRpath%"
-netsh advfirewall firewall add rule name="mihomo.exe" dir=out   action=allow protocol=any  program="%PRpath%"
 
 
 echo 清理日志...
 del /q "%~dp0mihomo_RunLOG.log"
-timeout /t 2 > NUL
+timeout /t 1 > NUL
 rem echo.
 rem echo. >> "%~dp0\mihomo_RunLOG.log"
 rem echo. >> "%~dp0\mihomo_RunLOG.log"
