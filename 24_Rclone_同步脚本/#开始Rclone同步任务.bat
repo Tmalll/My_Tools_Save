@@ -40,7 +40,7 @@ for %%f in (*.bat) do (
         echo = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
         echo.
         timeout /t 1 > NUL
-        start /WAIT /min "" cmd /c ""%%f" > "%LOGpath%%%~nf.log" 2>&1"
+        start /min "" cmd /c ""%%f" > "%LOGpath%%%~nf.log" 2>&1"
         echo.
     )
 )
@@ -53,9 +53,9 @@ exit
 
 /B /WAIT
 
+/WAIT
 
-
-
+/min
 
 
 
