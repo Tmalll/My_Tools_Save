@@ -32,8 +32,12 @@ rclone sync "%Source1%"  "%TargetDIR1%\01.latest" ^
     --checkers 4 ^
     --one-file-system ^
     --copy-links ^
+    --exclude "Default.rdp" ^
+    --exclude "**/Common/Log/**" ^
+    --exclude "/Red Alert 3/Mods/**" ^
     --exclude "**/Xshell/applog/**" ^
     --exclude "**/Xftp/applog/**" ^
+    --exclude "backup_last_run.txt" ^
     --exclude "/排除测试文件夹1-位于根目录中的/**" ^
     --exclude "**/排除测试文件夹2-位于非根目录-只存在于子目录中的/**" ^
     --exclude "/排除特定文件1_位于根目录中的" ^
@@ -50,20 +54,17 @@ timeout /t 1 > NUL
 echo. & echo. & echo.
 :: --log-level LogLevel  Log level DEBUG|INFO|NOTICE|ERROR (default NOTICE)
 
-
-
 :任务2
 echo 启动任务2, RAR归档...
 echo ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- 
 
-:: 基础变量
 set "SOURCE=%TargetDIR1%"
 set "Archives_DIR=%TargetDIR1%\Archives"
 set "bakName=Master100_Documents"
 set "rarPath=C:\Program Files\WinRAR\Rar.exe"
-set "RAR_ARGS=a -m3 -tl -htb -oc -ep1 -idq -x"*\Archives\*" "
+set "RAR_ARGS=a -m3 -htb -oc -ep1 -idq -x"*\Archives\*" "
+set "LogFile=%Archives_DIR%\backup_last_run.txt"
 
-:: 备份节奏与清理控制变量
 set "IntervalHours=24"
 set "RetentionDays=60"
 echo 设置归档间隔时间为: [ %IntervalHours% ] 小时...
@@ -75,19 +76,30 @@ if not exist "%Archives_DIR%" mkdir "%Archives_DIR%"
 
 echo 正在检查上一次归档时间间隔...
 set "RUN_BACKUP=0"
-for /f %%A in ('powershell -NoProfile -ExecutionPolicy Bypass -Command "$latest=Get-ChildItem -Path '%Archives_DIR%' -Filter '%bakName%_*.rar' -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1; if($latest){ if(((Get-Date)-$latest.LastWriteTime).TotalHours -ge %IntervalHours%){ 1 }else{ 0 } }else{ 1 }"') do (
+
+for /f "delims=" %%A in ('powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding=[Text.Encoding]::UTF8; $log='%LogFile%'; if(Test-Path $log){ try { $str=(Get-Content $log -Raw).Trim(); if($str){ $last=Get-Date $str; if(((Get-Date)-$last).TotalHours -lt %IntervalHours%){ Write-Output '0' }else{ Write-Output '1' } }else{ Write-Output '1' } } catch { Write-Output '1' } } else { Write-Output '1' }"') do (
     set "RUN_BACKUP=%%A"
 )
 
 if "%RUN_BACKUP%"=="1" (
-    :: 使用你指定的命令获取标准时间戳
     for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH.mm.ss"') do set "timestamp=%%i"
     echo.
     echo [状态] 满足备份条件，开始归档...
     echo.
-    :: 纯原生 BAT 调用 WinRAR
+    
     "%rarPath%" %RAR_ARGS% "%Archives_DIR%\%bakName%_%timestamp%.rar" "%SOURCE%"
-    if errorlevel 0 (echo. && echo [成功] 备份归档已完成。&& echo.) else (echo. && echo [错误] 备份失败，错误码: %errorlevel% && echo.)
+    
+    if %ERRORLEVEL% equ 0 (
+        echo.
+        echo [成功] 备份归档已完成。
+        powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding=[Text.Encoding]::UTF8; Set-Content -Path '%LogFile%' -Value (Get-Date -Format 'yyyy-MM-dd HH:mm:ss') -Encoding ASCII"
+        echo [记录] 已更新上次备份时间戳至记录文件。
+        echo.
+    ) else (
+        echo.
+        echo [错误] 备份失败，错误码: %ERRORLEVEL%
+        echo.
+    )
 ) else (
     echo.
     echo [跳过] 距离上一次归档不足 [ %IntervalHours% ] 小时，今日不再备份。
@@ -95,12 +107,13 @@ if "%RUN_BACKUP%"=="1" (
 )
 
 echo 正在检查并清理 %RetentionDays% 天之前的旧备份...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$limitDate=(Get-Date).AddDays(-%RetentionDays%); Get-ChildItem -Path '%Archives_DIR%' -Filter '%bakName%_*.rar' -File | Where-Object { $_.LastWriteTime -lt $limitDate } | Remove-Item -Force"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$limitDate=(Get-Date).AddDays(-%RetentionDays%); Get-ChildItem -Path '%Archives_DIR%' -Filter '%bakName%_*.rar' -File | Where-Object { $_.LastWriteTime -lt $limitDate } | ForEach-Object { Write-Host '[清理旧备份]' $_.Name; Remove-Item -Path $_.FullName -Force }"
 echo.
 
 echo 归档任务执行完毕...
 timeout /t 1 > NUL
 echo. & echo. & echo.
+
 
 :任务3
 echo 启动任务3
@@ -118,8 +131,12 @@ rclone sync "%TargetDIR1%"   "%TargetDIR2%" ^
     --checkers 4 ^
     --one-file-system ^
     --copy-links ^
+    --exclude "Default.rdp" ^
+    --exclude "**/Common/Log/**" ^
+    --exclude "/Red Alert 3/Mods/**" ^
     --exclude "**/Xshell/applog/**" ^
     --exclude "**/Xftp/applog/**" ^
+    --exclude "backup_last_run.txt" ^
     --exclude "/排除测试文件夹1-位于根目录中的/**" ^
     --exclude "**/排除测试文件夹2-位于非根目录-只存在于子目录中的/**" ^
     --exclude "/排除特定文件1_位于根目录中的" ^
