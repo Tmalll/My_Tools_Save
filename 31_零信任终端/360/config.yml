@@ -9,22 +9,30 @@ log-level: info                           # 日志等级（ silent / error / war
 # 子规则
 sub-rules:
   MuMu_REJECT:
-    - NETWORK,UDP,REJECT-DROP # MuMu模拟器, 内置NAT, 禁止UDP
+    - AND,((NETWORK,UDP),(DST-PORT,123),(DOMAIN,time.android.com)),HidePROXY # 放行NTP
+    - AND,((NETWORK,UDP),(DST-PORT,123),(GEOSITE,category-ntp)),HidePROXY # 放行NTP
+    - AND,((NETWORK,UDP),(GEOSITE,youtube)),REJECT-DROP # 禁止YT-UDP连接
+    - NETWORK,UDP,REJECT  # MuMu模拟器, 内置NAT, 禁止UDP
     - GEOSITE,category-ads-all,REJECT-DROP # MuMu模拟器, 内置NAT, 屏蔽广告域名
     - GEOSITE,category-number-verification-cn,REJECT-DROP # 中国互联网服务提供商提供的SDK被应用程序用于通过蜂窝网络确定电话号码。
     - GEOSITE,category-httpdns-cn,REJECT-DROP # 全是广告的合集
     - GEOSITE,huawei,REJECT-DROP # 菊厂
     - DOMAIN-KEYWORD,dbankcloud,REJECT-DROP # 菊厂2, 关键字匹配
     # 疑似内置遥测
-    #- DOMAIN,store-api.mumu.163.com,REJECT-DROP # GooglePlay安装和打开应用后弹出此域名
+    - DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP
+    - DOMAIN,store-api.mumu.163.com,REJECT-DROP # GooglePlay安装和打开应用后弹出此域名 # 内置商店API
+    - DOMAIN,dispatcher-mobile.uu.163.com,REJECT-DROP
+    # shence-api.mumu.163.com
     #- DOMAIN,romsdk-mobile.uu.163.com,REJECT-DROP # 同上
     # 进一步观察
   MuMu_Allow:
-    #- GEOSITE,geolocation-!cn,HidePROXY       # 非中国
+    #- GEOSITE,geolocation-!cn,HidePROXY      # 非中国
     - GEOSITE,category-companies,HidePROXY    # 非中国以外的大型公司
     #- GEOSITE,google,HidePROXY                # 允许, Google
+    #- GEOSITE,youtube,HidePROXY    
     #- GEOSITE,microsoft,HidePROXY             # 允许, microsoft
     - GEOSITE,connectivity-check,HidePROXY    # 允许, 连通性检测网址
+
   BiliBili_APP_REJECT:
     # B站客户端APP, 奇怪的IP
     - IP-CIDR,203.119.206.0/24,REJECT-DROP,no-resolve
