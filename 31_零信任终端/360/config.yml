@@ -12,15 +12,20 @@ sub-rules:
     # UDP
     - AND,((NETWORK,UDP),(DST-PORT,123),(DOMAIN,time.android.com)),HidePROXY # 放行NTP
     - AND,((NETWORK,UDP),(DST-PORT,123),(GEOSITE,category-ntp)),HidePROXY # 放行NTP
-    - AND,((NETWORK,UDP),(GEOSITE,youtube)),REJECT-DROP # 禁止YT-UDP连接
-    - NETWORK,UDP,REJECT  # MuMu模拟器内置NAT, 禁止剩余的UDP连接
-    # 广告遥测监控
+    - AND,((NETWORK,UDP),(DST-PORT,53)),MuMuPlayer_PROXY # 放行DNS
+    - AND,((NETWORK,UDP),(GEOSITE,youtube)),REJECT-DROP  # 禁止YT-UDP连接
+    - NETWORK,UDP,REJECT  # 禁止剩余的UDP连接, 显示被阻止的连接
+    
+    # 广告\遥测\监控
     - GEOSITE,category-ads-all,REJECT-DROP # 屏蔽广告域名
-    - GEOSITE,category-number-verification-cn,REJECT-DROP # 中国互联网服务提供商提供的SDK被应用程序用于通过蜂窝网络确定电话号码。
-    - GEOSITE,category-httpdns-cn,REJECT-DROP # 全是广告的合集
-    - GEOSITE,huawei,REJECT-DROP # 菊厂
-    - DOMAIN-KEYWORD,dbankcloud,REJECT-DROP # 菊厂2, 关键字匹配
+    #- GEOSITE,category-number-verification-cn,REJECT-DROP # 中国互联网服务提供商提供的SDK被应用程序用于通过蜂窝网络确定电话号码。
+    - GEOSITE,category-httpdns-cn,REJECT-DROP # 全是广告的合集, 应该是APP内置DNS劫持.
+    #- GEOSITE,huawei,REJECT-DROP # 菊厂
+    #- DOMAIN-KEYWORD,dbankcloud,REJECT-DROP # 菊厂2, 关键字匹配
+    
     # 疑似内置遥测
+    - DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP  # 遥测主域名
+    - DOMAIN-SUFFIX,uu.163.com,REJECT-DROP    # 疑似加速器
     #- DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP # 这两条已放到主规则中
     #- DOMAIN-SUFFIX,uu.163.com,REJECT-DROP   # 这两条已放到主规则中
     #- DOMAIN,store-api.mumu.163.com,REJECT-DROP # 内置商店API, 在GooglePlay安装和打开应用后, 会弹出此域名的连接.
@@ -33,59 +38,70 @@ sub-rules:
     #- GEOSITE,google,HidePROXY               # 允许, Google
     #- GEOSITE,youtube,HidePROXY              # YouTube
     #- GEOSITE,microsoft,HidePROXY            # 允许, microsoft
-    #- GEOSITE,connectivity-check,HidePROXY    # 允许, 连通性检测网址
+    - GEOSITE,connectivity-check,HidePROXY    # 允许, 连通性检测网址
   BiliBili_APP_REJECT:
-    # B站客户端APP, 奇怪的IP
+    # B站客户端APP, 奇怪的IP, 疑似是httpDNS, 不显式禁用这玩意会卡封面娘.
+    - GEOSITE,category-httpdns-cn,REJECT-DROP  # 应该是APP内置HTTPDNS
+    - DOMAIN,httpdns.bilivideo.com,REJECT-DROP # 同上
     - IP-CIDR,203.119.206.0/24,REJECT-DROP,no-resolve
     - IP-CIDR,203.119.204.0/24,REJECT-DROP,no-resolve
     - IP-CIDR,203.119.238.0/24,REJECT-DROP,no-resolve
     - IP-CIDR,106.13.246.0/24,REJECT-DROP,no-resolve
     - IP-CIDR,106.13.254.0/24,REJECT-DROP,no-resolve    
+   
     # B站客户端APP, 游戏域名, 不玩游戏可屏蔽.
-    - DOMAIN-SUFFIX,bilibiligame.cn,REJECT-DROP
-    - DOMAIN-SUFFIX,bilibiligame.co,REJECT-DROP
-    - DOMAIN-SUFFIX,bilibiligame.net,REJECT-DROP
-    - DOMAIN-SUFFIX,biligame.co,REJECT-DROP
-    - DOMAIN-SUFFIX,biligame.com,REJECT-DROP
-    - DOMAIN-SUFFIX,biligame.net,REJECT-DROP
+    - GEOSITE,bilibili-game,REJECT-DROP
+    #- DOMAIN-SUFFIX,bilibiligame.cn,REJECT-DROP
+    #- DOMAIN-SUFFIX,bilibiligame.co,REJECT-DROP
+    #- DOMAIN-SUFFIX,bilibiligame.net,REJECT-DROP
+    #- DOMAIN-SUFFIX,biligame.co,REJECT-DROP
+    #- DOMAIN-SUFFIX,biligame.com,REJECT-DROP
+    #- DOMAIN-SUFFIX,biligame.net,REJECT-DROP
+    
     # B站客户端APP, 看样子像是B站商城, 屏蔽!
     - DOMAIN,mall.bilibili.com,REJECT-DROP
     - DOMAIN,mall.bilibili.cn,REJECT-DROP
     - DOMAIN,club.bilibili.com,REJECT-DROP # 会员购
+    
     # B站客户端APP, 疑似遥测域名
-    - DOMAIN,bilistatic.cn,REJECT-DROP # 疑似遥测域名
+    #- DOMAIN,bilistatic.cn,REJECT-DROP # 疑似遥测域名
     - DOMAIN,cm.bilibili.com,REJECT-DROP # 遥测与行为统计!!!
     - DOMAIN,data.bilibili.com,REJECT-DROP # 交互行为上报域名
     - DOMAIN,dataflow.biliapi.com,REJECT-DROP # 交互行为上报域名
+    
     # B站客户端APP, 疑似广告域名
     - DOMAIN-SUFFIX,yirujs.com,REJECT-DROP
     - DOMAIN,api.iegadp.qq.com,REJECT-DROP # 广告
     - DOMAIN,android.bugly.qq.com,REJECT-DROP # 异常上报
     - DOMAIN,cn.register.xmpush.xiaomi.com,REJECT-DROP # 小米推送注册, 什么鬼?
+    
     # 观看直播时用的域名
     - DOMAIN,live-trace.bilibili.com,REJECT-DROP   # 直播追踪, 看名字不是啥好东西. 追踪观看时常和获取免费礼物.
     - DOMAIN-SUFFIX,chat.bilibili.com,REJECT-DROP  # 疑似直播弹幕人气值统计用的
-    #- DOMAIN,broadcast.chat.bilibili.com,REJECT-DROP    # 疑似直播弹幕人气值统计用的
-    #- DOMAIN,broadcastlv.chat.bilibili.com,REJECT-DROP  # 疑似直播弹幕人气值统计用的
+    - DOMAIN,broadcast.chat.bilibili.com,REJECT-DROP    # 疑似直播弹幕人气值统计用的
+    - DOMAIN,broadcastlv.chat.bilibili.com,REJECT-DROP  # 疑似直播弹幕人气值统计用的
+    
     # PCDN
     # f52af0b9c79f7d9336e5afb35aa9cde3.v.smtcdns.com
-    - DOMAIN-SUFFIX,edge.mountaintoys.cn,REJECT-DROP # PCDN
+    #- DOMAIN-SUFFIX,edge.mountaintoys.cn,REJECT-DROP # PCDN
   BiliBili_APP_Allow:
-    - DOMAIN,www.bilibili.com,HidePROXY # 主域名, 对于APP屏蔽了无影响, 但是无法用浏览器打开主页.
+    # B站CDN
+    - GEOSITE,bilibili-cdn,HidePROXY
+    
     # 核心API接口
-    - DOMAIN,grpc.biliapi.net,HidePROXY  # 屏蔽了影响相关视频加载速度, 影响弹幕加载速度, 视频详情加载速度, 影响搜索速度.     
-    - DOMAIN,app.biliapi.com,HidePROXY # 不能屏蔽, 屏蔽了主页无法刷出视频.
-    - DOMAIN,app.bilibili.com,HidePROXY # 不能屏蔽, 屏蔽了主页无法刷出视频.  
-    - DOMAIN,app.biliapi.net,HidePROXY # 这个不能屏蔽, 屏蔽了无法刷出视频.
+    - DOMAIN,app.bilibili.com,HidePROXY # 不能屏蔽, 屏蔽了主页无法刷出视频.
     - DOMAIN,api.bilibili.com,HidePROXY # 这个不能屏蔽, 屏蔽了无法刷出视频.
-    - GEOSITE,bilibili-cdn,HidePROXY # B站CDN
+    - DOMAIN,www.bilibili.com,HidePROXY # 主域名, 对于APP屏蔽了无影响, 但是无法用浏览器打开主页.    
+    - DOMAIN,grpc.biliapi.net,HidePROXY  # 屏蔽了影响相关视频加载速度, 影响弹幕加载速度, 视频详情加载速度, 影响搜索速度.     
+    - DOMAIN,app.biliapi.com,HidePROXY # 不能屏蔽, 屏蔽了主页无法刷出视频.      
+    - DOMAIN,app.biliapi.net,HidePROXY # 这个不能屏蔽, 屏蔽了无法刷出视频.    
     - DOMAIN,interface.bilibili.com,HidePROXY # 早期的核心数据接口域名之一
     - DOMAIN,member.bilibili.com,HidePROXY # 创作中心, 用来上传视频等功能...
-    - DOMAIN,api.vc.bilibili.com,HidePROXY # 动态与私信业务
-    # 疑似登录专用域名, 屏蔽后无法登录
-    - DOMAIN,passport.bilibili.com,HidePROXY # 登录专用域名
+    - DOMAIN,api.vc.bilibili.com,HidePROXY # 动态与私信业务    
+    - DOMAIN,passport.bilibili.com,HidePROXY # 登录专用域名, 禁用后无法登录
     - DOMAIN,passport.bilibili.cn,HidePROXY  # 登录专用域名
     - GEOSITE,geetest,HidePROXY # 用来跳验证码.
+    
     # 观看直播时用的域名, 屏蔽后无法刷出直播列表
     - DOMAIN,live.bilibili.com,HidePROXY
     - DOMAIN,api.live.bilibili.com,HidePROXY
@@ -99,10 +115,7 @@ sub-rules:
 # 主要规则
 rules:
   # MuMu模拟器, 程序自身的规则
-  - PROCESS-NAME,MuMuNxUpdater.exe,REJECT-DROP # MuMu模拟器, 更新程序
-  # 疑似内置遥测
-  - DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP # 遥测主域名
-  - DOMAIN-SUFFIX,uu.163.com,REJECT-DROP # 疑似加速器
+  - PROCESS-NAME,MuMuNxUpdater.exe,REJECT-DROP # MuMu模拟器, 更新程序  
   - DOMAIN,fcount-api.webapp.easebar.com,REJECT-DROP # 遥测与数据上报
   - DOMAIN,fcount-api.webapp.163.com,REJECT-DROP # 遥测与数据上报
   - DOMAIN,report.mumu.nie.netease.com,REJECT-DROP # 遥测与数据上报
@@ -112,13 +125,16 @@ rules:
   - DOMAIN,event.sc.gearupportal.com,REJECT-DROP # 遥测与数据上报
   - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN,api.map.baidu.com)),MuMuPlayer_PROXY # 虚拟定位API
   - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN-SUFFIX,bdimg.com)),MuMuPlayer_PROXY  # 虚拟定位API
+  
   # MuMu模拟器, 虚拟机NAT网络规则
   #- PROCESS-NAME,MuMuVMMHeadless.exe,MuMuPlayer_PROXY # 忽略下面规则, 允许所有连接
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),MuMu_REJECT
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),MuMu_Allow
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),BiliBili_APP_REJECT
-  - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),BiliBili_APP_Allow  
-  - PROCESS-NAME,MuMuVMMHeadless.exe,MuMuPlayer_REJECT # 兜底拒绝所有未允许的连接. 
+  - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),BiliBili_APP_Allow
+  - AND,((PROCESS-NAME,MuMuVMMHeadless.exe),(DST-PORT,80)),MuMuPlayer_PROXY         # @显示审核@
+  - AND,((PROCESS-NAME,MuMuVMMHeadless.exe),(DST-PORT,443)),MuMuPlayer_PROXY        # @显示审核@
+  - PROCESS-NAME,MuMuVMMHeadless.exe,MuMuPlayer_REJECT # 兜底拒绝所有未允许的连接.  # @显示审核@
   
 
   ###
@@ -519,7 +535,7 @@ tun:
   #include-interface: # 指定出口网卡, 还有一个 exclude-interface 排除路由的接口，与 include-interface 冲突，不可一起配置
   #  - "以太网"
   ###
-  strict-route: true #  启用 auto-route 时执行严格的路由规则
+  #strict-route: true #  启用 auto-route 时执行严格的路由规则
     # 在 Linux 中:
     #   让不支持的网络无法到达
     #   将所有连接路由到 tun
