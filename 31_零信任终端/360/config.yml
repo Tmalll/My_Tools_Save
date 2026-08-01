@@ -40,6 +40,7 @@ sub-rules:
     #- GEOSITE,youtube,HidePROXY              # YouTube
     #- GEOSITE,microsoft,HidePROXY            # 允许, microsoft
     - GEOSITE,connectivity-check,HidePROXY    # 允许, 连通性检测网址
+    - GEOIP,telegram,HidePROXY
   BiliBili_APP_REJECT:
     # B站客户端APP, 奇怪的IP, 疑似是httpDNS, 不显式禁用这玩意会卡封面娘.
     - GEOSITE,category-httpdns-cn,REJECT-DROP  # 应该是APP内置HTTPDNS
@@ -75,6 +76,7 @@ sub-rules:
     - DOMAIN,api.iegadp.qq.com,REJECT-DROP # 广告
     - DOMAIN,android.bugly.qq.com,REJECT-DROP # 异常上报
     - DOMAIN,cn.register.xmpush.xiaomi.com,REJECT-DROP # 小米推送注册, 什么鬼?
+    - DOMAIN,ef-dongfeng.tanx.com,REJECT-DROP # 疑似淘宝广告
     
     # 观看直播时用的域名
     - DOMAIN,live-trace.bilibili.com,REJECT-DROP   # 直播追踪, 看名字不是啥好东西. 追踪观看时常和获取免费礼物.
