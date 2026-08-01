@@ -1,0 +1,14 @@
+curl "https://store.rg-adguard.net/api/GetFiles" ^
+  -H "authority: store.rg-adguard.net" ^
+  -H "accept: */*" ^
+  -H "accept-language: zh-CN,zh;q=0.9,zh-TW;q=0.8,zh-HK;q=0.7,en;q=0.6,en-IE;q=0.5,en-AU;q=0.4,en-CA;q=0.3,en-US;q=0.2,en-ZA;q=0.1,en-NZ;q=0.1,en-IN;q=0.1,en-GB-oxendict;q=0.1,en-GB;q=0.1" ^
+  -H "content-type: application/x-www-form-urlencoded" ^
+  -H "dnt: 1" ^
+  -H "origin: https://store.rg-adguard.net" ^
+  -H "referer: https://store.rg-adguard.net/" ^
+  -H "sec-fetch-dest: empty" ^
+  -H "sec-fetch-mode: cors" ^
+  -H "sec-fetch-site: same-origin" ^
+  -H "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" ^
+  --data-raw "type=ProductId&url=9nmzlz57r3t7&ring=Retail&lang=zh-CN" ^
+  --compressed

@@ -1,0 +1,73 @@
+https://github.com/microsoft/winget-cli/releases/latest
+下载最新的安装包...
+
+主体文件
+https://github.com/microsoft/winget-cli/releases/download/v1.28.240/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+
+依赖包
+https://github.com/microsoft/winget-cli/releases/download/v1.28.240/DesktopAppInstaller_Dependencies.zip
+
+把它们放到一起
+
+执行安装命令
+Add-AppxPackage -Path "E:\01.userData\ZhuoMian\#CentDL\新建文件夹\1Microsoft.VCLibs.140.00.UWPDesktop_14.0.33728.0_x64.appx"
+Add-AppxPackage -Path "E:\01.userData\ZhuoMian\#CentDL\新建文件夹\2Microsoft.VCLibs.140.00_14.0.33519.0_x64.appx"
+Add-AppxPackage -Path "E:\01.userData\ZhuoMian\#CentDL\新建文件夹\3Microsoft.WindowsAppRuntime.1.8_8000.616.304.0_x64.appx"
+Add-AppxPackage -Path "E:\01.userData\ZhuoMian\#CentDL\新建文件夹\4Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+
+补全常用APP, 使用 Winget 安装...
+
+解除网络限制
+CheckNetIsolation LoopbackExempt -a -n="Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"
+
+# 1. 安装 Windows 计算器
+winget install --id 9wzdncrfhvn5 --source msstore --accept-package-agreements --accept-source-agreements
+
+# 2. 安装 微软照片 (图片)
+winget install --id 9wzdncrfjbh4 --source msstore --accept-package-agreements --accept-source-agreements
+
+# 3. 安装 Microsoft To Do (待办)
+winget install --id 9nblggh5r558 --source msstore --accept-package-agreements --accept-source-agreements
+
+# 4. 安装 微软新版便签 (Sticky Notes)
+winget install --id 9nblggh4qghw --source msstore --accept-package-agreements --accept-source-agreements
+
+# 5. 安装 微软新版画图 (Paint)
+winget install --id 9pcfs5b6t72h --source msstore --accept-package-agreements --accept-source-agreements
+
+# 6. 安装 Windows Web 体验包（找回任务栏天气核心组件）
+winget install --id 9mssgkg348sp --source msstore --accept-package-agreements --accept-source-agreements
+
+# 卸载 Windows Media Player
+Disable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -NoRestart
+
+# 动态壁纸, 替代系统自带的 windows聚焦 | https://apps.microsoft.com/detail/9nblggh1zbkw?hl=zh-cn
+winget install --id 9nblggh1zbkw --source msstore --accept-package-agreements --accept-source-agreements
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

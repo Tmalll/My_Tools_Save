@@ -29,7 +29,7 @@ sub-rules:
     # 疑似内置遥测
     - DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP  # 遥测主域名
     - DOMAIN-SUFFIX,uu.163.com,REJECT-DROP    # 疑似加速器
-    #- DOMAIN,store-api.mumu.163.com,REJECT-DROP # 内置商店API, 在GooglePlay安装和打开应用后, 会弹出此域名的连接.
+    - DOMAIN,store-api.mumu.163.com,REJECT-DROP # 内置商店API, 在GooglePlay安装和打开应用后, 会弹出此域名的连接. # 疑似遥测 # 禁用这个安装APP的时候会解析很久
     #- DOMAIN,dispatcher-mobile.uu.163.com,REJECT-DROP # 看名字是移动版UU加速器调度用的域名?
     #- DOMAIN,shence-api.mumu.163.com,REJECT-DROP # 看名字是侧载用的.
     #- DOMAIN,romsdk-mobile.uu.163.com,REJECT-DROP # 看名字是UU加速器用的.
@@ -86,11 +86,12 @@ sub-rules:
     
     # PCDN
     # f52af0b9c79f7d9336e5afb35aa9cde3.v.smtcdns.com
-    #- DOMAIN-SUFFIX,edge.mountaintoys.cn,REJECT-DROP # PCDN
+    
   BiliBili_APP_Allow:
     # B站CDN
     - GEOSITE,bilibili-cdn,HidePROXY
-    
+    - DOMAIN-SUFFIX,edge.mountaintoys.cn,MuMuPlayer_PROXY # PCDN
+
     # 核心API接口
     - DOMAIN,app.bilibili.com,HidePROXY # 不能屏蔽, 屏蔽了主页无法刷出视频.
     - DOMAIN,api.bilibili.com,HidePROXY # 这个不能屏蔽, 屏蔽了无法刷出视频.
