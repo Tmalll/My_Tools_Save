@@ -13,12 +13,15 @@ sub-rules:
     - AND,((NETWORK,UDP),(DST-PORT,123),(DOMAIN,time.android.com)),HidePROXY # 放行NTP
     - AND,((NETWORK,UDP),(DST-PORT,123),(GEOSITE,category-ntp)),HidePROXY # 放行NTP
     - AND,((NETWORK,UDP),(DST-PORT,53)),MuMuPlayer_PROXY # 放行DNS
-    - AND,((NETWORK,UDP),(GEOSITE,youtube)),REJECT-DROP  # 禁止YT-UDP连接
+    - AND,((NETWORK,UDP),(DST-PORT,80),(GEOSITE,youtube)),REJECT-DROP  # 禁止YT-UDP连接
+    - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,youtube)),REJECT-DROP  # 禁止YT-UDP连接
+    - AND,((NETWORK,UDP),(DST-PORT,80),(GEOSITE,google)),REJECT-DROP  # 禁止YT-UDP连接
+    - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,google)),REJECT-DROP  # 禁止YT-UDP连接
     - NETWORK,UDP,REJECT  # 禁止剩余的UDP连接, 显示被阻止的连接
     
     # 广告\遥测\监控
     - GEOSITE,category-ads-all,REJECT-DROP # 屏蔽广告域名
-    #- GEOSITE,category-number-verification-cn,REJECT-DROP # 中国互联网服务提供商提供的SDK被应用程序用于通过蜂窝网络确定电话号码。
+    - GEOSITE,category-number-verification-cn,REJECT-DROP # 中国互联网服务提供商提供的SDK被应用程序用于通过蜂窝网络确定电话号码。
     - GEOSITE,category-httpdns-cn,REJECT-DROP # 全是广告的合集, 应该是APP内置DNS劫持.
     #- GEOSITE,huawei,REJECT-DROP # 菊厂
     #- DOMAIN-KEYWORD,dbankcloud,REJECT-DROP # 菊厂2, 关键字匹配
@@ -26,11 +29,9 @@ sub-rules:
     # 疑似内置遥测
     - DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP  # 遥测主域名
     - DOMAIN-SUFFIX,uu.163.com,REJECT-DROP    # 疑似加速器
-    #- DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP # 这两条已放到主规则中
-    #- DOMAIN-SUFFIX,uu.163.com,REJECT-DROP   # 这两条已放到主规则中
     #- DOMAIN,store-api.mumu.163.com,REJECT-DROP # 内置商店API, 在GooglePlay安装和打开应用后, 会弹出此域名的连接.
     #- DOMAIN,dispatcher-mobile.uu.163.com,REJECT-DROP # 看名字是移动版UU加速器调度用的域名?
-    # shence-api.mumu.163.com # 看名字是侧载用的.
+    #- DOMAIN,shence-api.mumu.163.com,REJECT-DROP # 看名字是侧载用的.
     #- DOMAIN,romsdk-mobile.uu.163.com,REJECT-DROP # 看名字是UU加速器用的.
   MuMu_Allow:
     #- GEOSITE,geolocation-!cn,HidePROXY      # 非中国
@@ -123,6 +124,8 @@ rules:
   - DOMAIN,api-pro.mumu.163.com,REJECT-DROP # 模拟器Pro版API——账号登录态、增值功能、云端配置下发
   - DOMAIN,api.mumu.nie.netease.com,REJECT-DROP # 模拟器核心服务端——版本检测、更新推送、消息中心、设备校验等, 也用于模拟器更新
   - DOMAIN,event.sc.gearupportal.com,REJECT-DROP # 遥测与数据上报
+  - DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP  # 遥测主域名
+  - DOMAIN-SUFFIX,uu.163.com,REJECT-DROP    # 疑似加速器
   - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN,api.map.baidu.com)),MuMuPlayer_PROXY # 虚拟定位API
   - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN-SUFFIX,bdimg.com)),MuMuPlayer_PROXY  # 虚拟定位API
   
