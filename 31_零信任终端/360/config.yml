@@ -49,7 +49,8 @@ sub-rules:
     - IP-CIDR,203.119.204.0/24,REJECT-DROP,no-resolve
     - IP-CIDR,203.119.238.0/24,REJECT-DROP,no-resolve
     - IP-CIDR,106.13.246.0/24,REJECT-DROP,no-resolve
-    - IP-CIDR,106.13.254.0/24,REJECT-DROP,no-resolve    
+    - IP-CIDR,106.13.254.0/24,REJECT-DROP,no-resolve
+    - IP-CIDR,106.13.168.0/24,REJECT-DROP,no-resolve
    
     # B站客户端APP, 游戏域名, 不玩游戏可屏蔽.
     - GEOSITE,bilibili-game,REJECT-DROP
@@ -83,25 +84,25 @@ sub-rules:
     - DOMAIN-SUFFIX,chat.bilibili.com,REJECT-DROP  # 疑似直播弹幕人气值统计用的
     - DOMAIN,broadcast.chat.bilibili.com,REJECT-DROP    # 疑似直播弹幕人气值统计用的
     - DOMAIN,broadcastlv.chat.bilibili.com,REJECT-DROP  # 疑似直播弹幕人气值统计用的
-    
-    # PCDN
-    # f52af0b9c79f7d9336e5afb35aa9cde3.v.smtcdns.com
-    
   BiliBili_APP_Allow:
     # B站CDN
     - GEOSITE,bilibili-cdn,HidePROXY
-    - DOMAIN-SUFFIX,edge.mountaintoys.cn,MuMuPlayer_PROXY # PCDN
+    #- DOMAIN-SUFFIX,edge.mountaintoys.cn,MuMuPlayer_PROXY # PCDN
+    #- DOMAIN-SUFFIX,zhenidc.cn,MuMuPlayer_PROXY # PCDN
+    #- DOMAIN-SUFFIX,nexusedgeio.com,MuMuPlayer_PROXY # PCDN
+    #- DOMAIN-SUFFIX,qrstuvwxyzab.com,MuMuPlayer_PROXY # PCDN
+    #- DOMAIN-SUFFIX,v.smtcdns.com,MuMuPlayer_PROXY # PCDN
 
     # 核心API接口
     - DOMAIN,app.bilibili.com,HidePROXY # 不能屏蔽, 屏蔽了主页无法刷出视频.
     - DOMAIN,api.bilibili.com,HidePROXY # 这个不能屏蔽, 屏蔽了无法刷出视频.
-    - DOMAIN,www.bilibili.com,HidePROXY # 主域名, 对于APP屏蔽了无影响, 但是无法用浏览器打开主页.    
-    - DOMAIN,grpc.biliapi.net,HidePROXY  # 屏蔽了影响相关视频加载速度, 影响弹幕加载速度, 视频详情加载速度, 影响搜索速度.     
-    - DOMAIN,app.biliapi.com,HidePROXY # 不能屏蔽, 屏蔽了主页无法刷出视频.      
-    - DOMAIN,app.biliapi.net,HidePROXY # 这个不能屏蔽, 屏蔽了无法刷出视频.    
+    - DOMAIN,www.bilibili.com,HidePROXY # 主域名, 对于APP屏蔽了无影响, 但是无法用浏览器打开主页.
+    - DOMAIN,grpc.biliapi.net,HidePROXY  # 屏蔽了影响相关视频加载速度, 影响弹幕加载速度, 视频详情加载速度, 影响搜索速度.
+    - DOMAIN,app.biliapi.com,HidePROXY # 不能屏蔽, 屏蔽了主页无法刷出视频.
+    - DOMAIN,app.biliapi.net,HidePROXY # 这个不能屏蔽, 屏蔽了无法刷出视频.
     - DOMAIN,interface.bilibili.com,HidePROXY # 早期的核心数据接口域名之一
     - DOMAIN,member.bilibili.com,HidePROXY # 创作中心, 用来上传视频等功能...
-    - DOMAIN,api.vc.bilibili.com,HidePROXY # 动态与私信业务    
+    - DOMAIN,api.vc.bilibili.com,HidePROXY # 动态与私信业务
     - DOMAIN,passport.bilibili.com,HidePROXY # 登录专用域名, 禁用后无法登录
     - DOMAIN,passport.bilibili.cn,HidePROXY  # 登录专用域名
     - GEOSITE,geetest,HidePROXY # 用来跳验证码.
@@ -110,7 +111,7 @@ sub-rules:
     - DOMAIN,live.bilibili.com,HidePROXY
     - DOMAIN,api.live.bilibili.com,HidePROXY
     - DOMAIN,api-live-bo.biliapi.com,HidePROXY
-    - DOMAIN,api-live-bo.biliapi.net,HidePROXY    
+    - DOMAIN,api-live-bo.biliapi.net,HidePROXY
 ###
 ##
 #
@@ -790,5 +791,6 @@ proxies:
     dns: [1.1.1.1]
     dialer-proxy: "Warp_select"
   #
-
-
+###
+##
+#
