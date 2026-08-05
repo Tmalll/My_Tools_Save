@@ -23,12 +23,10 @@ sub-rules:
     - GEOSITE,category-ads-all,REJECT-DROP # 屏蔽广告域名
     - GEOSITE,category-number-verification-cn,REJECT-DROP # 中国互联网服务提供商提供的SDK被应用程序用于通过蜂窝网络确定电话号码。
     - GEOSITE,category-httpdns-cn,REJECT-DROP # 全是广告的合集, 应该是APP内置DNS劫持.
-    #- GEOSITE,huawei,REJECT-DROP # 菊厂
-    #- DOMAIN-KEYWORD,dbankcloud,REJECT-DROP # 菊厂2, 关键字匹配
-    
+        
     # 疑似内置遥测
-    - DOMAIN-SUFFIX,mumu.163.com,MuMuPlayer_REJECT    # 遥测主域名
-    - DOMAIN-SUFFIX,uu.163.com,MuMuPlayer_REJECT      # 疑似加速器
+    #- DOMAIN-SUFFIX,mumu.163.com,MuMuPlayer_REJECT    # 遥测主域名
+    #- DOMAIN-SUFFIX,uu.163.com,MuMuPlayer_REJECT      # 疑似加速器
     - DOMAIN,store-api.mumu.163.com,REJECT-DROP       # 内置商店API, 在GooglePlay安装和打开应用后, 会弹出此域名的连接. # 疑似遥测 # 禁用这个安装APP的时候会解析很久
     #- DOMAIN,dispatcher-mobile.uu.163.com,REJECT-DROP # 看名字是移动版UU加速器调度用的域名?
     #- DOMAIN,shence-api.mumu.163.com,REJECT-DROP # 看名字是侧载用的.
@@ -120,21 +118,21 @@ sub-rules:
 # 主要规则
 rules:
   # MuMu模拟器, 程序自身的规则
-  - DOMAIN,report.mumu.nie.netease.com,REJECT-DROP # 遥测与数据上报 +
-  - DOMAIN,api.mumu.nie.netease.com,REJECT-DROP # 模拟器核心服务端——版本检测、更新推送、消息中心、设备校验等, 也用于模拟器更新 +
+  - DOMAIN,report.mumu.nie.netease.com,REJECT-DROP  # 遥测与数据上报 +
+  - DOMAIN,api.mumu.nie.netease.com,REJECT-DROP     # 模拟器核心服务端——版本检测、更新推送、消息中心、设备校验等, 也用于模拟器更新 +
   # 上面这两个最频繁
-  - PROCESS-NAME,MuMuNxUpdater.exe,MuMuPlayer_REJECT # MuMu模拟器, 更新程序
-  - DOMAIN,fcount-api.webapp.easebar.com,MuMuPlayer_REJECT # 遥测与数据上报
-  - DOMAIN,fcount-api.webapp.163.com,MuMuPlayer_REJECT # 遥测与数据上报
-  - DOMAIN,sentry.netease.com,MuMuPlayer_REJECT # 遥测与数据上报
-  - DOMAIN,api-pro.mumu.163.com,MuMuPlayer_REJECT # 模拟器Pro版API——账号登录态、增值功能、云端配置下发
-  - DOMAIN,event.sc.gearupportal.com,MuMuPlayer_REJECT # 遥测与数据上报
-  - DOMAIN-SUFFIX,mumu.163.com,MuMuPlayer_REJECT  # 遥测主域名
-  - DOMAIN-SUFFIX,uu.163.com,MuMuPlayer_REJECT    # 疑似加速器
-  - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN,api.map.baidu.com)),MuMuPlayer_PROXY # 虚拟定位API
-  - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN-SUFFIX,bdimg.com)),MuMuPlayer_PROXY  # 虚拟定位API
+  - PROCESS-NAME,MuMuNxUpdater.exe,REJECT-DROP # MuMu模拟器, 更新程序
+  - DOMAIN,fcount-api.webapp.easebar.com,REJECT-DROP # 遥测与数据上报
+  - DOMAIN,fcount-api.webapp.163.com,REJECT-DROP # 遥测与数据上报
+  - DOMAIN,sentry.netease.com,REJECT-DROP # 遥测与数据上报
+  - DOMAIN,api-pro.mumu.163.com,REJECT-DROP # 模拟器Pro版API——账号登录态、增值功能、云端配置下发
+  - DOMAIN,event.sc.gearupportal.com,REJECT-DROP # 遥测与数据上报
+  #- DOMAIN-SUFFIX,mumu.163.com,REJECT-DROP  # 遥测主域名
+  #- DOMAIN-SUFFIX,uu.163.com,REJECT-DROP    # 疑似加速器
   
   # MuMu模拟器, 虚拟机NAT网络规则
+  - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN,api.map.baidu.com)),HidePROXY # 虚拟定位API
+  - AND,((PROCESS-NAME,QtWebEngineProcess.exe),(DOMAIN-SUFFIX,bdimg.com)),HidePROXY  # 虚拟定位API  
   #- PROCESS-NAME,MuMuVMMHeadless.exe,MuMuPlayer_PROXY # 忽略下面规则, 允许所有连接
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),MuMu_REJECT
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),MuMu_Allow
