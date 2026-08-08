@@ -27,6 +27,7 @@ sub-rules:
     # 疑似内置遥测
     #- DOMAIN-SUFFIX,mumu.163.com,MuMuPlayer_REJECT     # 遥测主域名
     #- DOMAIN-SUFFIX,uu.163.com,MuMuPlayer_REJECT       # 疑似加速器
+    - DOMAIN,sentry.netease.com,REJECT-DROP
     - DOMAIN,sigma-fcount-webtech.proxima.nie.netease.com,REJECT-DROP # 疑似遥测上报
     - DOMAIN,hubble.mumu.163.com,REJECT-DROP            # 遥测上报
     - DOMAIN,report.mumu.nie.netease.com,REJECT-DROP    # 遥测上报
@@ -223,6 +224,7 @@ rules:
   - DOMAIN,cs.dds.microsoft.com,REJECT-DROP # 微软遥测, 安全健康报告, 诊断数据上传, 系统错误报告, 设备兼容性检查
   - DOMAIN,validation-v2.sls.microsoft.com,REJECT-DROP # Windows 操作系统和 Office 办公软件激活与正版验证（Activation and Validation） 的服务器域名
   - DOMAIN,config.edge.skype.com,REJECT-DROP # 微软遥测, Windows 系统本身（尤其是 Edge 浏览器、Windows Update、Teams 以及 Skype）来拉取最新的客户端配置、实验性功能策略（A/B 测试）和发送匿名的诊断遥测数据。
+  - PROCESS-NAME,TextInputHost.exe,REJECT-DROP # 疑似微软剪贴板同步服务.
 
   # 屏蔽组, 可疑程序...
   - PROCESS-NAME,NVDisplay.Container.exe,REJECT-DROP  # Nvidia显卡服务
