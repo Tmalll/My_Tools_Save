@@ -303,6 +303,7 @@ rules:
   - PROCESS-NAME,opera.exe,HidePROXY
   - PROCESS-NAME,thunderbird.exe,HidePROXY
   - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\*\Vivaldi-bin\vivaldi.exe,HidePROXY
+  #- PROCESS-NAME,aria2c.exe,HidePROXY
 
   # 放行组, 微软全家桶
   - DOMAIN,ntp.msn.cn,HidePROXY # Windows 时间同步
