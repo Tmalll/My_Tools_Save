@@ -274,8 +274,8 @@ rules:
   - DOMAIN,chromewebstore.googleapis.com,HidePROXY # chrome 应用商店
   - DOMAIN,edgedl.me.gvt1.com,HidePROXY # Google资源分发
   - DOMAIN,dl.google.com,HidePROXY # Google资源分发
-  - DOMAIN,translate.googleapis.com,HidePROXY # Google翻译相关域名
-  - DOMAIN,translate.google.com,HidePROXY # Google翻译相关域名  
+  #- DOMAIN,translate.googleapis.com,HidePROXY # Google翻译相关域名
+  #- DOMAIN,translate.google.com,HidePROXY # Google翻译相关域名  
   - DOMAIN,update.googleapis.com,HidePROXY # Google API
   - DOMAIN,clients2.google.com,HidePROXY # Google Chrome 浏览器相关
   - DOMAIN-SUFFIX,googleapis.com,HidePROXY # Google API
