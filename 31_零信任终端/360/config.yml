@@ -248,6 +248,18 @@ rules:
   # ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
   # - - - 👇程序区👇 - - -
 
+  # Steam
+  - PROCESS-PATH-WILDCARD,D:\04.Steam\bin\*\steamwebhelper.exe,HidePROXY
+  - PROCESS-PATH-WILDCARD,D:\04.Steam\steam.exe,HidePROXY
+  
+  # "D:\Battle.net\Battle.net.exe"
+  - PROCESS-PATH,D:\Battle.net\Battle.net.exe,HidePROXY
+  - PROCESS-PATH,D:\Battle.net\Battle.net Launcher.exe,HidePROXY
+  - PROCESS-PATH-WILDCARD,C:\ProgramData\Battle.net\*Agent.exe,HidePROXY
+  - PROCESS-PATH-WILDCARD,C:\ProgramData\Battle.net\*\temp_*.exe,HidePROXY
+  - PROCESS-PATH,D:\Battle.net_Game\World of Warcraft TW\_retail_\Wow.exe,HidePROXY
+  # "C:\ProgramData\Battle.net\Agent\Agent.9700\Agent.exe"
+
   # thorium_browser
   - PROCESS-PATH-WILDCARD,D:\01.Program_Soft\01-浏览器\Thorium\#Thorium_BIN\thorium.exe,HidePROXY
   
