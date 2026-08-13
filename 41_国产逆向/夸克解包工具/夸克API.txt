@@ -11,4 +11,6 @@ curl "https://open-cms-api.quark.cn/open-cms?no_decrypt=false&params=NxRrnwVjh%2
 
 
 
+"url": "http://puds-down.quark.cn/down/u1/cchhjicicghccdciglfckjcdceccekededdfhgceklfhgjkcccccdccdccccelfv/86f9e0af8d96998da1406ccb3e7beb5f/QuarkPC_V6.6.2.781_windows_pf5001_(zh-cn)_release_999_(Build260325205207).exe",
 
+"url": "http://puds-down.uc.cn/down/u1/uuzzz788uyzuuvu6y89vy8uvuuuuuuuuvuuvuuuuw9xm/f6268be6dae19b4744d030d2dc0f3d03/QuarkPC_V4.6.0.558_windows_pf5001_(zh-cn)_release_999_(Build251017190053-cd).exe",
