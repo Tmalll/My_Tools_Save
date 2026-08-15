@@ -84,7 +84,7 @@ echo.
 echo.
 
 :: bilibili 适用的转换方式, 因为B站是根据视频长度来进行转码的,  如果视频长度小于音频, 则以视频长度为准. 所以只能适用 output_LENGTH_S 这种先获取长度,  再指定的方式.
-set /A output_LENGTH_S = s + 3
+set /A output_LENGTH_S = VIDEO_LENGTH_S + 3
 "%ffmpegPath%" -r 1 -f image2 -loop 1 -i "%picNamePath%" -i "%audioName%" -map 0:v:0 -map 1:a:0 -c:a copy -vf "scale=-2:1080,format=yuv420p" -c:v libx264 -crf 24 -preset veryfast -tune stillimage -movflags +faststart -t %output_LENGTH_S% -y "%audioName%.mp4"
 
 
@@ -109,19 +109,24 @@ del "%~dp0output.tmp"
 exit
 
 :calcLength1
-set /A s=%3
-set /A s=s+%2*60
-set /A s=s+%1*60*60
+:: 利用 1xx - 100 消除 08、09 的八进制解析错误
+set /A hh=1%1 - 100
+set /A mm=1%2 - 100
+set /A ss=1%3 - 100
+set /A ms=1%4 - 100
+set /A s=ss + mm*60 + hh*3600
 set /A VIDEO_LENGTH_S = s
-set /A VIDEO_LENGTH_MS = s*1000 + %4*10
+set /A VIDEO_LENGTH_MS = s*1000 + ms*10
 echo 输入文件长度为: %1:%2:%3.%4 = %VIDEO_LENGTH_MS%ms = %VIDEO_LENGTH_S%s
 goto :EOF
 
 :calcLength2
-set /A s=%3
-set /A s=s+%2*60
-set /A s=s+%1*60*60
+set /A hh=1%1 - 100
+set /A mm=1%2 - 100
+set /A ss=1%3 - 100
+set /A ms=1%4 - 100
+set /A s=ss + mm*60 + hh*3600
 set /A VIDEO_LENGTH_S = s
-set /A VIDEO_LENGTH_MS = s*1000 + %4*10
+set /A VIDEO_LENGTH_MS = s*1000 + ms*10
 echo 输出文件长度为: %1:%2:%3.%4 = %VIDEO_LENGTH_MS%ms = %VIDEO_LENGTH_S%s
 goto :EOF
