@@ -122,6 +122,13 @@ sub-rules:
 
 # 主要规则
 rules:
+  # 内部链接, 用来更新GEO文件
+  #- DOMAIN,github.com,HidePROXY
+  #- GEOSITE,github,HidePROXY
+  #- AND,((PROCESS-NAME,#mihomo.exe),(GEOSITE,github)),HidePROXY
+  - AND,((IN-TYPE,INNER),(GEOSITE,github)),HidePROXY
+
+
   # MuMu模拟器, 虚拟机NAT网络规则
   #- PROCESS-NAME,MuMuVMMHeadless.exe,MuMuPlayer_PROXY # 忽略下面规则, 允许所有连接
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),MuMu_REJECT
@@ -814,4 +821,14 @@ proxies:
   #
 ###
 ##
+#
+
+# 指定GEO文件
+geo-auto-update: true     # 自动更新
+geo-update-interval: 24   # 更新间隔，单位：小时.
+geox-url:
+  geosite:  "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat" # 加强版
+  geoip:    "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat"
+  mmdb:     "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb"
+  asn:      "https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb"
 #
