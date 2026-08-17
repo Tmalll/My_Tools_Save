@@ -125,7 +125,6 @@ rules:
   # 内部链接, 用来更新GEO文件
   #- DOMAIN,github.com,HidePROXY
   #- GEOSITE,github,HidePROXY
-  #- AND,((PROCESS-NAME,#mihomo.exe),(GEOSITE,github)),HidePROXY
   - AND,((IN-TYPE,INNER),(GEOSITE,github)),HidePROXY
 
 
@@ -164,18 +163,13 @@ rules:
   # - - - 👇调试区👇 - - -
 
   # DNS泄漏测试.
-  #- AND,((PROCESS-NAME,chrome.exe),(DOMAIN-SUFFIX,browserleaks.net)),测试专用规则 
-  #- AND,((PROCESS-NAME,chrome.exe),(DOMAIN-SUFFIX,browserleaks.org)),测试专用规则
-  #- AND,((PROCESS-NAME,chrome.exe),(DOMAIN-SUFFIX,browserleaks.com)),测试专用规则
-  #- AND,((PROCESS-NAME,chrome.exe),(DOMAIN-SUFFIX,ipleak.net)),测试专用规则
-  #- AND,((PROCESS-NAME,chrome.exe),(DOMAIN-SUFFIX,4.ident.me)),测试专用规则
   #- DOMAIN-SUFFIX,browserleaks.net,测试专用规则
   #- DOMAIN-SUFFIX,browserleaks.org,测试专用规则
   #- DOMAIN-SUFFIX,browserleaks.com,测试专用规则
   #- DOMAIN-SUFFIX,ipleak.net,测试专用规则
   #- DOMAIN-SUFFIX,4.ident.me,测试专用规则
   #- DOMAIN,www.google.com,测试专用规则
-  #- PROCESS-NAME,chrome.exe,HidePROXY
+  #- PROCESS-NAME,chrome.exe,测试专用规则
   
 
   ###
