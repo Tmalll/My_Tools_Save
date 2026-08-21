@@ -8,6 +8,13 @@ log-level: info                           # 日志等级（ silent / error / war
 
 # 子规则
 sub-rules:
+  Auto_PR:
+    - GEOSITE,category-ads-all,AutoPR_REJECT # 屏蔽广告域名
+    - GEOSITE,geolocation-!cn,AutoPR_PROXY   # 非中国
+    - GEOSITE,cn,AutoPR_PROXY                # 中国域名
+    - GEOIP,cn,AutoPR_PROXY                  # 中国IP
+    - MATCH,AutoPR_PROXY                     # 漏网之鱼, 兜底
+
   MuMu_REJECT:
     # UDP
     - AND,((NETWORK,UDP),(DST-PORT,123),(DOMAIN,time.android.com)),HidePROXY # 放行NTP
@@ -122,6 +129,10 @@ sub-rules:
 
 # 主要规则
 rules:
+  
+  - SUB-RULE,(PROCESS-NAME,Foxmail.exe),Auto_PR
+
+
   # 内部链接, 用来更新GEO文件
   #- DOMAIN,github.com,HidePROXY
   #- GEOSITE,github,HidePROXY
@@ -751,6 +762,21 @@ proxy-groups:
     hidden: true
   ##
   - name: "MuMuPlayer_REJECT"
+    type: select
+    proxies:
+      - REJECT
+    use:
+      #- node_Home订阅
+    hidden: true
+  ##
+  - name: "AutoPR_PROXY"
+    type: select
+    proxies:
+      - AutoPROXY
+    use:
+      #- node_Home订阅
+    hidden: true
+  - name: "AutoPR_REJECT"
     type: select
     proxies:
       - REJECT
