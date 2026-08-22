@@ -14,7 +14,6 @@ sub-rules:
     - GEOSITE,cn,AutoPR_PROXY                # 中国域名
     - GEOIP,cn,AutoPR_PROXY                  # 中国IP
     - MATCH,AutoPR_PROXY                     # 漏网之鱼, 兜底
-
   MuMu_REJECT:
     # UDP
     - AND,((NETWORK,UDP),(DST-PORT,123),(DOMAIN,time.android.com)),HidePROXY # 放行NTP
@@ -130,8 +129,7 @@ sub-rules:
 # 主要规则
 rules:
   
-  - SUB-RULE,(PROCESS-NAME,Foxmail.exe),Auto_PR
-
+  #- SUB-RULE,(PROCESS-NAME,Foxmail.exe),Auto_PR
 
   # 内部链接, 用来更新GEO文件
   #- DOMAIN,github.com,HidePROXY
@@ -140,7 +138,7 @@ rules:
 
 
   # MuMu模拟器, 虚拟机NAT网络规则
-  - PROCESS-NAME,MuMuVMMHeadless.exe,MuMuPlayer_PROXY # 忽略下面规则, 允许所有连接
+  #- PROCESS-NAME,MuMuVMMHeadless.exe,MuMuPlayer_PROXY # 忽略下面规则, 允许所有连接
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),MuMu_REJECT
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),MuMu_Allow
   - SUB-RULE,(PROCESS-NAME,MuMuVMMHeadless.exe),BiliBili_APP_REJECT
