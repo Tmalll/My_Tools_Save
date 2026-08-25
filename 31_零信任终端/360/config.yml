@@ -128,7 +128,12 @@ sub-rules:
 
 # 主要规则
 rules:
-  
+  # Fallout4.exe
+  - AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,api.bethesda.net)),HidePROXY
+  - AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,titlestorage.bethesda.net)),HidePROXY
+  - AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,us-east-1-prod-fo4prodbi01-glb-bps-bigateway.bgssvcprod.com)),HidePROXY
+
+
   #- SUB-RULE,(PROCESS-NAME,Foxmail.exe),Auto_PR
 
   # 内部链接, 用来更新GEO文件
