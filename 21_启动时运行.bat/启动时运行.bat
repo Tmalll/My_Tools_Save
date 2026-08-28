@@ -44,6 +44,8 @@ echo.
 
 :先行脚本
 :: start  /min  ""  "E:\01.userData\Saved Games\D2R_BAK.bat" ::备份暗黑2存档
+start  /min  ""  "E:\01.userData\Documents\My Games\Fallout4_BAK.bat"
+
 start  /min  ""  "E:\01.userData\ZhuoMian\工具存档\21_启动时运行.bat\禁用文件共享防火墙规则.bat"
 explorer.exe "E:\01.userData\ZhuoMian\工具存档\24_Rclone_同步脚本\#开始Rclone同步任务.bat"
 explorer.exe "E:\01.userData\ZhuoMian\工具存档\#02.同步仓库_工具.bat"
