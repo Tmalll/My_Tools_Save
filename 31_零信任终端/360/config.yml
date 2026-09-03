@@ -128,6 +128,9 @@ sub-rules:
 
 # 主要规则
 rules:
+  #- PROCESS-NAME,Palemoon-Portable.exe,HidePROXY
+  - PROCESS-NAME,palemoon.exe,HidePROXY
+
   # Fallout4.exe
   - AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,api.bethesda.net)),HidePROXY
   - AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,titlestorage.bethesda.net)),HidePROXY
