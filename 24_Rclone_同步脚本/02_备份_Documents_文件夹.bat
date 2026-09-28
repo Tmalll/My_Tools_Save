@@ -35,6 +35,7 @@ rclone sync "%Source1%"  "%TargetDIR1%\01.latest" ^
     --exclude "Default.rdp" ^
     --exclude "**/Common/Log/**" ^
     --exclude "/Red Alert 3/Mods/**" ^
+    --exclude "/My Games/Fallout4/**" ^
     --exclude "**/Xshell/applog/**" ^
     --exclude "**/Xftp/applog/**" ^
     --exclude "backup_last_run.txt" ^
@@ -134,6 +135,7 @@ rclone sync "%TargetDIR1%"   "%TargetDIR2%" ^
     --exclude "Default.rdp" ^
     --exclude "**/Common/Log/**" ^
     --exclude "/Red Alert 3/Mods/**" ^
+    --exclude "/My Games/Fallout4/**" ^
     --exclude "**/Xshell/applog/**" ^
     --exclude "**/Xftp/applog/**" ^
     --exclude "backup_last_run.txt" ^
