@@ -42,9 +42,59 @@ rclone sync "%Source1%"  "%TargetDIR3%\01.latest" ^
     --log-level INFO
 echo.
 echo 同步 [ %Source1% ] 到 [ %TargetDIR3% ] 完成...
-timeout /t 1 > NUL
+timeout /t 3 > NUL
 echo. & echo. & echo.
 :: --log-level LogLevel  Log level DEBUG|INFO|NOTICE|ERROR (default NOTICE)
+
+
+
+
+
+:任务4
+echo 启动任务4
+
+:: 目标目录
+set "Source2=E:\01.userData\ZhuoMian\F4MOD"
+set "TargetDIR4=\\192.168.1.120\e\#016-Master桌面F4MOD文件夹"
+net use "%TargetDIR4%" "qwe123!!0952**" /user:"administrator" /persistent:no > nul 2>&1
+
+:: echo ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+:: echo 去除 [ %TargetDIR4% ] 的重复文件...
+:: rclone dedupe newest  "%TargetDIR4%" --by-hash --log-level ERROR
+:: echo.
+
+echo ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- 
+echo 同步 [ %Source2% ] 到 [ %TargetDIR4% ] 开始...
+echo. & echo.
+rclone sync "%Source2%"  "%TargetDIR4%\01.latest" ^
+    --backup-dir         "%TargetDIR4%\02.history\%timestamp%" ^
+    --modify-window 2s ^
+    --buffer-size 64M ^
+    --transfers 3 ^
+    --checkers 3 ^
+    --copy-links ^
+    --timeout 10s ^
+    --contimeout 10s ^
+    --retries 3 ^
+    --low-level-retries 3 ^
+    --log-level INFO
+echo.
+echo 同步 [ %Source2% ] 到 [ %TargetDIR4% ] 完成...
+timeout /t 3 > NUL
+echo. & echo. & echo.
+:: --log-level LogLevel  Log level DEBUG|INFO|NOTICE|ERROR (default NOTICE)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
