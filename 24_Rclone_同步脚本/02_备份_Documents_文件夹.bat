@@ -36,6 +36,8 @@ rclone sync "%Source1%"  "%TargetDIR1%\01.latest" ^
     --exclude "**/Common/Log/**" ^
     --exclude "/Red Alert 3/Mods/**" ^
     --exclude "/My Games/Fallout4/Saves/**" ^
+    --exclude "**/Fallout4/F4SE/*.log" ^
+    --exclude "**/Fallout4/Logs/**" ^
     --exclude "**/Xshell/applog/**" ^
     --exclude "**/Xftp/applog/**" ^
     --exclude "backup_last_run.txt" ^
@@ -136,6 +138,8 @@ rclone sync "%TargetDIR1%"   "%TargetDIR2%" ^
     --exclude "**/Common/Log/**" ^
     --exclude "/Red Alert 3/Mods/**" ^
     --exclude "/My Games/Fallout4/Saves/**" ^
+    --exclude "**/Fallout4/F4SE/*.log" ^
+    --exclude "**/Fallout4/Logs/**" ^
     --exclude "**/Xshell/applog/**" ^
     --exclude "**/Xftp/applog/**" ^
     --exclude "backup_last_run.txt" ^

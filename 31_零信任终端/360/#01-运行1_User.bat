@@ -1,8 +1,8 @@
 @echo off
 cd /d "%~dp0" & title %~nx0
-
 title [mihomo.exe] 运行中.........
 echo [mihomo.exe] 运行中.........
+
 
 echo 结束后台程序...
 taskkill /f /t /im #mihomo.exe
@@ -11,25 +11,24 @@ taskkill /f /t /im #mihomo.exe
 timeout /t 1 > NUL
 echo.
 
+
 echo 设置变量...
 set "PRpath=%~dp0#core_and_data\#mihomo.exe"
 set "configDIR=%~dp0#core_and_data"
 echo.
-
-
-echo 清理日志...
-del /q "%~dp0mihomo_RunLOG.log"
-timeout /t 1 > NUL
-rem echo.
-rem echo. >> "%~dp0\mihomo_RunLOG.log"
-rem echo. >> "%~dp0\mihomo_RunLOG.log"
-rem echo. >> "%~dp0\mihomo_RunLOG.log"
 
 echo 获取时间戳...
 for /f "delims=" %%i in ('powershell -command "Get-Date -Format 'yyyy-MM-dd(HH.mm.ss)'"') do set "TIMESTAMP=%%i"
 echo 当前时间为: %TIMESTAMP%
 echo.
 
+echo 清理日志...
+move /y "%~dp0mihomo_RunLOG.log" "%~dp0mihomo_RunLOG_%TIMESTAMP%_之前的.log"
+timeout /t 1 > NUL
+rem echo.
+rem echo. >> "%~dp0\mihomo_RunLOG.log"
+rem echo. >> "%~dp0\mihomo_RunLOG.log"
+rem echo. >> "%~dp0\mihomo_RunLOG.log"
 
 echo 运行主体程序...
 

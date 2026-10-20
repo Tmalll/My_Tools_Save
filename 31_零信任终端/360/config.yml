@@ -129,12 +129,12 @@ sub-rules:
 # 主要规则
 rules:
   #- PROCESS-NAME,Palemoon-Portable.exe,HidePROXY
-  - PROCESS-NAME,palemoon.exe,HidePROXY
+  #- PROCESS-NAME,palemoon.exe,HidePROXY
 
   # Fallout4.exe
-  - AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,api.bethesda.net)),HidePROXY
-  - AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,titlestorage.bethesda.net)),HidePROXY
-  - AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,us-east-1-prod-fo4prodbi01-glb-bps-bigateway.bgssvcprod.com)),HidePROXY
+  #- AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,api.bethesda.net)),HidePROXY
+  #- AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,titlestorage.bethesda.net)),HidePROXY
+  #- AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,us-east-1-prod-fo4prodbi01-glb-bps-bigateway.bgssvcprod.com)),HidePROXY
 
 
   #- SUB-RULE,(PROCESS-NAME,Foxmail.exe),Auto_PR
@@ -205,7 +205,7 @@ rules:
   #- AND,((PROCESS-PATH-WILDCARD,*),(DST-PORT,53),(NETWORK,UDP)),AutoPROXY   # 放行DNS # 使用FakeIP模式不用DNS, 所以注销掉.
   #- AND,((PROCESS-PATH-WILDCARD,*),(DST-PORT,123),(NETWORK,UDP)),AutoPROXY  # 放行NTP # 使用FakeIP模式不用DNS, 所以注销掉.
   #- AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,53),(NETWORK,UDP)),AutoPROXY   # 放行DNS # 使用FakeIP模式不用DNS, 所以注销掉.
-  #- AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,123),(NETWORK,UDP)),AutoPROXY  # 放行NTP # 使用FakeIP模式不用DNS, 所以注销掉.
+  - AND,((PROCESS-NAME-WILDCARD,*),(DST-PORT,123),(NETWORK,UDP)),AutoPROXY   # 放行NTP # 使用FakeIP模式不用DNS, 所以注销掉.
   #- IP-CIDR,223.5.5.5/32,HidePROXY,no-resolve # 使用FakeIP模式不用DNS, 所以注销掉.
   #- IP-CIDR,223.6.6.6/32,HidePROXY,no-resolve # 使用FakeIP模式不用DNS, 所以注销掉.
   #- IP-CIDR,1.12.12.12/32,HidePROXY,no-resolve # 使用FakeIP模式不用DNS, 所以注销掉.
