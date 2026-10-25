@@ -1,0 +1,17 @@
+Windows Registry Editor Version 5.00
+
+
+
+[HKEY_CLASSES_ROOT\Drive\shell\runas]
+
+@="BitLockerËø¶¨"
+
+"AppliesTo"="(System.Volume.BitLockerProtection:=System.Volume.BitLockerProtection#On OR System.Volume.BitLockerProtection:=System.Volume.BitLockerProtection#Encrypting OR System.Volume.BitLockerProtection:=System.Volume.BitLockerProtection#Suspended) AND System.Volume.BitLockerCanChangePassphraseByProxy:=System.StructuredQueryType.Boolean#True"
+
+"Icon"="%SystemRoot%\\System32\\manage-bde.exe"
+
+
+
+[HKEY_CLASSES_ROOT\Drive\shell\runas\command]
+
+@="cmd  /v:on /k   set bdestr=%1 && set bdedrv=!bdestr:~0,2! && manage-bde.exe  -lock !bdedrv! -ForceDismount& exit"

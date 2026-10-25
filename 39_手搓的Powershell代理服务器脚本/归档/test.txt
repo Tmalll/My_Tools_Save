@@ -1,0 +1,18 @@
+curl -m 5 -o NUL https://ipv4.icanhazip.com -x http://127.0.0.1:1080 -ISL 
+curl -m 5 -o NUL https://ipv6.icanhazip.com -x http://127.0.0.1:1080 -ISL 
+
+curl -m 5 -o NUL https://ipv4.icanhazip.com -x socks5://127.0.0.1:1080 -ISL 
+curl -m 5 -o NUL https://ipv6.icanhazip.com -x socks5://127.0.0.1:1080 -ISL 
+
+curl -m 5 -o NUL https://ipv4.icanhazip.com -x socks5h://127.0.0.1:1080 -ISL 
+curl -m 5 -o NUL https://ipv6.icanhazip.com -x socks5h://127.0.0.1:1080 -ISL 
+
+
+
+
+
+
+
+
+
+

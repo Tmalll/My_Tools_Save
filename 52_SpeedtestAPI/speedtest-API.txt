@@ -1,0 +1,35 @@
+curl 'https://www.speedtest.net/api/js/config-sdk?engine=js&search=hong+kong&https_functional=true&limit=100' \
+  -H 'authority: www.speedtest.net' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh-TW;q=0.9,zh;q=0.8,en;q=0.7' \
+  -H 'cookie: zdconsent=optin; OptanonAlertBoxClosed=2025-12-15T16:13:17.925Z; stnetsid=0nr1g2ev2r0ke3h9ckh7dj4bkh; st_react=2; st_adblock=1; geoRC=13; geoCC=JP; __cf_bm=Xnar3KZOwnlobqtDrvrI4AWVeiAD8kdBLHjzncQqzx8-1792958166.5146618-1.0.1.1-Uc_TxQwmBqey4cMmb6HOIIPOU4A7RrasE._2eV2D6CpihqQAQ7WyKXk_ExUb274xzbPoBUNeUgyKJzNuxRJ5upwnuBZ3WSSb5NKlUH9HEwL5hJ15.e6W.YUHllb_.OOu; OptanonConsent=isGpcEnabled=0&datestamp=Mon+Oct+26+2026+04%3A08%3A16+GMT%2B0800+(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)&version=202609.2.0&browserGpcFlag=0&isIABGlobal=false&genVendors=&consentId=f4010568-90e3-46c8-97b4-40fac7a0a06d&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&GPPCookiesCount=1&gppSid=7&groups=C0001%3A1%2CC0003%3A1%2CC0002%3A1%2CC0004%3A1%2COSSTA_BG%3A1&intType=1&geolocation=JP%3B13&AwaitingReconsent=false&isDntEnabled=0&prevHadToken=0; OTGPPConsent=DBABLA~BVQqAAAAAgA.QA; usprivacy=1YNY' \
+  -H 'dnt: 1' \
+  -H 'referer: https://www.speedtest.net/' \
+  -H 'sec-ch-ua: "Not=A?Brand";v="99", "Chromium";v="118"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36' \
+  --compressed
+  
+  
+
+
+
+curl 'https://www.speedtest.net/api/js/config-sdk?engine=js&limit=10&https_functional=true' \
+  -H 'authority: www.speedtest.net' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh-TW;q=0.9,zh;q=0.8,en;q=0.7' \
+  -H 'cookie: zdconsent=optin; OptanonAlertBoxClosed=2025-12-15T16:13:17.925Z; stnetsid=0nr1g2ev2r0ke3h9ckh7dj4bkh; st_react=2; st_adblock=1; geoRC=13; geoCC=JP; OTGPPConsent=DBABLA~BVQqAAAAAgA.QA; usprivacy=1YNY; __cf_bm=Ct2.SD4C3Ew8eqS55RgMCeLjmJ7p6Jkt5AhD8xsLr2E-1792959905.496168-1.0.1.1-Lrt39p3whXNtwl6lQt8NS53hhndnYmalbxjN2XiE8q89h2J7uYGy7UBgwX8qLs6zWyjiNtvGjKq1cPd0Be2H6hcLsvu1d4vGl7An9sHxvsIU.dHlRcz.F5CCz4sNRLzL; OptanonConsent=isGpcEnabled=0&datestamp=Mon+Oct+26+2026+04%3A27%3A09+GMT%2B0800+(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)&version=202609.2.0&browserGpcFlag=0&isIABGlobal=false&genVendors=&consentId=f4010568-90e3-46c8-97b4-40fac7a0a06d&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&GPPCookiesCount=1&gppSid=7&groups=C0001%3A1%2CC0003%3A1%2CC0002%3A1%2CC0004%3A1%2COSSTA_BG%3A1&intType=1&geolocation=JP%3B13&AwaitingReconsent=false&isDntEnabled=0&prevHadToken=0' \
+  -H 'dnt: 1' \
+  -H 'referer: https://www.speedtest.net/' \
+  -H 'sec-ch-ua: "Not=A?Brand";v="99", "Chromium";v="118"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36' \
+  --compressed

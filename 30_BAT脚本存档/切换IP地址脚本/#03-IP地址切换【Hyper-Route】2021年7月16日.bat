@@ -1,0 +1,27 @@
+
+
+netsh interface ip set address 	"vEthernet (#01-本地共享LAN[以太网5][8788])" 	source=static addr=192.168.1.130 mask=255.255.255.0
+netsh interface ip add address 	"vEthernet (#01-本地共享LAN[以太网5][8788])"  	addr=192.168.1.131 mask=255.255.255.0
+
+netsh interface ip set address 	"vEthernet (@虚拟内网@)" 	source=static addr=192.168.88.130 mask=255.255.255.0
+netsh interface ip add address 	"vEthernet (@虚拟内网@)"  	addr=192.168.88.131 mask=255.255.255.0
+
+@title "设置网关地址"
+netsh interface ip add address name="vEthernet (#01-本地共享LAN[以太网5][8788])" gateway=192.168.1.33 gwmetric=0
+netsh interface ip add address name="vEthernet (@虚拟内网@)" gateway=192.168.88.33 gwmetric=0
+
+
+@title "设置DNS地址"
+netsh interface ip set dns name="vEthernet (#01-本地共享LAN[以太网5][8788])" source=static addr=192.168.1.130
+netsh interface ip add dns name="vEthernet (#01-本地共享LAN[以太网5][8788])" addr=192.168.1.131
+
+
+netsh interface ip set dns name="vEthernet (@虚拟内网@)" source=static addr=192.168.88.130
+netsh interface ip add dns name="vEthernet (@虚拟内网@)" addr=192.168.88.131
+
+
+
+ipconfig /flushdns
+choice /t 1 /d y /n >nul  
+
+

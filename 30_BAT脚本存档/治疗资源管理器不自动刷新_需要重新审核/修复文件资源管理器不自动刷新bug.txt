@@ -1,0 +1,52 @@
+您好！
+
+我们了解到您关于Windows 10文件操作异常的问题，
+
+可能是您的资源管理器出现异常导致的这个问题，
+
+您可以尝试使用以下方案重新注册并修复您的Windows资源管理器：
+
+以管理员身份运行“命令提示符”粘贴以下命令并执行：
+
+ 
+
+dism /online /Cleanup-Image /RestoreHealth & sfc /SCANNOW?& for %d in (%windir%\system32\*.dll) do %windir%\system32\regsvr32.exe /s %d
+
+您好，
+
+我叫伯纳德，希望这将有助于回答您的问题，我实际上遇到了与以前相同的问题，并且通过下面提供的故障排除步骤解决了我的问题。
+
+-打开运行命令（按Windows键+ R）
+
+-复制，粘贴然后单击确定以下文件路径：
+
+C:\Users\%username%\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations
+
+删除AutomaticDestinations文件夹中的所有内容
+
+重新启动PC 并检查
+
+如果问题仍然存在，请执行干净启动：
+
+“干净启动”使用最少的驱动程序和启动程序启动 Windows，以便您可以确定后台程序是否干扰您的游戏或程序。
+
+- 在任务栏上的搜索框中，键入 msconfig 并从结果中选择系统配置。
+
+- 在系统配置的服务选项卡上，选择隐藏所有 Microsoft 服务，然后选择全部禁用。
+
+- 在系统配置的启动选项卡上，选择打开任务管理器。
+
+- 在任务管理器的“启动”下，对于每个启动项，选择该项目，然后选择“禁用”。
+
+- 关闭任务管理器。
+
+- 在系统配置的启动选项卡上，选择确定。当您重新启动计算机时，它处于干净启动环境中。
+
+故障排除参考：https://support.microsoft.com/en-us/help/929135...
+
+- 重新启动电脑并选中“
+
+让我知道它是如何进行的”，我希望有所帮助:)
+
+Bernard
+Independent Advisor

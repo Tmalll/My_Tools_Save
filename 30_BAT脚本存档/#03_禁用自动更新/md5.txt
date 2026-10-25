@@ -1,0 +1,7 @@
+File: Wub_x64.exe ©¦ Virustotal
+MD5: 9d6778f7f274f7ecd4e7e875a7268b64
+SHA1: 452fa439f1cc0b9fcc37cf4b8cfff96e8cc348aa
+
+File: Wub.exe ©¦ Virustotal
+MD5: 82aff8883099cf75462057c4e47e88ac
+SHA1: 68e2939f59b3869e9bd3ecc4aca3947649631bf8

@@ -1,0 +1,506 @@
+
+@echo off
+
+set faceName=以太网
+
+echo 清除ipv6地址
+powershell "Remove-NetIPAddress -InterfaceAlias '%faceName%' -AddressFamily ipv6 -Confirm:$false"
+
+echo 重启ipv6
+powershell Disable-NetAdapterBinding -Name '%faceName%' -ComponentID 'ms_tcpip6'
+powershell Enable-NetAdapterBinding -Name '%faceName%' -ComponentID 'ms_tcpip6'
+
+
+pathping -p 5000 -q 1 localhost >nul
+
+curl 6.ipw.cn
+ping 6.ipw.cn
+
+
+
+pause
+exit
+
+
+echo 重启接口
+powershell Restart-NetAdapter '以太网'
+ipconfig /flushdns
+
+
+
+echo 禁用ipv6上的dhcp 只使用无状态获取IP
+echo 按索引号
+Get-NetIPInterface
+Set-NetIPInterface -InterfaceIndex 10 -addressFamily IPv6 -dhcp Disabled
+
+echo 按接口名称
+Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Enabled
+Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Disabled
+
+
+@echo off
+
+set faceName=以太网
+
+echo 禁用ipv6上的dhcp
+powershell Set-NetIPInterface -InterfaceAlias '%faceName%' -addressFamily IPv6 -dhcp Disabled
+
+echo 使用临时地址
+powershell Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+
+echo 随机标识符
+powershell Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+
+echo 清除ipv6地址
+powershell "Remove-NetIPAddress -InterfaceAlias '%faceName%' -AddressFamily ipv6 -Confirm:$false"
+
+echo 重启ipv6接口
+powershell Disable-NetAdapterBinding -Name '%faceName%' -ComponentID 'ms_tcpip6'
+powershell Enable-NetAdapterBinding -Name '%faceName%' -ComponentID 'ms_tcpip6'
+
+echo 重启接口
+powershell Restart-NetAdapter '%faceName%'
+ipconfig /flushdns
+
+
+pause
+exit
+
+
+DefaultHopLimit               : 128
+NeighborCacheLimit(Entries)   : 256
+RouteCacheLimit(Entries)      : 4096
+ReassemblyLimit(Bytes)        : 267911648
+IcmpRedirects                 : Enabled
+SourceRoutingBehavior         : DontForward
+DhcpMediaSense                : Enabled
+MediaSenseEventLog            : Disabled
+MldLevel                      : All
+MldVersion                    : Version2
+MulticastForwarding           : Disabled
+GroupForwardedFragments       : Disabled
+RandomizeIdentifiers          : Enabled
+AddressMaskReply              : Disabled
+UseTemporaryAddresses         : Enabled
+MaxTemporaryDadAttempts       : 3
+MaxTemporaryValidLifetime     : 7.00:00:00
+MaxTemporaryPreferredLifetime : 1.00:00:00 #最低11分钟 不能比MaxTemporaryDesyncTime小
+TemporaryRegenerateTime       : 00:00:05
+MaxTemporaryDesyncTime        : 00:10:00
+DeadGatewayDetection          : Enabled
+
+get-NetIPv6Protocol
+Set-NetIPv6Protocol -DeadGatewayDetection Enabled
+
+临时地址首选周期最长值默认 0.00:10:00
+
+Set-NetIPv6Protocol -TemporaryRegenerateTime 00:00:05
+Set-NetIPv6Protocol -MaxTemporaryDesyncTime 0.00:00:30
+Set-NetIPv6Protocol -MaxTemporaryValidLifetime 0.00:01:00
+Set-NetIPv6Protocol -MaxTemporaryPreferredLifetime 0.00:01:00
+
+
+
+
+
+
+
+邻居发现支持
+Set-NetIPInterface -InterfaceAlias '以太网' -NeighborDiscoverySupported yes
+托管地址配置
+Set-NetIPInterface -InterfaceAlias '以太网' -ManagedAddressConfiguration enabled
+邻居不可达检测
+Set-NetIPInterface -InterfaceAlias '以太网' -NeighborUnreachabilityDetection enabled
+
+
+开启关闭路由发现
+https://learn.microsoft.com/en-us/powershell/module/nettcpip/set-netipinterface?view=windowsserver2022-ps#-routerdiscovery
+Set-NetIPInterface -InterfaceAlias '以太网' -RouterDiscovery disabled
+Set-NetIPInterface -InterfaceAlias '以太网' -RouterDiscovery enabled
+关闭在开启后可重新获取IP地址
+
+
+Get-NetIPInterface -InterfaceAlias '以太网'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+echo 禁用ipv6上的dhcp 只使用无状态获取IP
+echo 按索引号
+Get-NetIPInterface
+Set-NetIPInterface -InterfaceIndex 10 -addressFamily IPv6 -dhcp Disabled
+echo 按接口名称
+Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Enabled
+
+
+
+
+
+echo 查看v6设置
+powershell get-netipv6protocol
+echo 使用临时地址
+powershell Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+echo 随机标识符
+powershell Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+echo 使用临时地址
+Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+echo 随机标识符
+Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+echo 禁用ipv6隐私模式
+netsh interface ipv6 set privacy state=enable
+netsh interface ipv6 set privacy state=disable
+
+
+echo 设置ipv4为dhcp模式
+netsh interface ip set address "SSTAP 1" dhcp
+netsh interface ip set dns "SSTAP 1" dhcp
+
+
+
+
+echo 断开时删除v6地址
+PostDown = "powershell Remove-NetIPAddress -InterfaceAlias 'SSTAP 1' -AddressFamily ipv6 -Confirm:$false"
+https://learn.microsoft.com/en-us/powershell/module/nettcpip/remove-netipaddress?view=windowsserver2022-ps
+
+
+https://adamtheautomator.com/disable-ipv6/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+echo 查看v6设置
+powershell get-netipv6protocol
+echo 使用临时地址
+powershell Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+echo 随机标识符
+powershell Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+echo 使用临时地址
+Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+echo 随机标识符
+Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+echo 禁用ipv6隐私模式
+netsh interface ipv6 set privacy state=enable
+netsh interface ipv6 set privacy state=disable
+
+
+echo 设置ipv4为dhcp模式
+netsh interface ip set address "SSTAP 1" dhcp
+netsh interface ip set dns "SSTAP 1" dhcp
+
+
+
+
+echo 断开时删除v6地址
+PostDown = "powershell Remove-NetIPAddress -InterfaceAlias 'SSTAP 1' -AddressFamily ipv6 -Confirm:$false"
+https://learn.microsoft.com/en-us/powershell/module/nettcpip/remove-netipaddress?view=windowsserver2022-ps
+
+
+https://adamtheautomator.com/disable-ipv6/
+
+
+
+
+
+
+
+
+
+
+
+
+注册表开启关闭v6协议 需要重启
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f
+reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /f
+
+@echo off
+
+echo 清除ipv6地址
+powershell "Remove-NetIPAddress -InterfaceAlias '以太网' -AddressFamily ipv6 -Confirm:$false"
+
+echo 重启ipv6
+powershell Disable-NetAdapterBinding -Name '以太网' -ComponentID 'ms_tcpip6'
+powershell Enable-NetAdapterBinding -Name '以太网' -ComponentID 'ms_tcpip6'
+
+echo 重启接口
+powershell Restart-NetAdapter '以太网'
+ipconfig /flushdns
+
+
+pause
+exit
+
+echo 禁用ipv6上的dhcp 只使用无状态获取IP
+echo 按索引号
+Get-NetIPInterface
+Set-NetIPInterface -InterfaceIndex 10 -addressFamily IPv6 -dhcp Disabled
+echo 按接口名称
+Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Enabled
+Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Disabled
+
+echo 查看v6设置
+powershell get-netipv6protocol
+echo 使用临时地址
+powershell Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+echo 随机标识符
+powershell Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+echo 使用临时地址
+Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+echo 随机标识符
+Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+echo 禁用ipv6隐私模式
+netsh interface ipv6 set privacy state=enable
+netsh interface ipv6 set privacy state=disable
+
+
+echo 设置ipv4为dhcp模式
+netsh interface ip set address "SSTAP 1" dhcp
+netsh interface ip set dns "SSTAP 1" dhcp
+
+
+
+
+echo 断开时删除v6地址
+PostDown = "powershell Remove-NetIPAddress -InterfaceAlias 'SSTAP 1' -AddressFamily ipv6 -Confirm:$false"
+https://learn.microsoft.com/en-us/powershell/module/nettcpip/remove-netipaddress?view=windowsserver2022-ps
+
+
+https://adamtheautomator.com/disable-ipv6/
+
+powershell Enable-NetAdapterBinding -name "以太网" -ComponentID ms_tcpip6
+echo ipv6 已开启
+
+
+
+powershell Disable-NetAdapterBinding -Name "以太网" -ComponentID ms_tcpip6
+echo ipv6 已关闭
+
+
+echo 断开时删除v6地址
+PostDown = "powershell Remove-NetIPAddress -InterfaceAlias 'SSTAP 1' -AddressFamily ipv6 -Confirm:$false"
+https://learn.microsoft.com/en-us/powershell/module/nettcpip/remove-netipaddress?view=windowsserver2022-ps
+
+echo 清除ipv6地址
+	powershell "Remove-NetIPAddress -InterfaceAlias '以太网' -AddressFamily ipv6 -Confirm:$false"
+
+
+echo 查看v6设置
+powershell get-netipv6protocol
+netsh interface ipv6 show interface "LAN"
+netsh interface ipv6 set route interface "LAN"
+
+查找接口
+Get-NetIPInterface -InterfaceAlias '以太网'
+
+
+@echo off
+
+set faceName=LAN
+
+echo 禁用ipv6上的dhcp
+Set-NetIPInterface -InterfaceAlias '%faceName%' -addressFamily IPv6 -dhcp Disabled
+
+echo 使用临时地址
+Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+
+echo 随机标识符
+Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+
+echo 清除ipv6地址
+powershell "Remove-NetIPAddress -InterfaceAlias '%faceName%' -AddressFamily ipv6 -Confirm:$false"
+
+echo 重启ipv6接口
+powershell Disable-NetAdapterBinding -Name '%faceName%' -ComponentID 'ms_tcpip6'
+powershell Enable-NetAdapterBinding -Name '%faceName%' -ComponentID 'ms_tcpip6'
+
+echo 重启接口
+powershell Restart-NetAdapter '%faceName%'
+ipconfig /flushdns
+
+
+pause
+exit
+
+echo 禁用ipv6上的dhcp 只使用无状态获取IP
+echo 按索引号
+Get-NetIPInterface
+Set-NetIPInterface -InterfaceIndex 10 -addressFamily IPv6 -dhcp Disabled
+echo 按接口名称
+Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Enabled
+
+
+echo 查看v6设置
+powershell get-netipv6protocol
+echo 使用临时地址
+powershell Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+echo 随机标识符
+powershell Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+echo 使用临时地址
+Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+echo 随机标识符
+Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+echo 禁用ipv6隐私模式
+netsh interface ipv6 set privacy state=enable
+netsh interface ipv6 set privacy state=disable
+
+
+echo 设置ipv4为dhcp模式
+netsh interface ip set address "SSTAP 1" dhcp
+netsh interface ip set dns "SSTAP 1" dhcp
+
+
+
+
+echo 断开时删除v6地址
+PostDown = "powershell Remove-NetIPAddress -InterfaceAlias 'SSTAP 1' -AddressFamily ipv6 -Confirm:$false"
+https://learn.microsoft.com/en-us/powershell/module/nettcpip/remove-netipaddress?view=windowsserver2022-ps
+https://adamtheautomator.com/disable-ipv6/
+
+开启DHCPv6
+	powershell Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Enabled
+	powershell Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Disabled
+	
+
+
+echo 禁用ipv6上的dhcp
+
+echo 按索引号
+Get-NetIPInterface
+Set-NetIPInterface -InterfaceIndex 10 -addressFamily IPv6 -dhcp Disabled
+
+
+echo 按接口名称
+Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Enabled
+Set-NetIPInterface -InterfaceAlias '以太网' -addressFamily IPv6 -dhcp Disabled
+
+
+
+
+禁用dhcpV6脚本
+	@echo off
+	set faceName=以太网
+	echo 禁用ipv6上的dhcp
+	powershell Set-NetIPInterface -InterfaceAlias '%faceName%' -addressFamily IPv6 -dhcp Disabled
+	echo 使用临时地址
+	powershell Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+	echo 随机标识符
+	powershell Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+	echo 清除ipv6地址
+	powershell "Remove-NetIPAddress -InterfaceAlias '%faceName%' -AddressFamily ipv6 -Confirm:$false"
+	echo 重启ipv6接口
+	powershell Disable-NetAdapterBinding -Name '%faceName%' -ComponentID 'ms_tcpip6'
+	powershell Enable-NetAdapterBinding -Name '%faceName%' -ComponentID 'ms_tcpip6'
+	echo 重启网卡接口
+	powershell Restart-NetAdapter '%faceName%'
+	ipconfig /flushdns
+	pause
+	exit
+
+
+echo 设置ipv4为dhcp模式
+netsh interface ip set address "SSTAP 1" dhcp
+netsh interface ip set dns "SSTAP 1" dhcp
+
+
+
+设置ipv6的IP的生存时间
+	默认值
+		DefaultHopLimit               : 128
+		NeighborCacheLimit(Entries)   : 256
+		RouteCacheLimit(Entries)      : 4096
+		ReassemblyLimit(Bytes)        : 267911648
+		IcmpRedirects                 : Enabled
+		SourceRoutingBehavior         : DontForward
+		DhcpMediaSense                : Enabled
+		MediaSenseEventLog            : Disabled
+		MldLevel                      : All
+		MldVersion                    : Version2
+		MulticastForwarding           : Disabled
+		GroupForwardedFragments       : Disabled
+		RandomizeIdentifiers          : Enabled
+		AddressMaskReply              : Disabled
+		UseTemporaryAddresses         : Enabled
+		MaxTemporaryDadAttempts       : 3
+		MaxTemporaryValidLifetime     : 7.00:00:00 默认7天
+		MaxTemporaryPreferredLifetime : 1.00:00:00 默认1天 #最低11分钟 不能比MaxTemporaryDesyncTime小
+		TemporaryRegenerateTime       : 00:00:05
+		MaxTemporaryDesyncTime        : 00:10:00
+		DeadGatewayDetection          : Enabled
+	查看设置
+	get-NetIPv6Protocol
+	命令格式
+	Set-NetIPv6Protocol -DeadGatewayDetection Enabled
+	重置成默认时间
+	Set-NetIPv6Protocol -TemporaryRegenerateTime 00:00:05 -MaxTemporaryDesyncTime 0.00:10:00 -MaxTemporaryValidLifetime 7.00:00:00 -MaxTemporaryPreferredLifetime 1.00:00:00
+	
+	指定多久换一次v6地址
+	Set-NetIPv6Protocol -TemporaryRegenerateTime 00:00:05
+	Set-NetIPv6Protocol -MaxTemporaryDesyncTime 0.00:10:00
+	Set-NetIPv6Protocol -MaxTemporaryValidLifetime 7.00:00:00
+	Set-NetIPv6Protocol -MaxTemporaryPreferredLifetime 1.00:00:00
+
+	好像没什么卵用的设置
+	邻居发现支持
+	Set-NetIPInterface -InterfaceAlias '以太网' -NeighborDiscoverySupported yes
+	托管地址配置
+	Set-NetIPInterface -InterfaceAlias '以太网' -ManagedAddressConfiguration enabled
+	邻居不可达检测
+	Set-NetIPInterface -InterfaceAlias '以太网' -NeighborUnreachabilityDetection enabled
+
+
+echo 使用临时地址
+powershell Set-NetIPv6Protocol -UseTemporaryAddresses Enabled
+
+
+echo 禁用ipv6隐私模式
+netsh interface ipv6 set privacy state=enable
+netsh interface ipv6 set privacy state=disable
+https://www.colorconsole.de/cmd/en/Windows_7/netsh/interface/ipv6/set/privacy.htm
+
+
+echo 随机标识符
+powershell Set-NetIPv6Protocol -RandomizeIdentifiers Enabled
+
+开启关闭路由发现
+	https://learn.microsoft.com/en-us/powershell/module/nettcpip/set-netipinterface?view=windowsserver2022-ps#-routerdiscovery
+	Set-NetIPInterface -InterfaceAlias '以太网' -RouterDiscovery disabled
+	Set-NetIPInterface -InterfaceAlias '以太网' -RouterDiscovery enabled
+	关闭在开启后可重新获取IP地址
+	
+netsh interface ipv6 set interface "以太网" routerdiscovery=disabled
+netsh interface ipv6 set interface "以太网" routerdiscovery=enabled
+ipconfig /flushdns
+
+
+
+
+
+
+
+
+

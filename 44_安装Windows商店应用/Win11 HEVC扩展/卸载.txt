@@ -1,0 +1,12 @@
+Remove-AppxPackage fullpackagename
+
+get-appxpackage *HEVC*	
+
+get-appxpackage *Microsoft.HEVC* | remove-appxpackage
+
+
+7块钱的
+9nmzlz57r3t7
+
+设备制造商的
+9n4wgh0z6vhq

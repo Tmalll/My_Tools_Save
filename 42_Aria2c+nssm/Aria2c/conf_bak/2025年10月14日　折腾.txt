@@ -1,0 +1,102 @@
+echo 创建账户
+set aria2cPWD=F9k59eXnj2HgYmnf7qOArK305
+
+echo Y | net user aria2c %aria2cPWD% /add
+
+:: net user aria2c %aria2cPWD% /add
+net user aria2c /active:yes
+net user aria2c /logonpasswordchg:no
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v aria2c /t REG_DWORD /d 0 /f
+
+echo 授权目录
+icacls "%~dp0." /grant "aria2c":(OI)(CI)(RX) /T
+icacls "D:\#03-Aria2c" /grant "aria2c":(OI)(CI)(RX) /T
+
+
+echo 设置账户为
+"%~dp0\nssm_x%sys8664%.exe" set "%ServerName%" ObjectName ".\aria2c" "%aria2cPWD%"
+
+
+
+
+
+
+
+
+
+setlocal DisableDelayedExpansion
+nssm_x64.exe set "%ServerName%" ObjectName "Administrator" "qwe123!!0952**"
+endlocal
+
+
+--conf-path="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2.conf" --input-file="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-save.session" --save-session="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-save.session" --dht-file-path="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-dht-v4.dat" --dht-file-path6="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-dht-v6.dat" --log="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\Aria2c_LOG.log"
+
+echo 设置启动参数
+"%~dp0\nssm_x%sys8664%.exe" set "%ServerName%" AppParameters ^
+--conf-path="%~dp0\Aria2c\aria2.conf" ^
+--input-file="%~dp0\Aria2c\aria2-save.session" ^
+--save-session="%~dp0\Aria2c\aria2-save.session" ^
+--dht-file-path="%~dp0\Aria2c\aria2-dht-v4.dat" ^
+--dht-file-path6="%~dp0\Aria2c\aria2-dht-v6.dat" ^
+--log="%~dp0\Aria2c\Aria2c_LOG.log"
+pause
+cls
+
+echo 设置启动参数
+"%~dp0\nssm_x%sys8664%.exe" set "%ServerName%" AppParameters --conf-path="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2.conf" --input-file="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-save.session" --save-session="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-save.session" --dht-file-path="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-dht-v4.dat" --dht-file-path6="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-dht-v6.dat" --log="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\Aria2c_LOG.log"
+pause
+cls
+
+
+
+
+
+
+
+taskkill /im %ServerName% && pathping -p 250 -q 1 localhost >nul
+
+/c start "" /min "C:\路径\你的脚本.bat"
+
+
+
+echo 安装服务 bat模式
+echo 结束程序进程
+:: taskkill /f /t /im Aria2c-Local.exe
+taskkill /im Aria2c-Local.exe
+pathping -p 1000 -q 1 localhost >nul
+
+echo 删除连接目录
+rmdir /s /q "C:\Aria2c_2024"
+pathping -p 1000 -q 1 localhost >nul
+
+echo 创建工作目录的连接
+mklink /j "C:\Aria2c_2024" "%~dp0\Aria2c"
+pathping -p 1000 -q 1 localhost >nul
+
+echo 删除日志文件
+del /s /q /a /f "C:\Aria2c_2024\Aria2c_LOG.log"
+pathping -p 1000 -q 1 localhost >nul
+
+"%~dp0\nssm_x%sys8664%.exe"     install    "%ServerName%"    "%~dp0#99【显示启动】.bat"
+"%~dp0\nssm_x%sys8664%.exe"     set         "%ServerName%"     Description "%ServerName%"
+pathping -p 500 -q 1 localhost >nul
+pause
+
+
+
+
+
+echo 安装服务 直接调用模式
+"%~dp0\nssm_x%sys8664%.exe" install "%ServerName%" "%~dp0\Aria2c\Aria2c-Local.exe"
+echo 设置描述
+"%~dp0\nssm_x%sys8664%.exe" set "%ServerName%" Description "%ServerName%"
+echo 设置启动参数
+"%~dp0\nssm_x%sys8664%.exe" set "%ServerName%" AppParameters ^
+	--conf-path="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2.conf" ^
+	--input-file="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-save.session" ^
+	--save-session="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-save.session" ^
+	 --dht-file-path="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-dht-v4.dat" ^
+	 --dht-file-path6="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\aria2-dht-v6.dat" ^
+	 --log="C:\Users\Administrator\MySoft\#02-Aria2c\Aria2c\Aria2c_LOG.log"
+echo 设置工作目录（可选，但建议）
+"%~dp0\nssm_x%sys8664%.exe" set "%ServerName%" AppDirectory "%~dp0\Aria2c"

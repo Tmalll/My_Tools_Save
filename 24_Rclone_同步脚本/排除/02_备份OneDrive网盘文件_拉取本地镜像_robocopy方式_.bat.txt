@@ -1,0 +1,14 @@
+@ echo off
+rem :拉取本地镜像_robocopy方式_
+:: robocopy "%source%"   "%localCache%" /MIR /MT:4 /R:3 /W:3 /NP /NFL /NDL > "%localCache%\robocopy.log"
+:: 参数说明:
+:: /MIR 镜像同步（新增/修改/删除都同步）
+:: /MT:8 多线程复制
+:: /R:2 失败重试次数
+:: /W:3 重试等待 3 秒
+:: /NP 不显示百分比
+:: /NFL 不列文件
+:: /NDL 不列目录
+:: /FFT 用 FAT 时间精度（2秒容差）
+:: /XJ 排除 Junction / 目录联接点
+:: /SL 复制符号链接本身，而不是跟随链接目标

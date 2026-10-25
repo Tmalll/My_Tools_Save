@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookmark Agg v7.8</title>
+    <style>
+        body{text-align:center}
+        button{padding:6px 12px;cursor:pointer;background:#f4f4f5;border:1px solid #d4d4d8;border-radius:4px}
+        #h{font-size:24px;outline:0}
+        #e{min-height:500px;outline:0;margin-top:15px;white-space:pre-wrap;word-break:break-all}
+        [contenteditable]:empty:before{content:attr(placeholder);color:#9ca3af}
+        #t{margin:8px 0;font-size:12px;color:#9ca3af;display:none}
+        hr{margin:20px 0;border:0;border-top:1px solid #e4e4e7}
+    </style>
+</head>
+<body>
+<div>
+    <button onclick="clr()">Clear</button>
+    <button onclick="cpEd()">Copy Editor</button>
+    <button onclick="svPg()">Save Page</button>
+    <button onclick="cpPg()">Copy Page</button>
+</div>
+<div id="t"></div> 
+<h1 id="h" contenteditable="true" placeholder="Title..."></h1>
+<div id="e" contenteditable="true" placeholder="Type here (URLs auto-link)..."></div>
+
+<script>
+    const $ = id => document.getElementById(id), h = $('h'), e = $('e'), t = $('t');
+    const b64 = s => btoa(unescape(encodeURIComponent(s)));
+    const tip = m => { t.innerText = m; t.style.display = 'block'; clearTimeout(window.to); window.to = setTimeout(() => t.style.display = 'none', 1000); };
+    const cp = (txt, m) => { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); tip(m); } catch(e) { tip('Failed'); } document.body.removeChild(ta); };
+    const clr = () => { h.innerText = ''; e.innerText = ''; tip('Cleared'); };
+    const enc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const getH = () => {
+        const c = e.innerText.split(/(\s+)/).map(p => (p.startsWith('http://') || p.startsWith('https://')) ? `<a href="${enc(p)}" target="_blank" style="color:#2563eb;text-decoration:underline;">${p}</a>` : p).join('');
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${h.innerText||'Bookmark Agg v7.8'}</title><style>${document.getElementsByTagName('style')[0].innerHTML}</style></head><body><h1>${h.innerText}</h1><hr><div>${c}</div></body></html>`;
+    };
+    function cpEd() {
+        const sty = document.getElementsByTagName('style')[0].innerHTML, scr = document.getElementsByTagName('script')[0].innerHTML;
+        cp('data:text/html;base64,' + b64(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Bookmark Agg v7.8</title><style>${sty}</style></head><body><div><button onclick="clr()">Clear</button> <button onclick="cpEd()">Copy Editor</button> <button onclick="svPg()">Save Page</button> <button onclick="cpPg()">Copy Page</button></div><div id="t"></div><h1 id="h" contenteditable="true" placeholder="Title..."></h1><div id="e" contenteditable="true" placeholder="Type here (URLs auto-link)..."></div>\<script>${scr}\<\/script></body></html>`), 'Editor Copied');
+    }
+    const cpPg = () => cp('data:text/html;base64,' + b64(getH()), 'Page Copied');
+    function svPg() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([getH()], {type: 'text/html'})); a.download = (h.innerText.trim() || 'Bookmark Agg v7.8') + '.html'; a.click(); tip('Downloaded'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+
+# Server 2016 可以,  2022 运行失败.
+dism /online /disable-feature /featurename:Internet-Explorer-Optional-amd64
+
+# Win11 LTSC 2024
+dism /online /get-features | findstr /i "explorer"
+dism /online /get-capabilities | findstr /i "browser"
+dism /online /get-capabilities | findstr /i "*Explorer*"
+dism /online /get-capabilities | findstr /i "*Internet*"
+DISM /Online /Remove-Capability /CapabilityName:Browser.InternetExplorer~~~~0.0.11.0
+
+
+:: 启用组策略禁用 IE11 (重定向/禁止作为独立浏览器)
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" /v DisableIE11 /t REG_DWORD /d 1 /f
+
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" /v DisableIE11 /f
+
+:: 移除 IE 的注册应用标识，使其对系统“隐形”
+reg delete "HKLM\SOFTWARE\RegisteredApplications" /v "Internet Explorer" /f
+
+
+:: 1. 夺权
+takeown /f "C:\Program Files\Internet Explorer\iexplore.exe" /a >nul
+icacls "C:\Program Files\Internet Explorer\iexplore.exe" /grant Administrators:F >nul
+
+:: 2. 备份原文件并用空文件替换
+ren "C:\Program Files\Internet Explorer\iexplore.exe" "iexplore.exe.bak"
+type nul > "C:\Program Files\Internet Explorer\iexplore.exe"
+
+:: 3. 锁定权限
+icacls "C:\Program Files\Internet Explorer\iexplore.exe" /deny Everyone:(F) >nul
+
+
+#

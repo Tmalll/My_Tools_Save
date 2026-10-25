@@ -1,0 +1,223 @@
+@echo off
+cd /d "%~dp0" & title %~nx0
+
+:: 设置用户名 - 这个一般不用改
+set UserName=Tmalll
+
+:: 设置仓库名称 - 创建和其他
+set REPO_NAME=My_Tools_Save
+
+:: 仓库地址
+set repo_addres=https://github.com/%UserName%/%REPO_NAME%
+
+:: 设置代理服务器
+set http_proxy=socks5h://192.168.1.40:10800
+set https_proxy=%http_proxy%
+set HTTP_PROXY=%http_proxy%
+set HTTPS_PROXY=%http_proxy%
+
+:: 测试网络
+:: curl -IL https://www.google.com -vv
+:: pause
+
+:: 信任当前目录
+git config --global --add safe.directory "%~dp0"
+
+:: 菜单选择器
+:menu
+timeout /t 1 > NUL
+echo.
+echo 当前用户名为: [ %UserName% ]
+echo 当前仓库名为: [ %REPO_NAME% ]
+echo 当前仓库地址为: [ %repo_addres% ]
+echo 使用的HTTP代理为: [ %http_proxy% ]
+echo.
+echo ==========================================
+echo 请选择同步方式:
+echo [1] 普通更新 ( 不拉取，安全推送，不带 --force ) 
+echo [2] 同步更新 ( 先拉取远程，再安全推送，不带 --force，日常使用 )
+echo [3] 强制覆盖远程 ( 不拉取，带 --force )
+echo [4] 彻底重置仓库 ( 删除.git，重新初始化并强制推送 )
+echo [5] 新建仓库 ( 把脚本所在目录新建为仓库, 并且初始化 )
+echo [6] 修改仓库名称 ( 注意上面的变量设置 )
+echo ==========================================
+set /p choice=请输入数字(1-6): 
+
+if "%choice%"=="1" goto 1_Normal_update
+if "%choice%"=="2" goto 2_Sync_update
+if "%choice%"=="3" goto 3_Force_update
+if "%choice%"=="4" goto 4_Reset_repo
+if "%choice%"=="5" goto 5_create
+if "%choice%"=="6" goto 6_rename
+
+
+echo 输入错误，请输入 1-6
+timeout /t 1 >nul
+cls
+goto :menu
+
+:: [1] 普通更新
+:1_Normal_update
+cd /d %~dp0
+git add -A
+git commit -m "update %date% %time%"
+git push origin main
+
+echo 普通更新 - 完成！
+pause
+cls
+goto :menu
+
+:: [2] 同步更新
+:2_Sync_update
+cd /d %~dp0
+git fetch origin
+git pull origin main
+git add -A
+git commit -m "sync update %date% %time%"
+git push origin main
+
+echo 同步更新 - 完成！
+pause
+cls
+goto :menu
+
+:: [3] 强制覆盖远程
+:3_Force_update
+echo 这将会覆盖远程仓库 [ 3 ] 如果远程有的文件本地没有, 则会丢失文件. 
+pause
+echo 这将会覆盖远程仓库 [ 2 ] 如果远程有的文件本地没有, 则会丢失文件. 
+pause
+echo 这将会覆盖远程仓库 [ 1 ] 如果远程有的文件本地没有, 则会丢失文件. 
+echo 再按就开始了 ! 
+pause
+
+cd /d %~dp0
+git add -A
+git commit -m "force override %date% %time%"
+git push origin main --force
+
+echo 强制覆盖远程 - 完成！
+pause
+cls
+goto :menu
+
+:: [4] 彻底重置仓库
+:4_Reset_repo
+echo 这将会彻底重置远程仓库 [ 3 ] 如果远程有的文件本地没有, 则会丢失文件. 另外还会丢失所有历史记录. 
+pause
+echo 这将会彻底重置远程仓库 [ 2 ] 如果远程有的文件本地没有, 则会丢失文件. 另外还会丢失所有历史记录. 
+pause
+echo 这将会彻底重置远程仓库 [ 1 ] 如果远程有的文件本地没有, 则会丢失文件. 另外还会丢失所有历史记录. 
+echo 再按就开始了 ! 
+pause
+
+
+cd /d %~dp0
+rmdir /s /q .git
+
+git init
+git remote add origin %repo_addres%
+git branch -M main
+
+git add -A
+git commit -m "initial clean commit %date% %time%"
+git push origin main --force
+
+echo 彻底重置仓库 - 完成！
+pause
+cls
+goto :menu
+
+
+:: 新建仓库...
+:5_create
+echo 请选择仓库类型:
+echo.
+echo [0] 公共仓库 (默认)
+echo [1] 私有仓库
+echo.
+set /p repo_type=请输入数字(0/1):
+
+if "%repo_type%"=="" set repo_type=0
+
+if "%repo_type%"=="0" (
+    set repo_flag=--public
+    echo 将创建公共仓库...
+) else (
+    set repo_flag=--private
+    echo 将创建私有仓库...
+)
+
+timeout /t 2 > NUL
+
+cd /d %~dp0
+
+:: 创建 GitHub 仓库
+echo 正在创建 GitHub 仓库: %REPO_NAME%
+gh repo create %REPO_NAME% %repo_flag% --confirm
+
+:: 初始化仓库
+git init
+git add .
+git commit -m "Initial commit %date% %time%"
+git branch -M main
+git remote remove origin 2>nul
+git remote add origin https://github.com/%UserName%/%REPO_NAME%.git
+git push -u origin main
+
+echo.
+echo 创建 GitHub 仓库 - 完成！
+echo 仓库地址:
+git remote get-url origin
+echo.
+
+pause
+cls
+goto :menu
+
+
+
+:: 仓库改名...
+:6_rename
+
+
+set NowName=My_Tools_Save
+set ToName=MosDNS_v3
+
+echo.
+echo 现在的仓库名为: [ %NowName% ]
+echo.
+echo 要修改的目标仓库名为: [ %ToName% ]
+echo.
+
+echo 脚本将会修改仓库名称 [ 3 ] , 请核对上面所显示参数, 具体设置请编辑脚本内的变量 !
+pause
+echo 脚本将会修改仓库名称 [ 2 ] , 请核对上面所显示参数, 具体设置请编辑脚本内的变量 !
+pause
+echo 脚本将会修改仓库名称 [ 1 ] , 请核对上面所显示参数, 具体设置请编辑脚本内的变量 ! 再按就开始了 ! 
+pause
+
+:: 修改 GitHub 仓库名
+gh api -X PATCH -H "Accept: application/vnd.github+json" /repos/%UserName%/%NowName% -F name=%ToName%
+
+:: 在你的本地仓库中更新远程地址
+cd %~dp0
+git remote set-url origin https://github.com/Tmalll/%ToName%.git
+
+:: 测试推送
+git push
+
+:: 确认
+git remote -v
+
+echo 修改 GitHub 仓库名 - 完成！
+pause
+cls
+goto :menu
+
+
+
+
+pause
+exit

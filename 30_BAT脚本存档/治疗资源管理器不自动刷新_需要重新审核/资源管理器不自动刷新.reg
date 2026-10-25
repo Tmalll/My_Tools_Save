@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINESYSTEMCurrentControlSetControlUpdate]
+
+[HKEY_LOCAL_MACHINESYSTEMCurrentControlSetControlUpdateUpdateMode]
+
+
+"DWORD"=hex(2):30,00,00,00

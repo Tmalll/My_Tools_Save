@@ -1,0 +1,76 @@
+cat << 'EOF' > ~/Rclone.sh
+#!/bin/bash
+
+# 定义源和目标
+Source="OD-LiveSkype:"
+TargetDIR1="/root/LiveSkype_OneDrive_Cache"
+TargetDIR2="GD-MiaoSKY-YG:/LiveSkype_OneDrive"
+
+# 执行去重
+rclone dedupe newest "${TargetDIR1}" --by-hash --log-level ERROR
+rclone sync "${Source}" "${TargetDIR1}/01.latest" \
+  --backup-dir "${TargetDIR1}/02.history/$(date +%Y-%m-%d[%H.%M.%S])" \
+  --onedrive-expose-onenote-files --onedrive-av-override \
+  --checksum \
+  --transfers 16 \
+  --checkers 16 \
+  --copy-links \
+  --timeout 10s \
+  --contimeout 10s \
+  --retries 3 \
+  --low-level-retries 3 \
+  --fast-list \
+  --log-level INFO
+
+
+rclone dedupe newest "${TargetDIR2}" --by-hash --log-level ERROR
+rclone sync "${TargetDIR1}" "${TargetDIR2}" \
+  --checksum \
+  --drive-use-trash=false \
+  --transfers 16 \
+  --checkers 16 \
+  --copy-links \
+  --timeout 10s \
+  --contimeout 10s \
+  --retries 3 \
+  --low-level-retries 3 \
+  --fast-list \
+  --log-level INFO
+
+# --log-level LogLevel  Log level DEBUG|INFO|NOTICE|ERROR (default NOTICE)
+
+
+
+
+
+EOF
+
+chmod +x ~/Rclone.sh
+~/Rclone.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+--exclude "/cache/**" \
+--exclude "/code_cache/**" \
+--exclude "/files/home/storage/**" \
+--exclude "/files/usr/bin/**" \
+--exclude "/files/usr/lib/**" \
+--exclude "/files/usr/share/**" \
+--exclude "/files/usr/include/**" \
+--exclude "/files/usr/var/cache/**" \
+--exclude "/files/usr/var/run/**" \
+--exclude "**/supervise/**" \
+--exclude "**/usr/var/log/**" \
+--exclude "**/*.socket" \
+--exclude "**/*.fifo" \
+--exclude "**/*.log" --exclude "**/*.tmp" --exclude "**/*.bash_history" \

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <title>极客笔记 · 全功能HTML编辑器</title>
+    <style>
+        *{box-sizing:border-box;}
+        html,body{margin:0;padding:0;height:100%;background:#fff;color:#000;font-family:system-ui,'Segoe UI',Roboto,sans-serif;}
+        body{display:flex;flex-direction:column;max-width:1280px;margin:0 auto;height:100%;overflow:auto;} /* 自带滚动条，编辑器内部无多余滚动条冲突 */
+        #top-sticky{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 12px 6px;backdrop-filter:blur(2px);}
+        /* 信息栏 */
+        .info-bar{font-size:11.5px;margin-bottom:8px;display:flex;gap:20px;flex-wrap:wrap;background:#f8fafc;padding:4px 14px;border-radius:40px;}
+        .info-bar span{font-family:monospace;font-weight:500;}
+        .sz{font-weight:800;transition:color 0.2s;}
+        /* 网格按钮布局 */
+        .btn-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+        .btn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+        .btn{width:100%;min-height:68px;padding:6px 5px;border:1px solid #cbd5e1;border-radius:18px;background:#fefefe;color:#0f172a;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:13px;font-weight:700;line-height:1.3;transition:0.1s linear;box-shadow:0 1px 2px rgba(0,0,0,0.03);}
+        .btn:hover{background:#eef2ff;border-color:#94a3b8;transform:translateY(-1px);}
+        .btn:active{background:#e2e8f0;transform:translateY(1px);}
+        .btn-size-badge{font-size:10px;font-weight:600;margin-top:5px;background:#f1f5f9;padding:2px 8px;border-radius:40px;font-family:monospace;transition:all 0.1s;}
+        /* 工具栏增强 */
+        .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:5px;padding:6px 8px;background:#f9f9fc;border:1px solid #e2e8f0;border-radius:24px;margin-top:8px;}
+        .toolbar button,.toolbar label{min-width:34px;height:34px;padding:0 8px;border-radius:12px;background:white;border:1px solid #cbd5e1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;}
+        .toolbar button:hover{background:#eef2ff;border-color:#90a3bf;}
+        .toolbar button.active{background:#d9e9ff;border-color:#3b82f6;color:#0753b3;}
+        .toolbar .sep{width:1px;height:28px;background:#cbd5e1;margin:0 6px;}
+        .toolbar input[type="color"]{width:36px;height:36px;padding:2px;border-radius:12px;border:1px solid #cbd5e1;}
+        .color-quick{background:#f1f5f9;padding:0 6px;gap:2px;}
+        .color-quick button{min-width:28px;height:28px;padding:0;font-weight:bold;}
+        /* 编辑区 - 无多余滚动条，完全依赖body滚动 */
+        #scroll-area{flex:1;padding:18px 20px 60px;overflow:visible;}
+        h1{margin:0 0 12px;font-size:2.2rem;outline:none;min-height:3rem;font-weight:600;}
+        hr{border-top:2px solid #1e293b;margin:4px 0 20px;}
+        #editor-body{min-height:520px;outline:none;font-size:16px;line-height:1.5;word-break:break-word;}
+        #editor-body img{max-width:100%;display:block;margin:12px 0;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+        [contenteditable]:empty:before{content:attr(placeholder);color:#94a3b8;white-space:pre-wrap;}
+        #toast-msg{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:white;padding:8px 20px;border-radius:60px;font-size:13px;z-index:9999;opacity:0;pointer-events:none;transition:opacity 0.2s;font-family:monospace;white-space:nowrap;}
+    </style>
+</head>
+<body>
+<div id="toast-msg"></div>
+<div id="top-sticky">
+    <div class="info-bar">
+        <span>🧠 <b>HyperNote · 专业编辑器</b></span>
+        <span>📄 当前页面大小: <span id="realSizeSpan" class="sz">0 B</span></span>
+        <span>🔗 DataText估算: <span id="dataSizeSpan" class="sz">0 B</span></span>
+        <span>✨ 按钮动态渐变 | 防丢提醒已启用</span>
+    </div>
+    <!-- 第一行：Clear / Insert Image / Restore For TextArea -->
+    <div class="btn-row-3">
+        <button class="btn" id="clearBtn">🧹 Clear<br><span class="btn-size-badge">清空标题+正文</span></button>
+        <button class="btn" id="insertImageBtn">🖼️ Insert Image<br><span class="btn-size-badge">光标处插入图片</span></button>
+        <button class="btn" id="restoreTextareaBtn">♻️ Restore For TextArea<br><span class="btn-size-badge">从正文恢复完整页面</span></button>
+    </div>
+    <!-- 模块1: 带编辑器的完整页面 (Save/Copy/Export/Import) -->
+    <div class="btn-grid">
+        <button class="btn" id="saveEditorBtn">💾 Save HTML Editor<br><span id="sizeEditorSave" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="copyEditorBtn">📋 Copy HTML Editor<br><span id="sizeEditorCopy" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="exportEditorBtn">📎 Export Editor .DataText<br><span id="sizeEditorExport" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="importEditorBtn">📂 Import Editor .DataText<br><span class="btn-size-badge">导入完整编辑器</span></button>
+    </div>
+    <!-- 模块2: 纯HTML页面(自动URL超链接) -->
+    <div class="btn-grid">
+        <button class="btn" id="savePageBtn">📄 Save HTML Page<br><span id="sizePageSave" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="copyPageBtn">📋 Copy HTML Page<br><span id="sizePageCopy" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="exportPageBtn">📎 Export Page .DataText<br><span id="sizePageExport" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="importPageBtn">📂 Import Page .DataText<br><span class="btn-size-badge">导入纯HTML页面</span></button>
+    </div>
+    <!-- 模块3: 纯文本 -->
+    <div class="btn-grid">
+        <button class="btn" id="saveTextBtn">📝 Save TEXT<br><span id="sizeTextSave" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="copyTextBtn">📋 Copy TEXT<br><span id="sizeTextCopy" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="exportTextBtn">📎 Export TEXT .DataText<br><span id="sizeTextExport" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="importTextBtn">📂 Import TEXT .DataText<br><span class="btn-size-badge">导入纯文本</span></button>
+    </div>
+    <!-- 格式工具栏: 增强快速颜色 / 高亮色块 -->
+    <div class="toolbar" id="formatToolbar">
+        <button onclick="execFormatCmd('removeFormat')" title="清除格式">🗑️清除格式</button><div class="sep"></div>
+        <button onclick="applyFontSize('16px')">16px</button><button onclick="applyFontSize('24px')">24px</button><button onclick="applyFontSize('32px')">32px</button><button onclick="promptFontSize()">自定义</button><div class="sep"></div>
+        <!-- 快速字体颜色区 -->
+        <div style="display:flex;gap:4px;align-items:center;background:#f1f5f9;padding:0 6px;border-radius:40px;">
+            <span style="font-size:11px;">🎨字</span>
+            <button onclick="applyColorQuick('foreColor','#e11d48')" style="background:#e11d48;color:white;border:none;">红</button>
+            <button onclick="applyColorQuick('foreColor','#2563eb')" style="background:#2563eb;color:white;">蓝</button>
+            <button onclick="applyColorQuick('foreColor','#16a34a')" style="background:#16a34a;color:white;">绿</button>
+            <button onclick="applyColorQuick('foreColor','#9333ea')" style="background:#9333ea;color:white;">紫</button>
+            <label style="background:white;padding:0 3px;">🎨<input type="color" id="fgQuickPicker" value="#000000" style="width:28px;height:28px;padding:0;"></label>
+        </div>
+        <!-- 快速高亮区 -->
+        <div style="display:flex;gap:4px;align-items:center;background:#f1f5f9;padding:0 6px;border-radius:40px;">
+            <span style="font-size:11px;">🖌️高亮</span>
+            <button onclick="applyColorQuick('hiliteColor','#fef08a')" style="background:#fef08a;border:1px solid #ca8a04;">黄</button>
+            <button onclick="applyColorQuick('hiliteColor','#fed7aa')" style="background:#fed7aa;">橙</button>
+            <button onclick="applyColorQuick('hiliteColor','#bfdbfe')" style="background:#bfdbfe;">蓝</button>
+            <button onclick="applyColorQuick('hiliteColor','#d9f99d')" style="background:#d9f99d;">绿</button>
+            <label style="background:white;"><input type="color" id="bgQuickPicker" value="#ffff00" style="width:28px;height:28px;"></label>
+        </div>
+        <div class="sep"></div>
+        <button onclick="execFormatCmd('bold')"><b>B</b></button><button onclick="execFormatCmd('italic')"><i>I</i></button><button onclick="execFormatCmd('underline')"><u>U</u></button><button onclick="execFormatCmd('strikeThrough')"><s>S</s></button><div class="sep"></div>
+        <button onclick="execFormatCmd('justifyLeft')">⬅️左</button><button onclick="execFormatCmd('justifyCenter')">⏺️中</button><button onclick="execFormatCmd('justifyRight')">➡️右</button><button onclick="execFormatCmd('justifyFull')">☰两端</button><div class="sep"></div>
+        <button onclick="execFormatCmd('insertUnorderedList')">•列表</button><button onclick="execFormatCmd('insertOrderedList')">1.有序</button><button onclick="execFormatCmd('outdent')">↩️缩出</button><button onclick="execFormatCmd('indent')">↪️缩进</button><div class="sep"></div>
+        <button onclick="execFormatCmd('superscript')">X²</button><button onclick="execFormatCmd('subscript')">X₂</button>
+    </div>
+</div>
+<div id="scroll-area">
+    <h1 id="titleEditor" contenteditable="true" placeholder="✨ 标题 (支持富文本) ..." oninput="updateAllSizes()"></h1>
+    <hr>
+    <div id="editor-body" contenteditable="true" placeholder="📝 记录灵感 / 粘贴 data:text/html;base64,... 然后点击「Restore For TextArea」即可完整恢复编辑器页面" oninput="updateAllSizes()" onkeyup="syncToolbarActive()" onmouseup="syncToolbarActive()"></div>
+</div>
+<input type="file" id="globalFileInput" style="display:none" accept=".datatext,.txt">
+<a id="hiddenDownload" style="display:none"></a>
+
+<script>
+    // ======================== 全局DOM ========================
+    const titleElem = document.getElementById('titleEditor');
+    const bodyElem = document.getElementById('editor-body');
+    const realSpan = document.getElementById('realSizeSpan');
+    const dataSpan = document.getElementById('dataSizeSpan');
+    const toastMsg = document.getElementById('toast-msg');
+    
+    // 快速颜色绑定
+    const fgQuickPicker = document.getElementById('fgQuickPicker');
+    const bgQuickPicker = document.getElementById('bgQuickPicker');
+    if(fgQuickPicker) fgQuickPicker.oninput = (e) => applyColorQuick('foreColor', e.target.value);
+    if(bgQuickPicker) bgQuickPicker.oninput = (e) => applyColorQuick('hiliteColor', e.target.value);
+    
+    // ========== 辅助函数 ==========
+    function getByteSize(str) { return new TextEncoder().encode(str).length; }
+    function formatBytes(bytes){
+        if(bytes < 1024) return bytes.toFixed(0)+' B';
+        let units = ['KB','MB','GB']; let i = -1;
+        do{ bytes /= 1024; i++; } while(bytes >= 1024 && i < units.length-1);
+        return bytes.toFixed(2)+' '+units[i];
+    }
+    // 颜色渐变：小文件绿→黄→蓝→橙→红→紫 (大文件)
+    function colorBySize(bytes){
+        let mb = bytes / (1024*1024);
+        if(mb < 0.3) return '#2b8c4a';
+        if(mb < 1) return '#84cc16';
+        if(mb < 2.5) return '#eab308';
+        if(mb < 5) return '#3b82f6';
+        if(mb < 9) return '#f97316';
+        if(mb < 16) return '#dc2626';
+        return '#a855f7';
+    }
+    function showToast(msg, isErr=false){
+        toastMsg.innerText = msg;
+        toastMsg.style.opacity = '1';
+        toastMsg.style.background = isErr ? '#b91c1c' : '#1e293b';
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(()=> toastMsg.style.opacity = '0', 1800);
+    }
+    // 可靠 Base64 (超大容量无限制)
+    function b64Encode(str){
+        const encoder = new TextEncoder();
+        const uint8 = encoder.encode(str);
+        let bin = '';
+        const chunk = 0x8000;
+        for(let i=0;i<uint8.length;i+=chunk) bin += String.fromCharCode(...uint8.subarray(i,i+chunk));
+        return btoa(bin);
+    }
+    function decodeBase64ToStr(base64){
+        const bin = atob(base64);
+        const bytes = new Uint8Array(bin.length);
+        for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+        return new TextDecoder().decode(bytes);
+    }
+    // 复制兼容 (execCommand + clipboard)
+    async function copyToClipboard(text, successHint){
+        try{
+            if(navigator.clipboard && navigator.clipboard.writeText){
+                await navigator.clipboard.writeText(text);
+                showToast(`${successHint} (${formatBytes(getByteSize(text))})`);
+                return;
+            }
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            const ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            if(ok) showToast(`${successHint} (${formatBytes(getByteSize(text))})`);
+            else throw new Error();
+        }catch(e){ showToast('复制失败', true); }
+    }
+    function downloadFile(filename, content, mime='application/octet-stream'){
+        const blob = new Blob([content], {type: mime});
+        const a = document.getElementById('hiddenDownload');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+    // ========== 1. 生成带编辑器的完整页面 (包含所有脚本样式 + 用户内容) ==========
+    function generateFullEditorHTML() {
+        const curTitleHtml = titleElem.innerHTML;
+        const curBodyHtml = bodyElem.innerHTML;
+        const styleContent = document.querySelector('style').innerHTML;
+        const scriptContent = document.querySelector('script').innerHTML;
+        // 关键: 导出的页面不再额外嵌套滚动容器，完全依赖 body 原生滚动 (移除多余的overflow限制)
+        return `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${(titleElem.innerText.trim()||'HyperNote').replace(/</g,'&lt;')}</title><style>${styleContent} body{overflow:auto; height:auto; min-height:100vh;} #scroll-area{overflow:visible;}</style><script>${scriptContent.replace(/<\/script/g,'<\\/script')}<\/script></head><body><div id="toast-msg"></div><div id="top-sticky">${document.getElementById('top-sticky').innerHTML}</div><div id="scroll-area"><h1 id="titleEditor" contenteditable="true">${curTitleHtml.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</h1><hr><div id="editor-body" contenteditable="true">${curBodyHtml}</div></div></body></html>`;
+    }
+    // 2. 纯HTML页面 (自动识别http/https超链接, 防止空格/回车污染)
+    function generateCleanPageWithLinks() {
+        let rawTitleHtml = titleElem.innerHTML;
+        let rawBodyHtml = bodyElem.innerHTML;
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = rawBodyHtml;
+        // 严格正则：匹配http/https 直到遇到空格/换行/结束
+        const urlRegex = /(https?:\/\/[^\s<>"'“”]+)/g;
+        function walkAndConvert(node){
+            if(node.nodeType === Node.TEXT_NODE){
+                let text = node.nodeValue;
+                if(text && urlRegex.test(text)){
+                    const frag = document.createDocumentFragment();
+                    let lastIdx = 0;
+                    let match;
+                    urlRegex.lastIndex = 0;
+                    while((match = urlRegex.exec(text)) !== null){
+                        const before = text.substring(lastIdx, match.index);
+                        if(before) frag.appendChild(document.createTextNode(before));
+                        const link = document.createElement('a');
+                        link.href = match[0];
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.style.color = '#2563eb';
+                        link.style.textDecoration = 'underline';
+                        link.innerText = match[0];
+                        frag.appendChild(link);
+                        lastIdx = match.index + match[0].length;
+                    }
+                    if(lastIdx < text.length) frag.appendChild(document.createTextNode(text.substring(lastIdx)));
+                    node.parentNode.replaceChild(frag, node);
+                }
+            } else if(node.nodeType === Node.ELEMENT_NODE && !['a','button','script','style'].includes(node.tagName.toLowerCase())){
+                node.childNodes.forEach(walkAndConvert);
+            }
+        }
+        tempDiv.childNodes.forEach(walkAndConvert);
+        const linkedBody = tempDiv.innerHTML;
+        const finalTitle = titleElem.innerHTML || '无标题';
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${(titleElem.innerText.trim()||'BookmarkPage').replace(/</g,'&lt;')}</title><style>body{max-width:1100px;margin:30px auto;padding:20px;font-family:system-ui;line-height:1.5;} img{max-width:100%;} a{color:#1e40af;text-decoration:underline;} h1{font-size:2rem;}</style></head><body><h1>${finalTitle}</h1><hr>${linkedBody}</body></html>`;
+    }
+    // 3. 纯文本
+    function getPlainText() { return bodyElem.innerText; }
+    
+    // ========== 动态更新所有按钮大小 + 顶部栏 ==========
+    function updateAllButtonSizes() {
+        try{
+            // editor 模块
+            let fullHtml = generateFullEditorHTML();
+            let editorDataUrl = 'data:text/html;base64,' + b64Encode(fullHtml);
+            let editorBytes = getByteSize(fullHtml);
+            let editorCopyBytes = getByteSize(editorDataUrl);
+            document.getElementById('sizeEditorSave').innerHTML = formatBytes(editorBytes);
+            document.getElementById('sizeEditorCopy').innerHTML = formatBytes(editorCopyBytes);
+            document.getElementById('sizeEditorExport').innerHTML = formatBytes(editorCopyBytes);
+            document.getElementById('sizeEditorSave').style.color = colorBySize(editorBytes);
+            document.getElementById('sizeEditorCopy').style.color = colorBySize(editorCopyBytes);
+            document.getElementById('sizeEditorExport').style.color = colorBySize(editorCopyBytes);
+            // page 模块
+            let cleanHtml = generateCleanPageWithLinks();
+            let pageDataUrl = 'data:text/html;base64,' + b64Encode(cleanHtml);
+            let pageBytes = getByteSize(cleanHtml);
+            let pageCopyBytes = getByteSize(pageDataUrl);
+            document.getElementById('sizePageSave').innerHTML = formatBytes(pageBytes);
+            document.getElementById('sizePageCopy').innerHTML = formatBytes(pageCopyBytes);
+            document.getElementById('sizePageExport').innerHTML = formatBytes(pageCopyBytes);
+            document.getElementById('sizePageSave').style.color = colorBySize(pageBytes);
+            document.getElementById('sizePageCopy').style.color = colorBySize(pageCopyBytes);
+            document.getElementById('sizePageExport').style.color = colorBySize(pageCopyBytes);
+            // text 模块
+            let plain = getPlainText();
+            let textDataUrl = 'data:text/plain;base64,' + b64Encode(plain);
+            let textBytes = getByteSize(plain);
+            let textCopyBytes = getByteSize(textDataUrl);
+            document.getElementById('sizeTextSave').innerHTML = formatBytes(textBytes);
+            document.getElementById('sizeTextCopy').innerHTML = formatBytes(textCopyBytes);
+            document.getElementById('sizeTextExport').innerHTML = formatBytes(textCopyBytes);
+            document.getElementById('sizeTextSave').style.color = colorBySize(textBytes);
+            document.getElementById('sizeTextCopy').style.color = colorBySize(textCopyBytes);
+            document.getElementById('sizeTextExport').style.color = colorBySize(textCopyBytes);
+            // 顶部栏
+            let realBytes = getByteSize(fullHtml);
+            let dataBytesEst = getByteSize('data:text/html;base64,'+b64Encode(fullHtml));
+            realSpan.innerText = formatBytes(realBytes);
+            realSpan.style.color = colorBySize(realBytes);
+            dataSpan.innerText = formatBytes(dataBytesEst);
+            dataSpan.style.color = colorBySize(dataBytesEst);
+        }catch(e){ console.warn(e);}
+    }
+    function updateAllSizes(){ updateAllButtonSizes(); }
+    
+    // ========== 导入导出核心 (支持完整编辑器, page, text) ==========
+    function importDataText(file, mode){
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            let content = e.target.result;
+            if(typeof content !== 'string' || !content.startsWith('data:')){ showToast('无效 .datatext 文件', true); return; }
+            try{
+                const base64Part = content.split(',')[1];
+                const decoded = decodeBase64ToStr(base64Part);
+                if(mode === 'editor'){
+                    document.open();
+                    document.write(decoded);
+                    document.close();
+                } else if(mode === 'page'){
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(decoded, 'text/html');
+                    const importedH1 = doc.querySelector('h1') ? doc.querySelector('h1').innerHTML : '导入页面';
+                    const importedBody = doc.body.innerHTML;
+                    titleElem.innerHTML = importedH1;
+                    bodyElem.innerHTML = importedBody;
+                    updateAllSizes();
+                    showToast('导入 Page .DataText 成功');
+                } else if(mode === 'text'){
+                    bodyElem.innerText = decoded;
+                    updateAllSizes();
+                    showToast('导入 TEXT .DataText 成功');
+                }
+            }catch(err){ showToast('解析失败', true); }
+        };
+        reader.readAsText(file);
+    }
+    // Restore: 从正文区域提取 data:text/html;base64, 并恢复为完整编辑器
+    function restoreFromBodyText(){
+        const bodyText = bodyElem.innerText;
+        const match = bodyText.match(/data:text\/html;base64,[A-Za-z0-9+/=]+/);
+        if(!match){ showToast('未在正文中找到 DataText 链接', true); return; }
+        try{
+            const base64Part = match[0].split(',')[1];
+            const fullHtml = decodeBase64ToStr(base64Part);
+            document.open();
+            document.write(fullHtml);
+            document.close();
+        }catch(e){ showToast('恢复失败', true); }
+    }
+    // 插入图片
+    function insertImageAtCursor(){
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const rd = new FileReader();
+            rd.onload = (ev) => {
+                const img = document.createElement('img');
+                img.src = ev.target.result;
+                img.style.maxWidth = '100%';
+                const sel = window.getSelection();
+                if(sel && sel.rangeCount>0 && bodyElem.contains(sel.anchorNode)){
+                    const range = sel.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(img);
+                    range.setStartAfter(img);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                } else { bodyElem.appendChild(img); }
+                updateAllSizes();
+            };
+            rd.readAsDataURL(file);
+        };
+        input.click();
+    }
+    function clearAllContents(){
+        if(confirm('⚠️ 确认清空标题和正文所有内容？')){
+            titleElem.innerHTML = '';
+            bodyElem.innerHTML = '';
+            updateAllSizes();
+            showToast('已清空');
+        }
+    }
+    // ========== 格式工具栏增强 ==========
+    window.execFormatCmd = (cmd) => {
+        bodyElem.focus();
+        document.execCommand(cmd, false, null);
+        updateAllSizes();
+        syncToolbarActive();
+    };
+    window.applyColorQuick = (cmd, colorVal) => {
+        bodyElem.focus();
+        document.execCommand(cmd, false, colorVal);
+        updateAllSizes();
+    };
+    function applyFontSize(val){
+        if(!val) return;
+        if(/^\d+$/.test(val)) val+='px';
+        bodyElem.focus();
+        const sel = window.getSelection();
+        if(!sel || sel.rangeCount===0) return;
+        const range = sel.getRangeAt(0);
+        if(!bodyElem.contains(range.commonAncestorContainer)) return;
+        try{
+            const span = document.createElement('span');
+            span.style.fontSize = val;
+            span.style.lineHeight = '1.4';
+            range.surroundContents(span);
+        }catch(e){
+            document.execCommand('fontSize', false, '7');
+            const fonts = bodyElem.querySelectorAll('font[size="7"]');
+            fonts.forEach(f=>{ f.removeAttribute('size'); f.style.fontSize=val; f.style.lineHeight='1.4'; });
+        }
+        updateAllSizes();
+    }
+    function promptFontSize(){
+        let v = prompt('输入字号 (例如 14, 28px, 2rem):');
+        if(v && v.trim()) applyFontSize(v.trim());
+    }
+    function syncToolbarActive(){
+        const cmds = ['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight','justifyFull','insertUnorderedList','insertOrderedList','superscript','subscript'];
+        cmds.forEach(cmd=>{
+            const btn = document.querySelector(`#formatToolbar button[onclick*='${cmd}']`);
+            if(btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+        });
+    }
+    // ========== 防刷新/防退出提醒 ==========
+    window.addEventListener('beforeunload', (e) => {
+        const hasContent = (titleElem.innerText.trim().length > 0 || bodyElem.innerText.trim().length > 0);
+        if(hasContent){
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        }
+    });
+    // ========== 绑定所有按钮模块 ==========
+    document.getElementById('clearBtn').onclick = clearAllContents;
+    document.getElementById('insertImageBtn').onclick = insertImageAtCursor;
+    document.getElementById('restoreTextareaBtn').onclick = restoreFromBodyText;
+    // 编辑器模块
+    document.getElementById('saveEditorBtn').onclick = () => { let html = generateFullEditorHTML(); downloadFile((titleElem.innerText.trim()||'editor_note')+'_editor.html', html, 'text/html'); };
+    document.getElementById('copyEditorBtn').onclick = async () => { let html = generateFullEditorHTML(); let dataUrl = 'data:text/html;base64,'+b64Encode(html); await copyToClipboard(dataUrl, '📋 复制 Editor DataText'); };
+    document.getElementById('exportEditorBtn').onclick = () => { let html = generateFullEditorHTML(); let dataUrl = 'data:text/html;base64,'+b64Encode(html); downloadFile((titleElem.innerText.trim()||'editor')+'.datatext', dataUrl); };
+    document.getElementById('importEditorBtn').onclick = () => { const inp = document.getElementById('globalFileInput'); inp.onchange = (e) => { importDataText(e.target.files[0], 'editor'); inp.value=''; }; inp.click(); };
+    // 纯页面模块
+    document.getElementById('savePageBtn').onclick = () => { let page = generateCleanPageWithLinks(); downloadFile((titleElem.innerText.trim()||'page')+'_page.html', page, 'text/html'); };
+    document.getElementById('copyPageBtn').onclick = async () => { let page = generateCleanPageWithLinks(); let dataUrl = 'data:text/html;base64,'+b64Encode(page); await copyToClipboard(dataUrl, '📋 复制 Page DataText'); };
+    document.getElementById('exportPageBtn').onclick = () => { let page = generateCleanPageWithLinks(); let dataUrl = 'data:text/html;base64,'+b64Encode(page); downloadFile((titleElem.innerText.trim()||'page')+'.datatext', dataUrl); };
+    document.getElementById('importPageBtn').onclick = () => { const inp = document.getElementById('globalFileInput'); inp.onchange = (e) => { importDataText(e.target.files[0], 'page'); inp.value=''; }; inp.click(); };
+    // 纯文本模块
+    document.getElementById('saveTextBtn').onclick = () => { let txt = getPlainText(); downloadFile((titleElem.innerText.trim()||'text_note')+'.txt', txt, 'text/plain'); };
+    document.getElementById('copyTextBtn').onclick = async () => { let txt = getPlainText(); let dataUrl = 'data:text/plain;base64,'+b64Encode(txt); await copyToClipboard(dataUrl, '📋 复制 TEXT DataText'); };
+    document.getElementById('exportTextBtn').onclick = () => { let txt = getPlainText(); let dataUrl = 'data:text/plain;base64,'+b64Encode(txt); downloadFile((titleElem.innerText.trim()||'text')+'.datatext', dataUrl); };
+    document.getElementById('importTextBtn').onclick = () => { const inp = document.getElementById('globalFileInput'); inp.onchange = (e) => { importDataText(e.target.files[0], 'text'); inp.value=''; }; inp.click(); };
+    
+    window.addEventListener('load', ()=>{ updateAllSizes(); syncToolbarActive(); });
+    setInterval(()=>{ updateAllButtonSizes(); }, 800);
+</script>
+</body>
+</html>

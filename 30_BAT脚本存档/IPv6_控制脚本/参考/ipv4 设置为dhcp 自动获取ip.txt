@@ -1,0 +1,3 @@
+echo 设置ipv4为dhcp模式
+netsh interface ip set address "SSTAP 1" dhcp
+netsh interface ip set dns "SSTAP 1" dhcp

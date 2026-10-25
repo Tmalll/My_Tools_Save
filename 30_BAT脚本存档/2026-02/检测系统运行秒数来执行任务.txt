@@ -1,0 +1,13 @@
+:: 检测系统运行秒数
+set "uptime=0"
+for /f %%i in ('powershell -NoProfile -Command "[int]((Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime).TotalSeconds"') do set "uptime=%%i"
+if %uptime% LSS 3600 (
+    echo ----- [ 跳过 ] ----- 当前系统运行时间仅为 %uptime% 秒，跳过此次任务 ----- [ 跳过 ] -----
+    echo.
+    goto :bak_2_end
+)
+
+echo ----- [任务开始] ----- 当前系统运行时间为 %uptime% 秒 ----- [任务开始] -----
+echo.
+echo Cobian Reflector 备份任务 - 开始
+echo.

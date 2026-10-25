@@ -1,0 +1,85 @@
+# Windows Update 核心更新（最小可用）
+update.microsoft.com 							# 用途：Windows Update 基础域名，负责更新检测与版本握手。禁用影响：系统无法主动触发更新检测。
+windowsupdate.com 								# 用途：Windows Update 早期及备用基础域名。禁用影响：影响老旧系统组件或特定补丁的重定向。
+download.windowsupdate.com 						# 用途：微软官方补丁及基础系统组件的核心下载 CDN 节点。禁用影响：更新下载彻底卡死在 0% 或报错。
+fe2.update.microsoft.com 						# 用途：Windows Update 前端服务器，负责客户端与云端的更新元数据交互。禁用影响：系统无法获取最新的补丁列表。
+emdl.ws.microsoft.com 							# 用途：微软紧急及基础下载管理服务（Emergency Download）。禁用影响：紧急修复补丁或关键驱动可能无法推送。
+ntservicepack.microsoft.com 					# 用途：早期 Service Pack 及系统核心升级包的分发握手服务。禁用影响：对大版本跨代升级造成潜在的检测障碍。
+tsfe.trafficshaping.dsp.mp.microsoft.com 		# 用途：微软流量整形与动态分发服务。禁用影响：大版本更新时极易遭遇握手延迟或连接超时。
+
+# Delivery Optimization（DO 传递优化）
+delivery.mp.microsoft.com 				# 用途：传递优化（P2P）核心控制服务器，协调补丁下载分发。禁用影响：导致补丁下载卡 0% 或无法获取分发策略。
+dl.delivery.mp.microsoft.com 			# 用途：传递优化补丁内容下载终结点。禁用影响：强依赖该通道的补丁无法下载，系统更新极慢。
+do.dsp.mp.microsoft.com 				# 用途：传递优化流量调度与策略配置服务。禁用影响：局域网内补丁共享加速失效，公网下载变慢。
+*.prod.do.dsp.mp.microsoft.com 			# 用途：传递优化生产环境全局调度与对等节点发现。禁用影响：无法发现局域网或公网中的其他补丁缓存节点。
+*.g.akamaitech.net 						# 用途：微软托管在 Akamai CDN 上的补丁分发节点。禁用影响：大幅降低海外或特定运营商环境下的补丁下载速度。
+
+# 网络合规与证书检查
+crl.microsoft.com 				# 用途：微软证书吊销列表（CRL）查询服务。禁用影响：导致补丁证书无法及时校验，系统更新抛出安全错误。
+evca.microsoft.com 				# 用途：微软扩展验证（EV）证书颁发机构验证点。禁用影响：系统无法信任某些高安全级别的微软核心组件签名。
+www.microsoft.com/pkiops 		# 用途：微软公钥基础设施（PKI）运营与根证书下载路径。禁用影响：补丁数字签名链校验失败，导致补丁被系统拒绝安装。
+ws.microsoft.com 				# 用途：微软 Web Services 通用子域，用于多种合规性与元数据验证。禁用影响：部分系统内置安全策略或组件激活检查失败。
+*.msftncsi.com 					# 用途：Windows 网络连接状态指示器（NCSI）。禁用影响：系统右下角网络图标可能显示“无互联网连接”，导致依赖该状态的微软服务停摆。
+
+# Office 365 / Microsoft 365 办公套件更新
+officecdn.microsoft.com 				# 用途：Office 点击就用（Click-to-Run）套件的核心下载与更新 CDN。禁用影响：Office 套件无法检查更新，无法下载新版本。
+officecdn.microsoft.com.edgesuite.net 	# 用途：Office 更新在 Akamai 边缘网络上的 CDN 别名。禁用影响：导致 Office 下载组件时无法利用边缘节点加速。
+officecdn.microsoft.com.prs 			# 用途：Office 专属预分发及区域更新通道。禁用影响：部分特定渠道或特定语言包的 Office 更新失败。
+officeapps.live.com 					# 用途：Office 网页版、组件元数据同步及激活合规性检查。禁用影响：Office 无法同步云端设置，或无法正常通过云端验证激活状态。
+
+# WinGet 软件包管理器与应用商店组件
+winget.azureedge.net 								# 用途：WinGet（Windows 软件包管理器）官方源 CDN。禁用影响：winget install/update 命令报错或提示找不到软件源。
+storeedgefd.dsx.mp.microsoft.com 					# 用途：微软应用商店（Microsoft Store）前端核心分发网络。禁用影响：微软应用商店页面加载异常或无法下载 UWP 应用。
+storecatalogrevocation.storequality.microsoft.com 	# 用途：应用商店应用证书吊销与质量合规性检查。禁用影响：应用商店下载和运行应用时可能出现安全警告。
+mp.microsoft.com 									# 用途：微软应用商店、UWP 组件及现代应用包通配符服务。禁用影响：微软商店彻底无法使用，内置现代应用无法更新。
+
+# Visual Studio & .NET & NuGet 生态
+aka.ms 										# 用途：微软官方短网址重定向服务。禁用影响：导致大量官方开发文档、工具的在线下载链接直接失效。
+download.microsoft.com 						# 用途：微软全局公共下载中心（含 .NET SDK、各类工具包）。禁用影响：无法下载独立的 .NET 运行时或微软官方离线安装包。
+visualstudio.microsoft.com 					# 用途：Visual Studio 官网及在线安装程序元数据获取。禁用影响：VS 在线安装器无法工作，无法获取组件列表。
+vsassets.io 								# 用途：Visual Studio 扩展商店、主题及核心静态资源 CDN。禁用影响：VS 插件市场图标、样式显示错乱或加载失败。
+*.gallerycdn.vsassets.io 					# 用途：VS Code 和 Visual Studio 插件市场的扩展包下载 CDN。禁用影响：在 IDE 内无法正常安装或更新任何插件。
+nuget.org 									# 用途：.NET 生态官方包管理器官网。禁用影响：无法通过网页端检索或查看 NuGet 依赖包。
+api.nuget.org 								# 用途：NuGet 包索引与依赖下载 API 终结点。禁用影响：.NET 项目执行 dotnet restore 或 nuget install 时彻底报错。
+
+# GitHub 开源与协作
+github.com 						# 用途：GitHub 官方主站。禁用影响：无法访问代码仓库网页，无法进行常规的 Git 远程拉取与推送。
+api.github.com 					# 用途：GitHub 官方 REST/GraphQL API 接口。禁用影响：依赖 GitHub 认证的 CI/CD 流程、第三方自动化工具、IDE 插件失效。
+objects.githubusercontent.com 	# 用途：GitHub Releases、大文件（LFS）及源码包的实际存储与下载 CDN。禁用影响：无法通过网页或命令行下载 Release 产物及大文件。
+raw.githubusercontent.com 		# 用途：GitHub 仓库原始文件查看与下载通道。禁用影响：许多开源项目的“一键安装脚本”或远程配置文件拉取彻底失败。
+codeload.github.com 			# 用途：GitHub 自动打包下载源码（Zip/Tar.gz）的专用服务器。禁用影响：点击网页上的 "Download ZIP" 或部分自动化打包工具报错。
+
+# 容器技术（Docker & Kubernetes）
+registry-1.docker.io 				# 用途：Docker Hub 官方镜像库主注册表。禁用影响：执行 docker pull 官方镜像时报错，找不到镜像。
+auth.docker.io 						# 用途：Docker Hub 身份验证与 Token 获取服务器。禁用影响：无法登录 Docker 账号，或者匿名拉取私有/限制镜像时鉴权失败。
+production.cloudflare.docker.com 	# 用途：Docker Hub 托管在 Cloudflare 上的镜像层实际下载 CDN。禁用影响：拉取镜像时会永久卡死在 Downloading 阶段。
+registry.k8s.io 					# 用途：Kubernetes 官方新核心镜像仓库（替代旧 k8s.gcr.io）。禁用影响：现代化 K8s 集群初始化或核心组件更新失败。
+k8s.gcr.io 							# 用途：Kubernetes 官方旧镜像仓库。禁用影响：依赖老版本 K8s 部署脚本（如旧版 kubeadm）的集群组件无法拉取。
+
+# 主流编程语言公共仓库
+pypi.org 							# 用途：Python 官方包管理器（PyPI）主站。禁用影响：无法访问 Python 包索引网页进行检索。
+files.pythonhosted.org 				# 用途：PyPI 软件包（Whl/Tar.gz）的实际文件下载 CDN。禁用影响：执行 pip install 时报错，Python 依赖包无法下载。
+registry.npmjs.org 					# 用途：Node.js 官方 npm 包管理器注册表。禁用影响：执行 npm install 时报错，前端依赖包无法拉取。
+registry.yarnpkg.com 				# 用途：Yarn 包管理器官方镜像源（通常重定向至 npm）。禁用影响：使用 yarn install 时无法正常解析并拉取依赖。
+repo.maven.apache.org 				# 用途：Java Maven 中央仓库。禁用影响：Maven 或 Gradle 项目构建时无法下载所需的依赖 Jar 包。
+
+
+# === 级别 1 补充：微软全局激活与时钟同步（必选） ===
+activation.sls.microsoft.com 		# 用途：Windows 系统 KMS/KMS 之外的官方云端激活验证。禁用影响：系统或批量授权提示“未激活”。
+go.microsoft.com 					# 用途：微软各种组件、Office 重定向与帮助链接跳转。禁用影响：部分微软内置向导和配置工具中断。
+time.windows.com 					# 用途：Windows 核心时间同步（NTP）。禁用影响：内网机器时钟若与证书发放时间不一致，会导致所有安全握手（HTTPS/TLS）因证书“过期/未生效”而报错。
+
+# === 级别 1 补充：Office 365 现代验证与云服务 ===
+login.microsoftonline.com 		# 用途：Office 365 / Microsoft 365 账户登录、现代身份验证（OAuth2）。禁用影响：正版 Office 无法登录账号，导致授权过期变成只读模式。
+*.msauth.net 					# 用途：微软多因素身份验证（MFA）及登录凭据托管。禁用影响：无法完成企业级二次安全认证。
+
+# === 开发组 补充：主流 IDE 核心服务 ===
+update.code.visualstudio.com 		# 用途：VS Code 编辑器自身的检查更新。禁用影响：无法在线升级 IDE 核心版本。
+*.jetbrains.com 					# 用途：IntelliJ IDEA, WebStorm, PyCharm 等 JetBrains 全家桶的更新及插件市场。禁用影响：无法下载 IDE 插件或升级。
+fls.jetbrains-license-server.com 	# 用途：JetBrains 企业许可证/激活服务器验证。禁用影响：正版 IDE 提示激活失效。
+
+# === 开发组 补充：全栈开发关键生态 ===
+proxy.golang.org 		# 用途：Go 语言官方 Module 代理。禁用影响：go get 或 go mod download 彻底卡死。
+sum.golang.org 			# 用途：Go 语言依赖包安全哈希校验（Checksum）。禁用影响：Go 项目构建时因无法验证安全性而报错。
+gcr.io 					# 用途：Google Container Registry 镜像仓库。禁用影响：无法拉取很多开源项目的 Google 官方基础镜像（如 Kubernetes 相关工具）。
+quay.io 				# 用途：Red Hat 旗下的公共容器镜像托管平台。禁用影响：无法拉取特定的企业级开源组件容器。

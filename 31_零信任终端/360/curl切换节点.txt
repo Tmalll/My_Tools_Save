@@ -1,0 +1,31 @@
+这个可用
+curl "http://192.168.1.29:9090/proxies/AutoProxy" -X "PUT" --data "{\"name\":\"AWSSG\"}"
+
+
+
+
+curl "http://192.168.1.29:9090/proxies/AutoProxy" -X "PUT" -H "Accept: */*" -H "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8"  -H "Cache-Control: no-cache"  -H "Connection: keep-alive"  -H "Content-Type: application/json"  -H "DNT: 1"  -H "Origin: http://192.168.1.29:9090"  -H "Pragma: no-cache"  -H "Referer: http://192.168.1.29:9090/ui/"  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.0.0 Safari/537.36"  --data-raw "^{^\^"name^\^":^\^"AWSSG^\^"^}"  --compressed   --insecure
+  
+pause
+exit
+
+curl "http://192.168.1.29:9090/proxies/AutoProxy" -X "PUT" -H "Accept: */*" -H "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8"  -H "Cache-Control: no-cache"  -H "Connection: keep-alive"  -H "Content-Type: application/json"  -H "DNT: 1"  -H "Origin: http://192.168.1.29:9090"  -H "Pragma: no-cache"  -H "Referer: http://192.168.1.29:9090/ui/"  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.0.0 Safari/537.36"  --data "{\"name\":\"AWSSG\"}"  --compressed   --insecure
+  
+
+
+
+curl 'http://192.168.1.29:9090/proxies/AutoProxy' \
+  -X 'PUT' \
+  -H 'Accept: */*' \
+  -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -H 'Content-Type: application/json' \
+  -H 'DNT: 1' \
+  -H 'Origin: http://192.168.1.29:9090' \
+  -H 'Pragma: no-cache' \
+  -H 'Referer: http://192.168.1.29:9090/ui/' \
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.0.0 Safari/537.36' \
+  --data-raw '{"name":"AWSSG"}' \
+  --compressed \
+  --insecure

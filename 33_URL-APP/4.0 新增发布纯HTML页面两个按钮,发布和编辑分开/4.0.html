@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HTML Note</title>
+<style>
+  body{max-width:900px;margin:20px auto;padding:0 10px;font-family:system-ui,sans-serif}
+  .sticky-top{position:sticky;top:0;background:#fff;padding:10px 0;z-index:999;border-bottom:1px solid #eee;margin-bottom:15px}
+  /* 调整为一行 5 个按钮的紧凑网格 */
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+  button{padding:8px;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  button:hover{background:#e8e8e8}
+  button.primary{background:#e6f2ff;border-color:#a3c2e6;font-weight:bold}
+  button.primary:hover{background:#cce2ff}
+  [contenteditable]{border:1px solid #ddd;border-radius:6px;padding:12px;background:#fafafa;outline:none}
+  [contenteditable]:focus{border-color:#666;background:#fff}
+  #h{font-size:24px;font-weight:bold;margin-bottom:15px;min-height:30px}
+  #e{min-height:400px;max-height:60vh;overflow-y:auto;font-size:16px;line-height:1.6;word-break:break-word}
+  
+  /* 编辑器内链接：柔和的提示，平时只作为普通编辑 */
+  #e a, #e a *{color:#0066cc !important;text-decoration:underline !important;cursor:text !important}
+  body.ctrl-pressed #e a, body.ctrl-pressed #e a * {cursor:pointer !important}
+  [contenteditable]:empty:before{content:attr(placeholder);color:#aaa}
+</style>
+<script>
+f=s=>new Blob([s]).size;
+fmt=b=>b<1024?b+' B':(b/1024).toFixed(2)+' KB';
+sync=()=>document.title=h.innerText.trim()||'HTML Note';
+uSize=()=>{
+  x=document.documentElement.outerHTML.length;
+  info.innerHTML=`<b>HTML Note v3.0</b> | <b>Size:</b> ${fmt(x)} | <b>DataText:</b> ${fmt(x*1.33)} | <small style="color:#666">≤512KB UseURL</small>`;
+};
+b64=a=>{let s='',c=0x8000;for(let i=0;i<a.length;i+=c)s+=String.fromCharCode(...a.subarray(i,i+c));return btoa(s)};
+ub64=s=>{b=atob(s);u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u};
+
+// 原本的全面备份模板（带全部编辑器按钮）
+tpl=(th,eh)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>`+(h.innerText.trim()||'HTML Note').replace(/</g,'&lt;')+'</title><style>'+document.querySelector('style').innerHTML+'</style><script>'+document.querySelector('script').innerHTML.replace(/<\/script>/g,'<\\\\/script>')+`<\/script></head><body><div class="sticky-top"><div id="info"></div><div class="grid"><button onclick="clr()">Clear</button><button onclick="img.click()">Insert Image</button><button onclick="copyDT()">Copy DataText</button><button onclick="restoreFromPage()">Restore TextArea</button><button onclick="saveHTML()">Save HTML</button><button onclick="saveTXT()">Save TEXT</button><button onclick="imp.click()">Import .DataText</button><button onclick="outDT()">Export .DataText</button><button class="primary" onclick="previewPost()">Preview Post</button><button class="primary" onclick="copyPostDT()">Copy Post DataText</button><input hidden type="file" id="img" accept="image/*" onchange="ins(this.files[0]);this.value=''"><input hidden type="file" id="imp" accept=".DataText,.txt" onchange="impDT(this.files[0]);this.value=''"><a hidden id="a"></a></div></div><div id="h" contenteditable="true" placeholder="Title..." oninput="sync();uSize()">`+th+`</div><div id="e" contenteditable="true" placeholder="Type notes here..." oninput="uSize()">`+eh+`</div></body></html>`;
+gen=()=>{html=tpl(h.innerHTML,e.innerHTML);return{html,data:'data:text/html;base64,'+b64(new TextEncoder().encode(html))}};
+dl=(n,t,d)=>{u=URL.createObjectURL(new Blob([d],{type:t}));a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),500)};
+
+clipWrite=async text=>{
+  if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(text);return true}catch(e){}}
+  const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);ta.focus();ta.select();const ok=document.execCommand('copy');document.body.removeChild(ta);
+  if(ok)return true;throw new Error('failed');
+};
+copyDT=async()=>{
+  try{g=gen();await clipWrite(g.data);alert('Copied Editor! ('+fmt(f(g.data))+')')}
+  catch(e){alert('Copy failed: '+e.message)}
+};
+outDT=()=>{g=gen();dl((h.innerText.trim()||'#HTML_Note')+'.DataText','application/octet-stream',g.data)};
+saveHTML=()=>{g=gen();dl((h.innerText.trim()||'#HTML_Note')+'.html','text/html',g.html)};
+saveTXT=()=>{dl((h.innerText.trim()||'#HTML_Note')+'.txt','text/plain',e.innerText)};
+clr=()=>{if(confirm('Clear all?')){h.innerHTML='';e.innerHTML='';sync();uSize()}};
+ins=file=>{
+  if(!file)return;const rd=new FileReader();
+  rd.onload=x=>{
+    const img=document.createElement('img');img.src=x.target.result;img.style.maxWidth='100%';
+    e.appendChild(img);uSize();
+  };rd.readAsDataURL(file)
+};
+restore=s=>{
+  try{s=s.trim();if(!s.startsWith('data:text/html;base64,')){alert('Invalid DataText');return}
+  document.open();document.write(new TextDecoder().decode(ub64(s.split(',')[1])));document.close()}catch(err){alert('Failed: '+err)}
+};
+restoreFromPage=()=>{const m=e.innerText.match(/data:text\/html;base64,[A-Za-z0-9+/=]+/);m?restore(m[0]):alert('No DataText found')};
+impDT=file=>{if(file){r2=new FileReader();r2.onload=x=>restore(x.target.result);r2.readAsText(file)}};
+
+// =================【核心创新：生成纯净发布版 HTML】=================
+const genPurePostHTML = () => {
+  const titleText = h.innerText.trim() || 'Untitled Post';
+  
+  // 1. 获取正文的 HTML（保留了所有原生的 <div><br> 换行结构）
+  let contentHtml = e.innerHTML;
+  
+  // 2. 临时剥离可能存在的旧 <a> 标签，确保干净
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = contentHtml;
+  tempDiv.querySelectorAll('a').forEach(a => { a.outerHTML = a.innerText; });
+  
+  // 3. 论坛级纯文本大正则过滤：精准匹配所有独立的 http:// 或 https:// 网址并加上超链接
+  const urlReg = /(https?:\/\/[^\s<]+)/gi; 
+  let pureHtml = tempDiv.innerHTML.replace(urlReg, '<a href="$1" target="_blank">$1</a>');
+
+  // 4. 返回一个完全脱离编辑器、干净利落的纯展示静态页面模板
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${titleText}</title>
+  <style>
+    body{max-width:800px;margin:40px auto;padding:0 20px;font-family:system-ui,sans-serif;line-height:1.6;color:#333}
+    h1{font-size:28px;border-bottom:2px solid #eee;padding-bottom:10px;margin-bottom:20px}
+    .content{font-size:16px;word-break:break-word}
+    .content img{max-width:100%;height:auto;margin:10px 0;display:block}
+    a{color:#0066cc;text-decoration:underline}
+    a:hover{color:#004499}
+  </style>
+</head>
+<body>
+  <h1>${titleText}</h1>
+  <div class="content">${pureHtml}</div>
+</body>
+</html>`;
+};
+
+// 按钮功能 1：在新标签页预览“已发表”的纯超链接帖子
+const previewPost = () => {
+  const pureHtml = genPurePostHTML();
+  const blob = new Blob([pureHtml], {type: 'text/html'});
+  window.open(URL.createObjectURL(blob), '_blank');
+};
+
+// 按钮功能 2：直接复制这个纯发布版页面的 DataText（完美放入收藏夹）
+const copyPostDT = async () => {
+  const pureHtml = genPurePostHTML();
+  const dataText = 'data:text/html;base64,' + b64(new TextEncoder().encode(pureHtml));
+  try {
+    await clipWrite(dataText);
+    alert('Copied Pure Post DataText! Perfect for your bookmarks. ('+fmt(f(dataText))+')');
+  } catch(err) {
+    alert('Copy failed: ' + err.message);
+  }
+};
+
+// Ctrl 快捷键手势支持
+window.addEventListener('keydown', x => { if (x.key === 'Control') document.body.classList.add('ctrl-pressed'); });
+window.addEventListener('keyup', x => { if (x.key === 'Control') document.body.classList.remove('ctrl-pressed'); });
+// 解决 Ctrl 点击跳转
+document.addEventListener('click', x => {
+  const a = x.target.closest('#e a');
+  if (a) {
+    x.preventDefault();
+    if (x.ctrlKey) window.open(a.href, '_blank');
+  }
+});
+window.addEventListener('beforeunload', ev => { if (h.innerText.trim() || e.innerText.trim()) { ev.preventDefault(); return '' } });
+addEventListener('load', () => uSize());
+</script>
+</head>
+<body>
+<div class="sticky-top">
+  <div id="info"></div>
+  <div class="grid">
+    <button onclick="clr()">Clear</button>
+    <button onclick="img.click()">Insert Image</button>
+    <button onclick="copyDT()">Copy Editor</button>
+    <button onclick="restoreFromPage()">Restore TA</button>
+    <button onclick="saveHTML()">Save HTML</button>
+    <button onclick="saveTXT()">Save TEXT</button>
+    <button onclick="imp.click()">Import .DT</button>
+    <button onclick="outDT()">Export .DT</button>
+    <button class="primary" onclick="previewPost()" title="Preview Clean HTML Post">Preview Post</button>
+    <button class="primary" onclick="copyPostDT()" title="Copy Pure HTML Bookmark Link">Copy Post DT</button>
+    <input hidden type="file" id="img" accept="image/*" onchange="ins(this.files[0]);this.value=''"><input hidden type="file" id="imp" accept=".DataText,.txt" onchange="impDT(this.files[0]);this.value=''"><a hidden id="a"></a>
+  </div>
+</div>
+<div id="h" contenteditable="true" placeholder="Title..." oninput="sync();uSize()"></div>
+<div id="e" contenteditable="true" placeholder="Type your notes here... URLs will be fully linkified when you click [Preview Post] or [Copy Post DT]" oninput="uSize()"></div>
+</body>
+</html>

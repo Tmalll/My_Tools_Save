@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <title>HyperNote · 纯HTML编辑器</title>
+    <style>
+        /* 完全继承第一版风格 + 紧凑优化 */
+        *{box-sizing:border-box;}
+        html,body{margin:0;padding:0;height:100%;background:#fff;color:#000;font-family:system-ui,'Segoe UI',Roboto,sans-serif;}
+        body{display:flex;flex-direction:column;max-width:1180px;margin:0 auto;height:100%;overflow:auto;}
+        
+        #top-sticky{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #ddd;padding:6px 10px;}
+        
+        /* 信息栏复古风格 */
+        .info-bar{font-size:11px;margin-bottom:6px;display:flex;flex-wrap:wrap;gap:14px;background:#f5f5f5;padding:4px 12px;border-radius:6px;align-items:center;}
+        .info-bar span{font-family:monospace;}
+        .sz{font-weight:700;transition:color .2s;}
+        .author-area{display:flex;align-items:center;gap:6px;margin-left:auto;background:#e9ecef;padding:2px 10px;border-radius:20px;font-size:10px;}
+        .author-area input{border:1px solid #aaa;border-radius:16px;padding:2px 8px;font-size:10px;width:140px;}
+        .author-area button{border:none;background:#3b82f6;color:white;border-radius:16px;padding:2px 10px;cursor:pointer;font-size:10px;}
+        
+        /* 按钮网格 - 高度已优化 */
+        .btn-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px;}
+        .btn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px;}
+        .btn{width:100%;min-height:54px;padding:5px;border:1px solid #bbb;border-radius:6px;background:#eee;color:#111;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:700;line-height:1.2;transition:0.1s;}
+        .btn:hover{background:#ddd;}
+        .btn:active{background:#ccc;}
+        .btn-size-badge{font-size:9px;font-weight:600;margin-top:3px;background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:20px;font-family:monospace;}
+        
+        /* 工具栏 - 完全第一版风格 + 带文字说明 */
+        #toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:5px;margin-top:6px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;}
+        #toolbar button{min-width:26px;height:28px;padding:0 5px;border:1px solid transparent;border-radius:4px;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#222;gap:3px;}
+        #toolbar button:hover{background:#e0e0e0;border-color:#ccc;}
+        #toolbar button.active{background:#d0e4ff;border-color:#99c0f0;}
+        #toolbar .sep{width:1px;height:20px;background:#ccc;margin:0 3px;}
+        #toolbar input[type=color]{width:28px;height:28px;padding:1px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;}
+        .toolbar-label{font-size:10px;color:#555;margin-right:2px;}
+        
+        /* 编辑区 */
+        #scroll-area{flex:1;padding:12px 12px 40px;overflow:visible;}
+        h1{margin:0 0 10px;font-size:2rem;outline:none;min-height:2.4rem;}
+        hr{border:none;border-top:2px solid #000;margin:0 0 12px;}
+        #editor-body{min-height:450px;outline:none;font-size:16px;line-height:1.5;word-break:break-word;}
+        #editor-body img{max-width:100%;display:block;margin:10px 0;}
+        [contenteditable]:empty:before{content:attr(placeholder);color:#aaa;white-space:pre-wrap;}
+        
+        #toast-msg{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s;font-family:monospace;}
+        .credit-footer{font-size:9px;color:#666;margin-top:8px;text-align:center;border-top:1px solid #eee;padding-top:5px;}
+    </style>
+</head>
+<body>
+<div id="toast-msg"></div>
+<div id="top-sticky">
+    <div class="info-bar">
+        <span>🧠 <b id="versionTag">HyperNote · v2.1</b></span>
+        <span>📄 页面大小: <span id="realSizeSpan" class="sz">0 B</span></span>
+        <span>🔗 DataText: <span id="dataSizeSpan" class="sz">0 B</span></span>
+        <span>⚡ DeepSeek 创作 | 灵感: xx123xx@.com | 项目: xx123xx.com/note</span>
+        <div class="author-area">
+            <span>✍️ 作者:</span>
+            <input type="text" id="authorNameInput" placeholder="你的名字/邮箱" value="xxx456xxx@gmail.com">
+            <button id="setAuthorBtn">✔️</button>
+        </div>
+    </div>
+    <!-- 第一行核心三按钮 -->
+    <div class="btn-row-3">
+        <button class="btn" id="clearBtn">🧹 Clear<br><span class="btn-size-badge">清空标题/正文</span></button>
+        <button class="btn" id="insertImageBtn">🖼️ Insert Image<br><span class="btn-size-badge">光标处插入图片</span></button>
+        <button class="btn" id="restoreTextareaBtn">♻️ Restore For TextArea<br><span class="btn-size-badge">从正文恢复页面</span></button>
+    </div>
+    <!-- 模块1: 带编辑器完整页面 -->
+    <div class="btn-grid">
+        <button class="btn" id="saveEditorBtn">💾 Save HTML Editor<br><span id="sizeEditorSave" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="copyEditorBtn">📋 Copy HTML Editor<br><span id="sizeEditorCopy" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="exportEditorBtn">📎 Export Editor .DataText<br><span id="sizeEditorExport" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="importEditorBtn">📂 Import Editor .DataText<br><span class="btn-size-badge">导入完整编辑器</span></button>
+    </div>
+    <!-- 模块2: 纯页面(超链接转换) -->
+    <div class="btn-grid">
+        <button class="btn" id="savePageBtn">📄 Save HTML Page<br><span id="sizePageSave" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="copyPageBtn">📋 Copy HTML Page<br><span id="sizePageCopy" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="exportPageBtn">📎 Export Page .DataText<br><span id="sizePageExport" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="importPageBtn">📂 Import Page .DataText<br><span class="btn-size-badge">导入纯HTML页面</span></button>
+    </div>
+    <!-- 模块3: 纯文本 -->
+    <div class="btn-grid">
+        <button class="btn" id="saveTextBtn">📝 Save TEXT<br><span id="sizeTextSave" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="copyTextBtn">📋 Copy TEXT<br><span id="sizeTextCopy" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="exportTextBtn">📎 Export TEXT .DataText<br><span id="sizeTextExport" class="btn-size-badge">0 B</span></button>
+        <button class="btn" id="importTextBtn">📂 Import TEXT .DataText<br><span class="btn-size-badge">导入纯文本</span></button>
+    </div>
+    <!-- 格式工具栏：完全第一版风格 + 按钮带文字说明（精简但保留全部功能）-->
+    <div id="toolbar">
+        <button onclick="execCmd('removeFormat')" title="清除格式">🗑️清除</button>
+        <div class="sep"></div>
+        <button onclick="applyFontSize('16px')">16px</button>
+        <button onclick="applyFontSize('24px')">24px</button>
+        <button onclick="applyFontSize('32px')">32px</button>
+        <button onclick="promptFontSize()">自定义</button>
+        <div class="sep"></div>
+        <label style="display:flex;align-items:center;gap:2px;font-size:10px;color:#555;">A<input type="color" id="fgColor" value="#000000"></label>
+        <label style="display:flex;align-items:center;gap:2px;font-size:10px;color:#555;">H<input type="color" id="bgColor" value="#ffff00"></label>
+        <!-- 快速颜色增强但保持第一版简洁 -->
+        <div class="sep"></div>
+        <button onclick="applyColorQuick('foreColor','#e11d48')" title="红色字">🔴红</button>
+        <button onclick="applyColorQuick('foreColor','#2563eb')" title="蓝色字">🔵蓝</button>
+        <button onclick="applyColorQuick('foreColor','#16a34a')" title="绿色字">🟢绿</button>
+        <button onclick="applyColorQuick('hiliteColor','#fef08a')" title="黄色高亮">🟡高亮</button>
+        <div class="sep"></div>
+        <button onclick="execCmd('bold')" title="粗体"><b>B</b></button>
+        <button onclick="execCmd('italic')" title="斜体"><i>I</i></button>
+        <button onclick="execCmd('underline')" title="下划线"><u>U</u></button>
+        <button onclick="execCmd('strikeThrough')" title="删除线"><s>S</s></button>
+        <div class="sep"></div>
+        <button onclick="execCmd('justifyLeft')" title="左对齐">◀左</button>
+        <button onclick="execCmd('justifyCenter')" title="居中">⏺中</button>
+        <button onclick="execCmd('justifyRight')" title="右对齐">右▶</button>
+        <button onclick="execCmd('justifyFull')" title="两端对齐">☰满</button>
+        <div class="sep"></div>
+        <button onclick="execCmd('insertUnorderedList')" title="无序列表">•列表</button>
+        <button onclick="execCmd('insertOrderedList')" title="有序列表">1.有序</button>
+        <button onclick="execCmd('outdent')" title="减少缩进">⇠缩出</button>
+        <button onclick="execCmd('indent')" title="增加缩进">缩进⇢</button>
+        <div class="sep"></div>
+        <button onclick="execCmd('superscript')" title="上标">x²</button>
+        <button onclick="execCmd('subscript')" title="下标">x₂</button>
+    </div>
+</div>
+<div id="scroll-area">
+    <h1 id="titleEditor" contenteditable="true" placeholder="标题..." oninput="updateAllSizes()"></h1>
+    <hr>
+    <div id="editor-body" contenteditable="true" placeholder="✍️ 写笔记... 粘贴 data:text/html;base64,... 然后点击上方的 Restore For TextArea 即可完整恢复页面" oninput="updateAllSizes()" onkeyup="syncToolbarState()" onmouseup="syncToolbarState()"></div>
+</div>
+<input type="file" id="globalFileInput" style="display:none" accept=".datatext,.txt">
+<a id="hiddenDownload" style="display:none"></a>
+
+<script>
+    // ======================== 版本自动递增 ========================
+    let version = "v2.1";
+    const versionEl = document.getElementById('versionTag');
+    if(versionEl) versionEl.innerText = `HyperNote · ${version}`;
+    
+    // ======================== 全局 DOM ========================
+    const titleElem = document.getElementById('titleEditor');
+    const bodyElem = document.getElementById('editor-body');
+    const realSpan = document.getElementById('realSizeSpan');
+    const dataSpan = document.getElementById('dataSizeSpan');
+    const toastMsg = document.getElementById('toast-msg');
+    const authorInput = document.getElementById('authorNameInput');
+    const setAuthorBtn = document.getElementById('setAuthorBtn');
+    let currentAuthor = "xxx456xxx@gmail.com";
+    
+    // 颜色选择器
+    const fgColorPicker = document.getElementById('fgColor');
+    const bgColorPicker = document.getElementById('bgColor');
+    if(fgColorPicker) fgColorPicker.oninput = (e) => applyColorCmd('foreColor', e.target.value);
+    if(bgColorPicker) bgColorPicker.oninput = (e) => applyColorCmd('hiliteColor', e.target.value);
+    if(setAuthorBtn) setAuthorBtn.onclick = () => { let val = authorInput.value.trim(); if(val) currentAuthor = val; showToast(`作者: ${currentAuthor}`); updateAllSizes(); };
+    
+    // 辅助函数
+    function getByteSize(str) { return new TextEncoder().encode(str).length; }
+    function formatBytes(bytes){
+        if(bytes < 1024) return bytes.toFixed(0)+' B';
+        let units = ['KB','MB','GB']; let i = -1;
+        do{ bytes /= 1024; i++; } while(bytes >= 1024 && i < units.length-1);
+        return bytes.toFixed(2)+' '+units[i];
+    }
+    function colorBySize(bytes){
+        let mb = bytes/(1024*1024);
+        if(mb < 0.3) return '#2b8c4a';
+        if(mb < 1) return '#84cc16';
+        if(mb < 2.5) return '#eab308';
+        if(mb < 5) return '#3b82f6';
+        if(mb < 9) return '#f97316';
+        if(mb < 16) return '#dc2626';
+        return '#a855f7';
+    }
+    function showToast(msg, isErr=false){
+        toastMsg.innerText = msg;
+        toastMsg.style.opacity = '1';
+        toastMsg.style.background = isErr ? '#b91c1c' : '#1e293b';
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(()=> toastMsg.style.opacity = '0', 1800);
+    }
+    function b64Encode(str){
+        const encoder = new TextEncoder();
+        const uint8 = encoder.encode(str);
+        let bin = '';
+        const chunk = 0x8000;
+        for(let i=0;i<uint8.length;i+=chunk) bin += String.fromCharCode(...uint8.subarray(i,i+chunk));
+        return btoa(bin);
+    }
+    function decodeBase64ToStr(base64){
+        const bin = atob(base64);
+        const bytes = new Uint8Array(bin.length);
+        for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+        return new TextDecoder().decode(bytes);
+    }
+    async function copyToClipboard(text, successHint){
+        try{
+            if(navigator.clipboard && navigator.clipboard.writeText){
+                await navigator.clipboard.writeText(text);
+                showToast(`${successHint} (${formatBytes(getByteSize(text))})`);
+                return;
+            }
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            const ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            if(ok) showToast(`${successHint} (${formatBytes(getByteSize(text))})`);
+            else throw new Error();
+        }catch(e){ showToast('复制失败', true); }
+    }
+    function downloadFile(filename, content, mime='application/octet-stream'){
+        const blob = new Blob([content], {type: mime});
+        const a = document.getElementById('hiddenDownload');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+    function getAuthorCreditHTML(){
+        return `<div style="font-size:9px; color:#666; text-align:center; margin-top:12px; border-top:1px solid #ddd; padding-top:6px;"><span>🧠 HyperNote ${version} | Powered by DeepSeek</span> | <span>✍️ 笔记作者: ${currentAuthor.replace(/</g,'&lt;')}</span> | <span>灵感: xx123xx@.com | 项目: xx123xx.com/note</span></div>`;
+    }
+    
+    // ========== 核心生成函数 (完整修复导出后编辑器功能) ==========
+    // 关键: 导出的HTML必须包含完全相同的脚本并且DOM结构完整，确保所有按钮 onclick 能正常调用全局函数。
+    function generateFullEditorHTML() {
+        const curTitle = titleElem.innerHTML;
+        const curBody = bodyElem.innerHTML;
+        const styleContent = document.querySelector('style').innerHTML;
+        const scriptContent = document.querySelector('script').innerHTML;
+        // 获取当前工具栏和内联结构，确保导出版本所有函数可用。
+        const topStickyHTML = document.getElementById('top-sticky').cloneNode(true);
+        // 清除输入框文件残留不影响
+        return `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${(titleElem.innerText.trim()||'HyperNote').replace(/</g,'&lt;')}</title><style>${styleContent}</style><script>${scriptContent.replace(/<\/script/g,'<\\/script')}<\/script></head><body><div id="toast-msg"></div>${topStickyHTML.outerHTML}<div id="scroll-area"><h1 id="titleEditor" contenteditable="true">${curTitle.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</h1><hr><div id="editor-body" contenteditable="true">${curBody}</div></div></body></html>`;
+    }
+    // 纯HTML页面(自动超链接转换)
+    function generateCleanPageWithLinks() {
+        let rawTitleHtml = titleElem.innerHTML;
+        let rawBodyHtml = bodyElem.innerHTML;
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = rawBodyHtml;
+        const urlRegex = /(https?:\/\/[^\s<>"'“”]+)/g;
+        function walkAndConvert(node){
+            if(node.nodeType === Node.TEXT_NODE){
+                let text = node.nodeValue;
+                if(text && urlRegex.test(text)){
+                    const frag = document.createDocumentFragment();
+                    let lastIdx = 0, match;
+                    urlRegex.lastIndex = 0;
+                    while((match = urlRegex.exec(text)) !== null){
+                        const before = text.substring(lastIdx, match.index);
+                        if(before) frag.appendChild(document.createTextNode(before));
+                        const link = document.createElement('a');
+                        link.href = match[0];
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.style.color = '#2563eb';
+                        link.style.textDecoration = 'underline';
+                        link.innerText = match[0];
+                        frag.appendChild(link);
+                        lastIdx = match.index + match[0].length;
+                    }
+                    if(lastIdx < text.length) frag.appendChild(document.createTextNode(text.substring(lastIdx)));
+                    node.parentNode.replaceChild(frag, node);
+                }
+            } else if(node.nodeType === Node.ELEMENT_NODE && !['a','button','script','style'].includes(node.tagName.toLowerCase())){
+                node.childNodes.forEach(walkAndConvert);
+            }
+        }
+        tempDiv.childNodes.forEach(walkAndConvert);
+        const linkedBody = tempDiv.innerHTML;
+        const finalTitle = titleElem.innerHTML || '无标题';
+        const authorInfo = getAuthorCreditHTML();
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${(titleElem.innerText.trim()||'BookmarkPage').replace(/</g,'&lt;')}</title><style>body{max-width:1100px;margin:30px auto;padding:20px;font-family:system-ui;line-height:1.5;} img{max-width:100%;} a{color:#1e40af;} h1{font-size:2rem;}</style></head><body><h1>${finalTitle}</h1><hr>${linkedBody}${authorInfo}</body></html>`;
+    }
+    function getPlainText() { return bodyElem.innerText; }
+    
+    // ========== 更新所有按钮大小显示 ==========
+    function updateAllButtonSizes() {
+        try{
+            let fullHtml = generateFullEditorHTML();
+            let editorDataUrl = 'data:text/html;base64,' + b64Encode(fullHtml);
+            let editorBytes = getByteSize(fullHtml);
+            let editorCopyBytes = getByteSize(editorDataUrl);
+            document.getElementById('sizeEditorSave').innerHTML = formatBytes(editorBytes);
+            document.getElementById('sizeEditorCopy').innerHTML = formatBytes(editorCopyBytes);
+            document.getElementById('sizeEditorExport').innerHTML = formatBytes(editorCopyBytes);
+            document.getElementById('sizeEditorSave').style.color = colorBySize(editorBytes);
+            document.getElementById('sizeEditorCopy').style.color = colorBySize(editorCopyBytes);
+            document.getElementById('sizeEditorExport').style.color = colorBySize(editorCopyBytes);
+            
+            let cleanHtml = generateCleanPageWithLinks();
+            let pageDataUrl = 'data:text/html;base64,' + b64Encode(cleanHtml);
+            let pageBytes = getByteSize(cleanHtml);
+            let pageCopyBytes = getByteSize(pageDataUrl);
+            document.getElementById('sizePageSave').innerHTML = formatBytes(pageBytes);
+            document.getElementById('sizePageCopy').innerHTML = formatBytes(pageCopyBytes);
+            document.getElementById('sizePageExport').innerHTML = formatBytes(pageCopyBytes);
+            document.getElementById('sizePageSave').style.color = colorBySize(pageBytes);
+            document.getElementById('sizePageCopy').style.color = colorBySize(pageCopyBytes);
+            document.getElementById('sizePageExport').style.color = colorBySize(pageCopyBytes);
+            
+            let plain = getPlainText();
+            let textDataUrl = 'data:text/plain;base64,' + b64Encode(plain);
+            let textBytes = getByteSize(plain);
+            let textCopyBytes = getByteSize(textDataUrl);
+            document.getElementById('sizeTextSave').innerHTML = formatBytes(textBytes);
+            document.getElementById('sizeTextCopy').innerHTML = formatBytes(textCopyBytes);
+            document.getElementById('sizeTextExport').innerHTML = formatBytes(textCopyBytes);
+            document.getElementById('sizeTextSave').style.color = colorBySize(textBytes);
+            document.getElementById('sizeTextCopy').style.color = colorBySize(textCopyBytes);
+            document.getElementById('sizeTextExport').style.color = colorBySize(textCopyBytes);
+            
+            let realBytes = getByteSize(fullHtml);
+            let dataBytesEst = getByteSize('data:text/html;base64,'+b64Encode(fullHtml));
+            realSpan.innerText = formatBytes(realBytes);
+            realSpan.style.color = colorBySize(realBytes);
+            dataSpan.innerText = formatBytes(dataBytesEst);
+            dataSpan.style.color = colorBySize(dataBytesEst);
+        }catch(e){ console.warn(e);}
+    }
+    function updateAllSizes(){ updateAllButtonSizes(); }
+    
+    // 导入恢复逻辑
+    function importDataText(file, mode){
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            let content = e.target.result;
+            if(typeof content !== 'string' || !content.startsWith('data:')){ showToast('无效.datatext', true); return; }
+            try{
+                const base64Part = content.split(',')[1];
+                const decoded = decodeBase64ToStr(base64Part);
+                if(mode === 'editor'){
+                    document.open();
+                    document.write(decoded);
+                    document.close();
+                } else if(mode === 'page'){
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(decoded, 'text/html');
+                    const importedH1 = doc.querySelector('h1') ? doc.querySelector('h1').innerHTML : '导入页面';
+                    const importedBody = doc.body.innerHTML;
+                    titleElem.innerHTML = importedH1;
+                    bodyElem.innerHTML = importedBody;
+                    updateAllSizes();
+                    showToast('导入 Page .DataText 成功');
+                } else if(mode === 'text'){
+                    bodyElem.innerText = decoded;
+                    updateAllSizes();
+                    showToast('导入 TEXT .DataText 成功');
+                }
+            }catch(err){ showToast('解析失败', true); }
+        };
+        reader.readAsText(file);
+    }
+    function restoreFromBodyText(){
+        const bodyText = bodyElem.innerText;
+        const match = bodyText.match(/data:text\/html;base64,[A-Za-z0-9+/=]+/);
+        if(!match){ showToast('未找到DataText链接', true); return; }
+        try{
+            const base64Part = match[0].split(',')[1];
+            const fullHtml = decodeBase64ToStr(base64Part);
+            document.open();
+            document.write(fullHtml);
+            document.close();
+        }catch(e){ showToast('恢复失败', true); }
+    }
+    function insertImageAtCursor(){
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const rd = new FileReader();
+            rd.onload = (ev) => {
+                const img = document.createElement('img');
+                img.src = ev.target.result;
+                img.style.maxWidth = '100%';
+                const sel = window.getSelection();
+                if(sel && sel.rangeCount>0 && bodyElem.contains(sel.anchorNode)){
+                    const range = sel.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(img);
+                    range.setStartAfter(img);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                } else { bodyElem.appendChild(img); }
+                updateAllSizes();
+            };
+            rd.readAsDataURL(file);
+        };
+        input.click();
+    }
+    function clearAllContents(){ if(confirm('清空所有内容？')){ titleElem.innerHTML=''; bodyElem.innerHTML=''; updateAllSizes(); showToast('已清空'); } }
+    
+    // 格式命令
+    window.execCmd = (cmd) => { bodyElem.focus(); document.execCommand(cmd, false, null); updateAllSizes(); syncToolbarState(); };
+    window.applyColorQuick = (cmd, colorVal) => { bodyElem.focus(); document.execCommand(cmd, false, colorVal); updateAllSizes(); };
+    function applyColorCmd(cmd, val){ bodyElem.focus(); document.execCommand(cmd, false, val); updateAllSizes(); }
+    function applyFontSize(val){
+        if(!val) return;
+        if(/^\d+$/.test(val)) val+='px';
+        bodyElem.focus();
+        const sel = window.getSelection();
+        if(!sel || sel.rangeCount===0) return;
+        const range = sel.getRangeAt(0);
+        if(!bodyElem.contains(range.commonAncestorContainer)) return;
+        try{
+            const span = document.createElement('span');
+            span.style.fontSize = val;
+            span.style.lineHeight = '1.4';
+            range.surroundContents(span);
+        }catch(e){
+            document.execCommand('fontSize', false, '7');
+            const fonts = bodyElem.querySelectorAll('font[size="7"]');
+            fonts.forEach(f=>{ f.removeAttribute('size'); f.style.fontSize=val; f.style.lineHeight='1.4'; });
+        }
+        updateAllSizes();
+    }
+    function promptFontSize(){ let v = prompt('输入字号 (px/rem)'); if(v) applyFontSize(v.trim()); }
+    function syncToolbarState(){
+        const cmds = ['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight','justifyFull','insertUnorderedList','insertOrderedList','superscript','subscript'];
+        cmds.forEach(cmd=>{
+            const btn = document.querySelector(`#toolbar button[onclick*='${cmd}']`);
+            if(btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+        });
+    }
+    window.addEventListener('beforeunload', (e) => {
+        const hasContent = (titleElem.innerText.trim().length > 0 || bodyElem.innerText.trim().length > 0);
+        if(hasContent){ e.preventDefault(); e.returnValue = ''; return ''; }
+    });
+    
+    // 按钮绑定
+    document.getElementById('clearBtn').onclick = clearAllContents;
+    document.getElementById('insertImageBtn').onclick = insertImageAtCursor;
+    document.getElementById('restoreTextareaBtn').onclick = restoreFromBodyText;
+    document.getElementById('saveEditorBtn').onclick = () => { let html = generateFullEditorHTML(); downloadFile((titleElem.innerText.trim()||'editor_note')+'_editor.html', html, 'text/html'); };
+    document.getElementById('copyEditorBtn').onclick = async () => { let html = generateFullEditorHTML(); let dataUrl = 'data:text/html;base64,'+b64Encode(html); await copyToClipboard(dataUrl, '📋 复制 Editor DataText'); };
+    document.getElementById('exportEditorBtn').onclick = () => { let html = generateFullEditorHTML(); let dataUrl = 'data:text/html;base64,'+b64Encode(html); downloadFile((titleElem.innerText.trim()||'editor')+'.datatext', dataUrl); };
+    document.getElementById('importEditorBtn').onclick = () => { const inp = document.getElementById('globalFileInput'); inp.onchange = (e) => { importDataText(e.target.files[0], 'editor'); inp.value=''; }; inp.click(); };
+    document.getElementById('savePageBtn').onclick = () => { let page = generateCleanPageWithLinks(); downloadFile((titleElem.innerText.trim()||'page')+'_page.html', page, 'text/html'); };
+    document.getElementById('copyPageBtn').onclick = async () => { let page = generateCleanPageWithLinks(); let dataUrl = 'data:text/html;base64,'+b64Encode(page); await copyToClipboard(dataUrl, '📋 复制 Page DataText'); };
+    document.getElementById('exportPageBtn').onclick = () => { let page = generateCleanPageWithLinks(); let dataUrl = 'data:text/html;base64,'+b64Encode(page); downloadFile((titleElem.innerText.trim()||'page')+'.datatext', dataUrl); };
+    document.getElementById('importPageBtn').onclick = () => { const inp = document.getElementById('globalFileInput'); inp.onchange = (e) => { importDataText(e.target.files[0], 'page'); inp.value=''; }; inp.click(); };
+    document.getElementById('saveTextBtn').onclick = () => { let txt = getPlainText(); downloadFile((titleElem.innerText.trim()||'text_note')+'.txt', txt, 'text/plain'); };
+    document.getElementById('copyTextBtn').onclick = async () => { let txt = getPlainText(); let dataUrl = 'data:text/plain;base64,'+b64Encode(txt); await copyToClipboard(dataUrl, '📋 复制 TEXT DataText'); };
+    document.getElementById('exportTextBtn').onclick = () => { let txt = getPlainText(); let dataUrl = 'data:text/plain;base64,'+b64Encode(txt); downloadFile((titleElem.innerText.trim()||'text')+'.datatext', dataUrl); };
+    document.getElementById('importTextBtn').onclick = () => { const inp = document.getElementById('globalFileInput'); inp.onchange = (e) => { importDataText(e.target.files[0], 'text'); inp.value=''; }; inp.click(); };
+    
+    window.addEventListener('load', ()=>{ updateAllSizes(); syncToolbarState(); if(authorInput) authorInput.value = currentAuthor; });
+    setInterval(()=>{ updateAllButtonSizes(); }, 700);
+</script>
+</body>
+</html>

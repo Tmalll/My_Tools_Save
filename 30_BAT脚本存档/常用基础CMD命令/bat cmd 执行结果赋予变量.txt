@@ -1,0 +1,3 @@
+for /F %i in ('curl -sL ifconfig.me') do (set commitid=%i)
+echo commitid=%commitid%
+ping -t %commitid%

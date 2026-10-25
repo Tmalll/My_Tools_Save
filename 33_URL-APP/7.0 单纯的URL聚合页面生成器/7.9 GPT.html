@@ -1,0 +1,113 @@
+<!DOCTYPE html><html><head><meta charset=utf-8><title>Bookmark Agg Lite</title><style>
+body{max-width:800px;margin:auto;padding:12px;font:14px sans-serif;background:#fafafa}
+button{padding:5px 10px;margin:0 2px;border:1px solid #ccc;background:#f5f5f5;cursor:pointer}
+button:hover{background:#eee}
+#t{height:18px;margin:8px 0;color:#666;font-size:12px}
+#h,#e{
+outline:0;
+background:#fff;
+box-shadow:0 1px 4px rgba(0,0,0,.08);
+border-radius:6px
+}
+#h{
+font-size:26px;
+margin:10px 0;
+padding:12px
+}
+#e{
+min-height:500px;
+max-height:500px;
+overflow:auto;
+padding:12px;
+white-space:pre-wrap;
+word-break:break-word
+}
+[contenteditable]:empty:before{
+content:attr(placeholder);
+color:#999
+}
+a{color:#2563eb}
+hr{border:0;border-top:1px solid #ddd;margin:15px 0}
+</style>
+
+<div>
+<button onclick=clr()>Clear</button>
+<button onclick=cpEd()>CopyEditor</button>
+<button onclick=svPg()>SavePage</button>
+<button onclick=cpPg()>CopyPage</button>
+</div>
+
+<div id=t>Ready</div>
+
+<h1 id=h contenteditable placeholder="Title..."></h1>
+<div id=e contenteditable placeholder="Type here..."></div>
+
+<script>
+d=document
+h=d.getElementById('h')
+e=d.getElementById('e')
+t=d.getElementById('t')
+
+msg=s=>{
+ t.innerText=s
+ clearTimeout(T)
+ T=setTimeout(_=>t.innerText='Ready',1200)
+}
+
+esc=s=>s.replace(/[&<>"']/g,m=>(
+{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]
+))
+
+link=s=>esc(s).replace(
+/https?:\/\/[^\s<]+/g,
+u=>`<a href="${u}" target=_blank>${u}</a>`
+)
+
+html=_=>`<!DOCTYPE html><meta charset=utf-8>
+<title>${esc(h.innerText)||'Bookmark Agg Lite'}</title>
+<style>${d.styleSheets[0].ownerNode.innerHTML}</style>
+<h1>${esc(h.innerText)}</h1><hr>
+<div style="white-space:pre-wrap;word-break:break-word">${link(e.innerText)}</div>`
+
+b64=s=>btoa(unescape(encodeURIComponent(s)))
+
+cp=x=>{
+ n=d.createElement('textarea')
+ n.value=x
+ d.body.appendChild(n)
+ n.select()
+ d.execCommand('copy')
+ n.remove()
+}
+
+clr=_=>{
+ h.innerText=''
+ e.innerText=''
+ msg('Cleared')
+}
+
+cpPg=_=>{
+ x='data:text/html;base64,'+b64(html())
+ e.innerText=x
+ cp(x)
+ msg('Page Copied')
+}
+
+cpEd=_=>{
+ x='data:text/html;base64,'+b64(`<!DOCTYPE html>${d.documentElement.outerHTML
+ .replace(h.innerText,'')
+ .replace(e.innerText,'')
+}`)
+ e.innerText=x
+ cp(x)
+ msg('Editor Copied')
+}
+
+svPg=_=>{
+ a=d.createElement('a')
+ a.href=URL.createObjectURL(new Blob([html()],{type:'text/html'}))
+ a.download=(h.innerText.trim()||'Bookmark Agg Lite')+'.html'
+ a.click()
+ msg('Downloaded')
+}
+</script>

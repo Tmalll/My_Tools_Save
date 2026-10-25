@@ -1,0 +1,11 @@
+validlifetime
+preferredlifetime
+
+powershell get-netipv6protocol
+netsh interface ipv6 show interface "LAN"
+
+
+netsh interface ipv6 set route interface "LAN"
+
+
+netsh interface ipv6 set privacy

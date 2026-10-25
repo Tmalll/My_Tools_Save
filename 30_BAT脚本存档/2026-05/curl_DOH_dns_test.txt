@@ -1,0 +1,8 @@
+curl.exe -v --http3-only "https://dns.google/dns-query?name=baidu.com&type=A" -H "accept: application/dns-json"
+
+
+curl.exe -v --http3-only "https://223.5.5.5/dns-query?name=baidu.com&type=A" -H "accept: application/dns-json"
+
+
+
+curl.exe -v --http3-only "https://223.5.5.5/resolve?name=baidu.com&type=A"

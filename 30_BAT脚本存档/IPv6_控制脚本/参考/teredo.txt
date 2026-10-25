@@ -1,0 +1,12 @@
+本地电脑添加IPV6隧道代码：
+开启隧道：
+Win+X 打开 Windows PowerShell（管理员）（右击自动粘贴）
+
+netsh interface teredo set state enterpriseclient server=default
+netsh interface ipv6 reset
+netsh interface teredo set state server=teredo.remlab.net
+
+
+关闭隧道：
+Win+X 打开 Windows PowerShell（管理员）（右击自动粘贴）
+netsh interface Teredo set state disable

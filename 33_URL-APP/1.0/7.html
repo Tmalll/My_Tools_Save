@@ -1,0 +1,96 @@
+<!DOCTYPEDOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML Temp Note</title>
+    <style>
+        html {
+            height: 100%;
+            display: flex;
+            color-scheme: light dark;
+        }
+        body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #t {
+            position: sticky;
+            padding: 8px 0;
+            inset: 0 0 auto;
+            gap: 8px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        #t button {
+            cursor: pointer;
+            padding: 6px 12px;
+            background: #eee;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        #t button:hover {
+            background: #ddd;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0 0 15px 0;
+            outline: none;
+            text-align: left;
+            min-height: 3.5rem;
+        }
+        .divider {
+            border: none;
+            border-top: 2px solid rgba(0,0,0,0.75);
+            margin: 0 0 20px 0;
+            width: 100%;
+        }
+        #e {
+            flex: 1;
+            outline: none;
+            font-size: 1.1rem;
+            text-align: left;
+            color: #333;
+            min-height: 400px;
+        }
+        #e img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+            display: block;
+        }
+        [contenteditable]:empty::before {
+            content: attr(placeholder);
+            color: #aaa;
+            font-weight: normal;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="t">
+        <button onclick="h.innerHTML='';e.innerHTML=''">Clear</button>
+        <button onclick="a.href='data:text/html;charset=utf-8,'+encodeURIComponent('<!DOCTYPE HTML>\n'+document.documentElement.outerHTML);a.download=(h.innerText.trim()||'note')+'.html';a.click()">Save as HTML</button>
+        <button onclick="a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(e.innerText);a.download=(h.innerText.trim()||'note')+'.txt';a.click()">Save as TXT</button>
+        <button onclick="i.click()">Insert Image</button>
+        <button onclick="let dt='data:text/html;base64,\n'+btoa(unescape(encodeURIComponent('<!DOCTYPE HTML>\n'+document.documentElement.outerHTML)));navigator.clipboard.writeText(dt).then(()=>{alert('DataText copied to clipboard!');}).catch(err=>{alert('Failed to copy: '+err);})">Copy DataText</button>
+        <input type="file" id="i" accept="image/*" style="display:none" onchange="let f=this.files[0];if(f){let r=new FileReader();r.onload=function(event){let img=document.createElement('img');img.src=event.target.result;e.appendChild(img);};r.readAsDataURL(f);this.value='';}">
+        <a hidden id="a"></a>
+    </div>
+
+    <h1 id="h" contenteditable="true" placeholder="Title..."></h1>
+    <hr class="divider">
+    <div id="e" contenteditable="true" placeholder="Type your notes here..."></div>
+</body>
+</html>

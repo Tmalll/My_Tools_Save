@@ -1,0 +1,29 @@
+<meta charset=utf-8>
+
+<button onclick="h.innerHTML=e.innerHTML=''">
+    Clear
+</button>
+
+<button onclick="
+a.href='data:text/html,'+encodeURIComponent(document.documentElement.outerHTML),
+a.download=(h.innerText||'note')+'.html',
+a.click()
+">
+    HTML
+</button>
+
+<button onclick="
+a.href='data:text/plain,'+encodeURIComponent(e.innerText),
+a.download=(h.innerText||'note')+'.txt',
+a.click()
+">
+    TXT
+</button>
+
+<a id=a hidden></a>
+
+<h1 id=h contenteditable></h1>
+
+<hr>
+
+<div id=e contenteditable style=min-height:90vh></div>

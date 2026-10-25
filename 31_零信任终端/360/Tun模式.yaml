@@ -1,0 +1,69 @@
+# Tun模式
+tun:
+  enable: true # 这个tun模式有BUG, 无法分配ipv6地址, 导致ipv6不可用.
+  device: mihomo_tun1
+  stack: mixed # https://wiki.metacubex.one/config/inbound/tun/#stack
+    # system 使用系统协议栈，可以提供更稳定/全面的 tun 体验，且占用相对其他堆栈更低
+    # gvisor 通过在用户空间中实现网络协议栈，可以提供更高的安全性和隔离性，同时可以避免操作系统内核和用户空间之间的切换，从而在特定情况下具有更好的网络处理性能
+    # mixed 混合堆栈，tcp 使用 system栈，udp 使用 gvisor栈，使用体验可能相对更好
+  dns-hijack:
+    - 0.0.0.0:53              # 需要劫持的 DNS
+    - 'any:53'                # 开启劫持
+    - 'any:53153'             # 开启劫持
+    #- "111.111.111.111:53"   # 关闭劫持
+  auto-route: true
+  auto-detect-interface: true
+  mtu: 9000
+  strict-route: true
+  inet4-address:
+    - 198.19.0.1/30
+  inet6-address:
+    - "fdfe:dcba:9877::1/126"
+  route-address:
+    - 0.0.0.0/1
+    - 128.0.0.0/1
+    - "::/1"
+    - "8000::/1"
+  route-exclude-address:
+    # IPv4 私有网络地址段 (RFC 1918)
+    #- 10.0.0.0/8         # Class A 私有网络
+    - 172.16.0.0/12      # Class B 私有网络
+    - 192.168.0.0/16     # Class C 私有网络 (包含你的 192.168.1.0/24)
+    # IPv4 特殊/本地环回地址
+    - 127.0.0.0/8        # 本地环回地址 (Localhost, 确保 127.0.0.1 不走代理)
+    - 169.254.0.0/16     # 链路本地地址 (APIPA)
+    # IPv6 地址段
+    - fc00::/7           # 独特的本地地址 (Unique Local Addresses, ULA)
+    - fe80::/10          # 链路本地地址 (Link-local)
+    - ::1/128            # IPv6 本地环回地址
+    - ff00::/8           # 组播地址 (Multicast)
+#
+
+
+备用模式
+#listeners:
+#- name: mihomo_tun2
+#  device: mihomo_tun2
+#  type: tun
+#  stack: mixed # system / gvisor / mixed
+#  strict-route: true # 将所有连接路由到 tun 来防止泄漏，但你的设备将无法其他设备被访问
+#  dns-hijack:
+#  - 0.0.0.0:53
+#  - 0.0.0.0:53
+#  - 'any:53'                # 开启劫持
+#  - 'any:53153'             # 开启劫持
+#  #- "111.111.111.111:53"   # 关闭劫持
+#  auto-detect-interface: true
+#  auto-route: true
+#  mtu: 9000
+#  inet4-address:
+#  - 198.19.0.1/30
+#  inet6-address:
+#  - "fdfe:dcba:9877::1/126"  
+#  inet4-route-address:
+#  - 0.0.0.0/1
+#  - 128.0.0.0/1
+#  inet6-route-address:
+#  - "::/1"
+#  - "8000::/1"
+# 这个tun配置纯IPv6可用.  
