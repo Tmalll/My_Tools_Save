@@ -86,6 +86,13 @@ rclone sync "%Source1%"  "%TargetDIR4%\01.latest" ^
     --exclude "**/.git/**" ^
     --exclude "desktop.ini" ^
     --exclude "mihomo_RunLOG.log" ^
+    --exclude "**/360/mihomo_log/**" ^
+    --exclude "**/360/#core_and_data/ASN.mmdb" ^
+    --exclude "**/360/#core_and_data/cache.db" ^
+    --exclude "**/360/#core_and_data/geoip.dat" ^
+    --exclude "**/360/#core_and_data/geoip.metadb" ^
+    --exclude "**/360/#core_and_data/geosite.dat" ^
+    --exclude "**/360/#core_and_data/#mihomo.exe" ^
     --timeout 10s ^
     --contimeout 10s ^
     --retries 3 ^

@@ -128,10 +128,19 @@ sub-rules:
 
 # 主要规则
 rules:
+  # Fallout4.exe Fallout4Launcher.exe
+  - PROCESS-NAME,Fallout4.exe,REJECT-DROP
+  - PROCESS-NAME,Fallout4Launcher.exe,REJECT-DROP
+  - PROCESS-NAME,nvngx_update.exe,REJECT-DROP
+  - PROCESS-NAME,steamerrorreporter64.exe,REJECT-DROP
+  - DOMAIN,crash.steampowered.com,REJECT-DROP
+  - DOMAIN,ngx.download.nvidia.com,REJECT-DROP
+  - DOMAIN,wdcp.microsoft.com,REJECT-DROP
+  - DOMAIN,wdcpalt.microsoft.com,REJECT-DROP
+
   #- PROCESS-NAME,Palemoon-Portable.exe,HidePROXY
   #- PROCESS-NAME,palemoon.exe,HidePROXY
 
-  # Fallout4.exe
   #- AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,api.bethesda.net)),HidePROXY
   #- AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,titlestorage.bethesda.net)),HidePROXY
   #- AND,((PROCESS-NAME,Fallout4.exe),(DOMAIN,us-east-1-prod-fo4prodbi01-glb-bps-bigateway.bgssvcprod.com)),HidePROXY
